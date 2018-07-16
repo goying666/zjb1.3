@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -23,6 +24,7 @@ import java.util.List;
 
 import renchaigao.com.zujuba.R;
 import renchaigao.com.zujuba.util.BottomNavigationViewHelper;
+import renchaigao.com.zujuba.widgets.CustomViewPager;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private NavigationView navigationView;
     private BottomNavigationView bottomNavigationView;
     private DrawerLayout drawerLayout;
+    private CustomViewPager customViewPager;
 
     public void loadImage(View view) {
 //        String url = "http://cn.bing.com/az/hprichbg/rb/Dongdaemun_ZH-CN10736487148_1920x1080.jpg";
@@ -46,13 +49,35 @@ public class MainActivity extends AppCompatActivity {
 //        testView = findViewById(R.id.test_image);
     }
 
-    private void initNavigationView(){
+    private void initToolBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.hide();
+//            actionBar.setDisplayHomeAsUpEnabled(true);
+//            actionBar.setHomeAsUpIndicator(R.drawable.nav_call);
+        }
 
     }
+
+    private void initNavigationView() {
+
+        navigationView.setCheckedItem(R.id.nav_call);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                drawerLayout.closeDrawers();
+                return true;
+            }
+        });
+    }
+
     private void initView() {
 //        init navigationView
+        initToolBar();
         drawerLayout = findViewById(R.id.main_drawerLayout);
         navigationView = findViewById(R.id.main_navigationView);
+        customViewPager = findViewById(R.id.main_customView);
+        initNavigationView();
 //        init bootom
         bottomNavigationView = findViewById(R.id.main_bootomNavigationView);
         BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);

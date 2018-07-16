@@ -15,6 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+
         <renchaigao.com.zujuba.widgets.CustomViewPager
             android:id="@+id/main_customView"
             android:layout_width="match_parent"
@@ -46,6 +47,7 @@
         android:id="@+id/main_navigationView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_gravity="start"
         app:headerLayout="@layout/left_page_layout"
         app:menu="@menu/left_page_menu"
         >
