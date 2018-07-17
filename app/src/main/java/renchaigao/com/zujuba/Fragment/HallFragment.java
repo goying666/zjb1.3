@@ -2,13 +2,19 @@ package renchaigao.com.zujuba.Fragment;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.app.Fragment;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -20,7 +26,12 @@ import com.youth.banner.loader.ImageLoader;
 
 import java.util.ArrayList;
 
+import renchaigao.com.zujuba.Activity.BusinessActivity;
+import renchaigao.com.zujuba.Activity.JoinUsActivity;
+import renchaigao.com.zujuba.Adapter.HallFragmentAdapter;
+import renchaigao.com.zujuba.Json.Store;
 import renchaigao.com.zujuba.R;
+import renchaigao.com.zujuba.widgets.DividerItemDecoration;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -45,7 +56,7 @@ public class HallFragment extends Fragment implements OnBannerListener {
     public Activity mContext;
 
     @Override
-    public void onAttach(Activity activity){
+    public void onAttach(Activity activity) {
         super.onAttach(activity);
         this.mContext = activity;
     }
@@ -54,6 +65,7 @@ public class HallFragment extends Fragment implements OnBannerListener {
     public HallFragment() {
         // Required empty public constructor
     }
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -80,20 +92,66 @@ public class HallFragment extends Fragment implements OnBannerListener {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
+
     private Banner banner;
     private ArrayList<String> list_path;
     private ArrayList<String> list_title;
+    private Button button_joinUs, button_business;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private Toolbar toolbar;
+    private HallFragmentAdapter hallFragmentAdapter;
+    private RecyclerView recyclerView;
+    private LinearLayoutManager layoutManager;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(
                 R.layout.fragment_hall, container, false);
         // Inflate the layout for this fragment
+//        swipeRefreshLayout = rootView.findViewById(R.id.hall_SwipeRefreshLayout);
+        recyclerView = rootView.findViewById(R.id.hall_recyclerView);
+        layoutManager = new LinearLayoutManager(mContext);
+        recyclerView.setLayoutManager(layoutManager);
+        hallFragmentAdapter = new HallFragmentAdapter(mContext);
+        recyclerView.setAdapter(hallFragmentAdapter);
+        recyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL_LIST));
+        reloadAdapter();
+        toolbar = rootView.findViewById(R.id.hall_Toolbar);
         setBanner(rootView);
+        setButton(rootView);
         return rootView;
     }
+    //刷新列表
+    public void reloadAdapter(){
+        ArrayList<Store> mStores = new ArrayList<>();
+        for (Integer i = 0; i < 16; i++) {
+            mStores.add(new Store());
+        }
+        hallFragmentAdapter.updateResults(mStores);
+    }
 
-    private void setBanner(View view){
+
+    private void setButton(View view) {
+        button_joinUs = view.findViewById(R.id.hall_button_joinUs);
+        button_business = view.findViewById(R.id.hall_button_business);
+        button_joinUs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Intent intent = new Intent(getActivity(), JoinUsActivity.class);
+                getActivity().startActivity(intent);
+            }
+        });
+        button_business.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Intent intent = new Intent(getActivity(), BusinessActivity.class);
+                getActivity().startActivity(intent);
+            }
+        });
+    }
+
+    private void setBanner(View view) {
         banner = view.findViewById(R.id.hall_banner);
         //放图片地址的集合
         list_path = new ArrayList<>();
@@ -132,7 +190,7 @@ public class HallFragment extends Fragment implements OnBannerListener {
 
     @Override
     public void OnBannerClick(int position) {
-        Log.i("tag", "你点了第"+position+"张轮播图");
+        Log.i("tag", "你点了第" + position + "张轮播图");
     }
 
     //自定义的图片加载器

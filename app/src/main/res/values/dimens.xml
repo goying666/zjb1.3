@@ -2,4 +2,59 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+
+
+    <!--button style size-->
+    <dimen name="button_width_style1">110dp</dimen>
+    <dimen name="button_height_style1">46dp</dimen>
+
+    <!--Material Design Text Size-->
+    <dimen name="md_text_size_display4">112sp</dimen>
+    <dimen name="md_text_size_display3">56sp</dimen>
+    <dimen name="md_text_size_display2">45sp</dimen>
+    <dimen name="md_text_size_display1">34sp</dimen>
+    <dimen name="md_text_size_headline">24sp</dimen>
+    <dimen name="md_text_size_title">20sp</dimen>
+    <dimen name="md_text_size_subhead">16sp</dimen>
+    <dimen name="md_text_size_body">14sp</dimen>
+    <dimen name="md_text_size_caption">12sp</dimen>
+    <dimen name="md_text_size_menu">14sp</dimen>
+    <dimen name="md_text_size_button">14sp</dimen>
+
+    <!--Material Design vertical Size-->
+    <dimen name="md_vertical_system">24dp</dimen>
+    <dimen name="md_vertical_headline">56dp</dimen>
+    <dimen name="md_vertical_title">48dp</dimen>
+    <dimen name="md_vertical_interval">8dp</dimen>
+    <!--单行文字(1)，有图标(y)，无图画(n)-->
+    <dimen name="md_vertical_body_1yn">48dp</dimen>
+    <!--单行文字(1)，有图标(y)，有图画(y)-->
+    <dimen name="md_vertical_body_1yy">72dp</dimen>
+    <!--双行文字(1)，有图标(y)，有图画(y)-->
+    <dimen name="md_vertical_body_2yy">144dp</dimen>
+    <!--双行内容(3)，有图标(y)，有图画(y)-->
+    <dimen name="md_vertical_body_3yy">216dp</dimen>
+
+    <!--Material Design horizontal Size-->
+    <dimen name="md_horizontal_left_icon">16dp</dimen>
+    <dimen name="md_horizontal_left_text">36dp</dimen>
+    <dimen name="md_horizontal_right_icon">16dp</dimen>
+    <dimen name="md_horizontal_right_draw">56dp</dimen>
+    <dimen name="md_horizontal_right_second_icon">32dp</dimen>
+
+    <!--
+Refer to App Widget Documentation for margin information
+http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
+    -->
+    <dimen name="widget_margin">8dp</dimen>
+    <dimen name="list_item_spacing">16dp</dimen>
+    <dimen name="list_item_spacing_half">8dp</dimen>
+
+
+    <dimen name="bottom_height">51dp</dimen>
+    <dimen name="image_size_width">110dp</dimen>
+    <dimen name="image_size_height">110dp</dimen>
+    <dimen name="icon_size_width">15dp</dimen>
+    <dimen name="icon_size_height">15dp</dimen>
+
 </resources>
