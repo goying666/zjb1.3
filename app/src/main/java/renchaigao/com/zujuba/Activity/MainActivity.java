@@ -14,10 +14,12 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -47,9 +49,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        drawerLayout = findViewById(R.id.main_drawerLayout);
+        navigationView = findViewById(R.id.main_navigationView);
+        customViewPager = findViewById(R.id.main_customView);
+        bottomNavigationView = findViewById(R.id.main_bootomNavigationView);
+        BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
+
         setToolBar();
-        initView();
         setViewPager();
+        setUpDrawer();
     }
 
     private void setToolBar() {
@@ -59,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void initNavigationView() {
+    private void setUpDrawer() {
         navigationView.setCheckedItem(R.id.nav_call);
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -70,16 +79,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void initView() {
-        drawerLayout = findViewById(R.id.main_drawerLayout);
-        navigationView = findViewById(R.id.main_navigationView);
-        customViewPager = findViewById(R.id.main_customView);
-        initNavigationView();
-//        init bootom
-        bottomNavigationView = findViewById(R.id.main_bootomNavigationView);
-        BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
-
-    }
 
     private void setViewPager() {
         final CustomViewPager customViewPager = findViewById(R.id.main_customView);
@@ -140,49 +139,19 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.navigation_message:
-                        customViewPager.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                customViewPager.setCurrentItem(0);
-                            }
-                        });
-                        Log.e(TAG, "this is : navigation_message");
+                        customViewPager.setCurrentItem(0);
                         return true;
                     case R.id.navigation_team:
-                        customViewPager.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                customViewPager.setCurrentItem(1);
-                            }
-                        });
-                        Log.e(TAG, "this is : navigation_team");
+                        customViewPager.setCurrentItem(1);
                         return true;
                     case R.id.navigation_dating:
-                        customViewPager.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                customViewPager.setCurrentItem(2);
-                            }
-                        });
-                        Log.e(TAG, "this is : navigation_dating");
+                        customViewPager.setCurrentItem(2);
                         return true;
                     case R.id.navigation_game:
-                        customViewPager.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                customViewPager.setCurrentItem(3);
-                            }
-                        });
-                        Log.e(TAG, "this is : navigation_game");
+                        customViewPager.setCurrentItem(3);
                         return true;
                     case R.id.navigation_shop:
-                        customViewPager.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                customViewPager.setCurrentItem(4);
-                            }
-                        });
-                        Log.e(TAG, "this is : navigation_shop");
+                        customViewPager.setCurrentItem(4);
                         return true;
                 }
                 return true;
@@ -210,6 +179,28 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public int getCount() {
             return mFragments.size();
+        }
+
+    }
+
+    /**
+     * 双击返回桌面
+     */
+    private long time = 0;
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if ((System.currentTimeMillis() - time > 1000)) {
+                Toast.makeText(this, "再按一次返回桌面", Toast.LENGTH_SHORT).show();
+                time = System.currentTimeMillis();
+            } else {
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.addCategory(Intent.CATEGORY_HOME);
+                startActivity(intent);
+            }
+            return true;
+        } else {
+            return super.onKeyDown(keyCode, event);
         }
 
     }
