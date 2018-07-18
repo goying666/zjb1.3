@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -102,7 +103,7 @@ public class HallFragment extends Fragment implements OnBannerListener {
     private HallFragmentAdapter hallFragmentAdapter;
     private RecyclerView recyclerView;
     private LinearLayoutManager layoutManager;
-
+    private FloatingActionButton floatingActionButton;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -117,7 +118,14 @@ public class HallFragment extends Fragment implements OnBannerListener {
         recyclerView.setAdapter(hallFragmentAdapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL_LIST));
         reloadAdapter();
-        toolbar = rootView.findViewById(R.id.hall_Toolbar);
+//        toolbar = rootView.findViewById(R.id.hall_Toolbar);
+        floatingActionButton = rootView.findViewById(R.id.hall_float_button);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                recyclerView.scrollToPosition(1);
+            }
+        });
         setBanner(rootView);
         setButton(rootView);
         return rootView;
