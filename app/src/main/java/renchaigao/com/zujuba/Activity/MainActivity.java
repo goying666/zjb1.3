@@ -1,11 +1,14 @@
 package renchaigao.com.zujuba.Activity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -34,6 +37,7 @@ import renchaigao.com.zujuba.Fragment.ShopFragment;
 import renchaigao.com.zujuba.Fragment.TeamFragment;
 import renchaigao.com.zujuba.R;
 import renchaigao.com.zujuba.util.BottomNavigationViewHelper;
+import renchaigao.com.zujuba.util.Permission;
 import renchaigao.com.zujuba.widgets.CustomViewPager;
 
 public class MainActivity extends AppCompatActivity {
@@ -50,6 +54,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+//        Permission.selfPermissionGranted(Manifest.permission.ACCESS_COARSE_LOCATION, getApplicationContext())){
+//            ActivityCompat.requestPermissions(this,
+//                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+//                    1);
+//                    /*Constant.LOCATION_STATE 为自己定义的一个常量，为权限弹窗回调时使用*/
+//        }
+
+
         drawerLayout = findViewById(R.id.main_drawerLayout);
         navigationView = findViewById(R.id.main_navigationView);
         customViewPager = findViewById(R.id.main_customView);
@@ -60,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
         setViewPager();
         setUpDrawer();
     }
+
 
     private void setToolBar() {
         ActionBar actionBar = getSupportActionBar();

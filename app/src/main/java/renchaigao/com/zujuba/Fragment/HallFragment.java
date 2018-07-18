@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import renchaigao.com.zujuba.Activity.BusinessActivity;
 import renchaigao.com.zujuba.Activity.JoinUsActivity;
+import renchaigao.com.zujuba.Activity.MapBusinessActivity;
 import renchaigao.com.zujuba.Adapter.HallFragmentAdapter;
 import renchaigao.com.zujuba.Json.Store;
 import renchaigao.com.zujuba.R;
@@ -153,7 +154,7 @@ public class HallFragment extends Fragment implements OnBannerListener {
         button_business.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Intent intent = new Intent(getActivity(), BusinessActivity.class);
+                final Intent intent = new Intent(getActivity(), MapBusinessActivity.class);
                 getActivity().startActivity(intent);
             }
         });
