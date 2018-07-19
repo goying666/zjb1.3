@@ -29,10 +29,10 @@ public class BusinessActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setToolBar();
         setContentView(R.layout.activity_business);
         initView();
         initClick();
-        setToolBar();
     }
 
     @Override
