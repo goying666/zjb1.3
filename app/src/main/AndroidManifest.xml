@@ -63,7 +63,7 @@
             android:value="ab40d48d50eaa812dff5ca5930040e56" />
 
         <service android:name="com.amap.api.location.APSService"/>
-        
+
         <activity android:name=".Activity.MapBusinessActivity"/>
     </application>
 
