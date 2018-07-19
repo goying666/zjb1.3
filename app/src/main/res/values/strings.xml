@@ -3,5 +3,13 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
-
+    <string name="business_join_introduce">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc eget.</string>
+    <string-array name="business_class_array">        　　　　　　
+        <item>餐馆</item>        　　　　　　
+        <item>棋牌室</item>
+        <item>桌游吧</item>
+        <item>民宿</item>
+        <item>其他</item>
+    </string-array>
+    <string name="business_class_title">请选择一个适合您店铺的类型</string>
 </resources>

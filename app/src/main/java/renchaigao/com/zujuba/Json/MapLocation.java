@@ -1,5 +1,7 @@
 package renchaigao.com.zujuba.Json;
 
+import com.amap.api.services.geocoder.RegeocodeAddress;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,7 +10,7 @@ import lombok.Setter;
  */
 @Setter
 @Getter
-public class MapLocation {
+public class MapLocation  {
 
         private double latitude;
         private double longitude;

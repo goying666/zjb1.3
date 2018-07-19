@@ -34,15 +34,123 @@
         </android.support.design.widget.CollapsingToolbarLayout>
 
     </android.support.design.widget.AppBarLayout>
+
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
+            <!--入驻须知-->
+            <LinearLayout
+                android:id="@+id/business_join_introduce_part1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="入驻须知" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/business_join_introduce" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/business_join_introduce_button_cancle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="有疑问" />
+
+                    <Button
+                        android:id="@+id/business_join_introduce_button_next"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="已读，下一步" />
+                </LinearLayout>
+            </LinearLayout>
+            <!--基本信息-->
+            <LinearLayout
+                android:id="@+id/business_join_introduce_part2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="基本信息"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="商铺名称"
+                    android:layout_marginStart="8dp"/>
+                <android.support.design.widget.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="请输入店名"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="商铺类型"
+                    android:layout_marginStart="8dp"/>
+                <android.support.v7.widget.AppCompatSpinner
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:spinnerMode="dialog"
+                    android:entries="@array/business_class_array"
+                    android:prompt="@string/business_class_title"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="地址"
+                    android:layout_marginStart="8dp"/>
+                <TextView
+                    android:id="@+id/business_join_introduce_addres_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="点击我进行地图选点"
+                    android:layout_marginStart="8dp"/>
+                <android.support.design.widget.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="对地址的追加描述.."/>
+
+            </LinearLayout>
+            <!--附加信息-->
+            <LinearLayout
+                android:id="@+id/business_join_introduce_part3"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+            </LinearLayout>
+            <!--图片信息-->
+            <LinearLayout
+                android:id="@+id/business_join_introduce_part4"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+            </LinearLayout>
+            <!--完成介绍-->
+            <LinearLayout
+                android:id="@+id/business_join_introduce_part5"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+            </LinearLayout>
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 </android.support.design.widget.CoordinatorLayout>

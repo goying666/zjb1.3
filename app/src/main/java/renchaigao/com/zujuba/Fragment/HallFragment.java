@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.support.v4.app.Fragment;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.youth.banner.Banner;
@@ -105,6 +106,7 @@ public class HallFragment extends Fragment implements OnBannerListener {
     private RecyclerView recyclerView;
     private LinearLayoutManager layoutManager;
     private FloatingActionButton floatingActionButton;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -154,7 +156,7 @@ public class HallFragment extends Fragment implements OnBannerListener {
         button_business.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Intent intent = new Intent(getActivity(), MapBusinessActivity.class);
+                final Intent intent = new Intent(getActivity(), BusinessActivity.class);
                 getActivity().startActivity(intent);
             }
         });

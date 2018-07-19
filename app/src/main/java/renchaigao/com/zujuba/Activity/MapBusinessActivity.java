@@ -2,13 +2,24 @@ package renchaigao.com.zujuba.Activity;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.View;
 import android.view.animation.Interpolator;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
@@ -32,6 +43,8 @@ import com.amap.api.services.geocoder.GeocodeResult;
 import com.amap.api.services.geocoder.GeocodeSearch;
 import com.amap.api.services.geocoder.RegeocodeQuery;
 import com.amap.api.services.geocoder.RegeocodeResult;
+import com.amap.api.services.help.Inputtips;
+import com.amap.api.services.help.InputtipsQuery;
 import com.amap.api.services.poisearch.PoiResult;
 import com.amap.api.services.poisearch.PoiSearch;
 
@@ -62,7 +75,20 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
     private PoiSearch.Query query;// Poi查询条件类
     private PoiSearch poiSearch;
     private List<PoiItem> poiItems;// poi数据
+    private AutoCompleteTextView searchText;
+    private TextView textView;
+    private Button button;
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        new Handler().postDelayed(new Runnable(){
+            public void run() {
+                //execute the task
+                geoAddress();
+            }
+        }, 1000);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.e(TAG,"onCreate");
@@ -73,9 +99,6 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
         init(savedInstanceState);
 
         initView();
-
-        getPositioning();
-
     }
     private void setUpMap(){
         Log.e(TAG,"setUpMap");
@@ -160,10 +183,26 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
     }
     private void initView(){
         Log.e(TAG,"initView");
-
+        button=findViewById(R.id.map_business_button);
+        textView = findViewById(R.id.map_business_text);
         geocoderSearch = new GeocodeSearch(this);
         geocoderSearch.setOnGeocodeSearchListener(this);
         progDialog = new ProgressDialog(this);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                if (null!=addressJsonStr){
+                    intent.putExtra("addressJsonStr",addressJsonStr);
+                    intent.putExtra("addressAllJsonStr",addressAllJsonStr);
+                    setResult(RESULT_OK,intent);
+                    finish();
+                }else {
+                    Toast.makeText(MapBusinessActivity.this,"请在地图上选取一个地址" ,Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
     }
     private void addMarkerInScreenCenter(LatLng locationLatLng) {
         Log.e(TAG,"addMarkerInScreenCenter");
@@ -220,22 +259,6 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
         return (int) (dpValue * scale + 0.5f);
     }
 
-    // 高德定位
-    public void getPositioning() {
-
-    }
-
-
-
-
-
-
-
-
-
-
-
-
 
     /**
      * 更新列表中的item
@@ -252,9 +275,6 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
 //        searchResultAdapter.setData(resultData);
 //        searchResultAdapter.notifyDataSetChanged();
 //    }
-
-
-
 
 
     @Override
@@ -380,6 +400,7 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
             mlocationClient.startLocation();
         }
     }
+
     //    根据给定的经纬度和最大结果数返回逆地理编码的结果列表。
     @Override
     public void onRegeocodeSearched(RegeocodeResult result, int rCode) {
@@ -389,13 +410,26 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
             if (result != null && result.getRegeocodeAddress() != null
                     && result.getRegeocodeAddress().getFormatAddress() != null) {
                 String address = result.getRegeocodeAddress().getProvince() + result.getRegeocodeAddress().getCity() + result.getRegeocodeAddress().getDistrict() + result.getRegeocodeAddress().getTownship();
-                firstItem = new PoiItem("regeo", searchLatlonPoint, address, address);
-                Toast.makeText(MapBusinessActivity.this,"result" +address,Toast.LENGTH_SHORT).show();
-                doSearchQuery();
+                String addressNew = result.getRegeocodeAddress().getFormatAddress();
+//                firstItem = new PoiItem("regeo", searchLatlonPoint, address, address);
+                Toast.makeText(MapBusinessActivity.this,"result" +addressNew,Toast.LENGTH_SHORT).show();
+//                Log.e(TAG,result.getRegeocodeAddress().getCity());
+                textView.setText(addressNew);
+                addressJsonStr = result.getRegeocodeAddress().getFormatAddress();
+                addressAllJsonStr = JSON.toJSONString(result);
+                Log.e(TAG, addressJsonStr);
+//                doSearchQuery();//搜索坐标附近的POI
             }
         } else {
             Toast.makeText(MapBusinessActivity.this, "error code is " + rCode, Toast.LENGTH_SHORT).show();
         }
+    }
+    private String addressJsonStr = null;
+    private String addressAllJsonStr = null;
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+        outState.putString("addressJsonStr", addressJsonStr);
     }
     @Override
     public void onGeocodeSearched(GeocodeResult geocodeResult, int i) {
@@ -445,8 +479,8 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
         progDialog.show();
         if (searchLatlonPoint != null){
             // 第一个参数表示一个Latlng，第二参数表示范围多少米，第三个参数表示是火系坐标系还是GPS原生坐标系
-            RegeocodeQuery query = new RegeocodeQuery(searchLatlonPoint, 200, GeocodeSearch.AMAP);
-            Log.e("geoAddress", "getLatLonType "+ query.getLatLonType().toString()+" getPoiType "+query.getPoiType().toString());
+            RegeocodeQuery query = new RegeocodeQuery(searchLatlonPoint, 5, GeocodeSearch.AMAP);
+            Log.e("geoAddress", "getLatLonType "+ query.getPoint().getLatitude()+" getPoiType "+query.getPoiType().toString());
             geocoderSearch.getFromLocationAsyn(query);
         }
     }
@@ -479,5 +513,10 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
         if (progDialog != null) {
             progDialog.dismiss();
         }
+    }
+    private void hideSoftKey(View view) {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(view,InputMethodManager.SHOW_FORCED);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }
