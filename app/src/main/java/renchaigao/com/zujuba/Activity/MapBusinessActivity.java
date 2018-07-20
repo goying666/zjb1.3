@@ -14,8 +14,11 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.Interpolator;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,6 +51,7 @@ import com.amap.api.services.help.InputtipsQuery;
 import com.amap.api.services.poisearch.PoiResult;
 import com.amap.api.services.poisearch.PoiSearch;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import renchaigao.com.zujuba.Json.MapLocation;
@@ -78,6 +82,7 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
     private AutoCompleteTextView searchText;
     private TextView textView;
     private Button button;
+    private ListView timeList;
 
     @Override
     protected void onStart() {
@@ -202,7 +207,15 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
                 }
             }
         });
-
+//        setLinearLayoutVisibile(1);
+//        List<String> timeDataList = new ArrayList<String>();
+//        timeDataList.add("09:00~12:00");
+//        timeDataList.add("09:00~12:00");
+//        timeDataList.add("09:00~12:00");
+//        timeDataList.add("09:00~12:00");
+//        timeList = findViewById(R.id.business_join_introduce_time_listview);
+//        ArrayAdapter<String> listAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_multiple_choice);
+//        timeList.setAdapter(listAdapter);
     }
     private void addMarkerInScreenCenter(LatLng locationLatLng) {
         Log.e(TAG,"addMarkerInScreenCenter");
