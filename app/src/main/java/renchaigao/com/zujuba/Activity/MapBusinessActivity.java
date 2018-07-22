@@ -57,6 +57,8 @@ import java.util.List;
 import renchaigao.com.zujuba.Json.MapLocation;
 import renchaigao.com.zujuba.R;
 
+import static renchaigao.com.zujuba.Activity.BusinessActivity.ADD_ADDRESS;
+
 public class MapBusinessActivity extends AppCompatActivity implements LocationSource,
         AMapLocationListener, GeocodeSearch.OnGeocodeSearchListener, PoiSearch.OnPoiSearchListener{
     MapView mMapView = null;
@@ -200,7 +202,7 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
                 if (null!=addressJsonStr){
                     intent.putExtra("addressJsonStr",addressJsonStr);
                     intent.putExtra("addressAllJsonStr",addressAllJsonStr);
-                    setResult(RESULT_OK,intent);
+                    setResult(ADD_ADDRESS,intent);
                     finish();
                 }else {
                     Toast.makeText(MapBusinessActivity.this,"请在地图上选取一个地址" ,Toast.LENGTH_SHORT).show();

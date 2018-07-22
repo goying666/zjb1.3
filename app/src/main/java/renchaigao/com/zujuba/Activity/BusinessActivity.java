@@ -2,6 +2,13 @@ package renchaigao.com.zujuba.Activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Build;
+import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -11,10 +18,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.File;
+import java.io.IOException;
 
 import renchaigao.com.zujuba.R;
 
@@ -25,8 +36,31 @@ public class BusinessActivity extends AppCompatActivity {
     private ScrollView business_join_NestedScrollView;
     private CheckBox business_join_introduce_time_checkBox1, business_join_introduce_time_checkBox2, business_join_introduce_time_checkBox3, business_join_introduce_time_checkBox4;
     private Integer checkBoxNum = 0;
+    private ImageView business_join_map_image_store_1, business_join_map_image_store_2, business_join_map_image_store_3, business_join_map_image_store_4,
+            business_join_map_image_license_1, business_join_map_image_license_2, business_join_map_image_license_3;
+
+    public static final int TAKE_PHOTO = 1;
+    public static final int PHOTO_1 = 1001;
+    public static final int PHOTO_2 = 1002;
+    public static final int PHOTO_3 = 1003;
+    public static final int PHOTO_4 = 1004;
+    public static final int PHOTO_5 = 1005;
+    public static final int PHOTO_6 = 1006;
+    public static final int PHOTO_7 = 1007;
+
+    public static final int CHOOSE_PHOTO = 2;
+    public static final int ADD_ADDRESS = 3;
+
+    private Uri imageUri;
 
     private void initView() {
+        business_join_map_image_store_1 = findViewById(R.id.business_join_map_image_store_1);
+        business_join_map_image_store_2 = findViewById(R.id.business_join_map_image_store_2);
+        business_join_map_image_store_3 = findViewById(R.id.business_join_map_image_store_3);
+        business_join_map_image_store_4 = findViewById(R.id.business_join_map_image_store_4);
+        business_join_map_image_license_1 = findViewById(R.id.business_join_map_image_license_1);
+        business_join_map_image_license_2 = findViewById(R.id.business_join_map_image_license_2);
+        business_join_map_image_license_3 = findViewById(R.id.business_join_map_image_license_3);
         business_join_detail_button_back = findViewById(R.id.business_join_detail_button_back);
         business_join_detail_button_next = findViewById(R.id.business_join_detail_button_next);
         business_join_basic_button_next = findViewById(R.id.business_join_basic_button_next);
@@ -113,6 +147,194 @@ public class BusinessActivity extends AppCompatActivity {
                 setLinearLayoutVisibile(2);
             }
         });
+        business_join_map_image_store_1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                takePhoto("photo1", PHOTO_1);
+            }
+        });
+        business_join_map_image_store_2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                takePhoto("photo2", PHOTO_2);
+            }
+        });
+        business_join_map_image_store_3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                takePhoto("photo3", PHOTO_3);
+            }
+        });
+        business_join_map_image_store_4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                takePhoto("photo4", PHOTO_4);
+            }
+        });
+
+        business_join_map_image_license_1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                takePhoto("photo5", PHOTO_5);
+            }
+        });
+        business_join_map_image_license_2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                takePhoto("photo6", PHOTO_6);
+            }
+        });
+        business_join_map_image_license_3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                takePhoto("photo7", PHOTO_7);
+            }
+        });
+    }
+
+    private void takePhoto(String photoName, int requestCode) {
+        File outputImage = new File(getExternalCacheDir(), photoName + ".jpg");
+        try {
+            if (outputImage.exists()) {
+                outputImage.delete();
+            }
+            outputImage.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (Build.VERSION.SDK_INT < 24) {
+            imageUri = Uri.fromFile(outputImage);
+        } else {
+            imageUri = FileProvider.getUriForFile(BusinessActivity.this, "com.example.cameraalbumtest.fileprovider", outputImage);
+        }
+        // 启动相机程序
+        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        startActivityForResult(intent, requestCode);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case PHOTO_1:
+                if (resultCode == RESULT_OK) {
+                    try {
+                        // 将拍摄的照片显示出来
+                        Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
+                        business_join_map_image_store_1.setAdjustViewBounds(true);
+                        business_join_map_image_store_1.setImageBitmap(bitmap);
+                        business_join_map_image_store_1.setMaxWidth(600);
+                        business_join_map_image_store_1.setMaxHeight(600);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            case PHOTO_2:
+                if (resultCode == RESULT_OK) {
+                    try {
+                        // 将拍摄的照片显示出来
+                        Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
+                        business_join_map_image_store_2.setImageBitmap(bitmap);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            case PHOTO_3:
+                if (resultCode == RESULT_OK) {
+                    try {
+                        // 将拍摄的照片显示出来
+                        Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
+                        business_join_map_image_store_3.setImageBitmap(bitmap);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            case PHOTO_4:
+                if (resultCode == RESULT_OK) {
+                    try {
+                        // 将拍摄的照片显示出来
+                        Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
+                        business_join_map_image_store_4.setImageBitmap(bitmap);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            case PHOTO_5:
+                if (resultCode == RESULT_OK) {
+                    try {
+                        // 将拍摄的照片显示出来
+                        Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
+                        business_join_map_image_license_1.setImageBitmap(bitmap);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            case PHOTO_6:
+                if (resultCode == RESULT_OK) {
+                    try {
+                        // 将拍摄的照片显示出来
+                        Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
+                        business_join_map_image_license_2.setImageBitmap(bitmap);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            case PHOTO_7:
+                if (resultCode == RESULT_OK) {
+                    try {
+                        // 将拍摄的照片显示出来
+                        Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
+                        business_join_map_image_license_3.setImageBitmap(bitmap);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+
+            case ADD_ADDRESS:
+                business_join_introduce_addres_name.setText(data.getStringExtra("addressJsonStr"));
+                break;
+//            case CHOOSE_PHOTO:
+//                if (resultCode == RESULT_OK) {
+//                    // 判断手机系统版本号
+//                    if (Build.VERSION.SDK_INT >= 19) {
+//                        // 4.4及以上系统使用这个方法处理图片
+//                        handleImageOnKitKat(data);
+//                    } else {
+//                        // 4.4以下系统使用这个方法处理图片
+//                        handleImageBeforeKitKat(data);
+//                    }
+//                }
+//                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case 1:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    openAlbum();
+                } else {
+                    Toast.makeText(this, "You denied the permission", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+        }
+    }
+
+    private void openAlbum() {
+        Intent intent = new Intent("android.intent.action.GET_CONTENT");
+        intent.setType("image/*");
+        startActivityForResult(intent, CHOOSE_PHOTO); // 打开相册
     }
 
     private void setLinearLayoutVisibile(int whichOne) {
@@ -154,15 +376,6 @@ public class BusinessActivity extends AppCompatActivity {
         super.onStart();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case 1:
-                if (resultCode == RESULT_OK) {
-                    business_join_introduce_addres_name.setText(data.getStringExtra("addressJsonStr"));
-                }
-        }
-    }
 
     private void setToolBar() {
         ActionBar actionBar = getSupportActionBar();
