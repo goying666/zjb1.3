@@ -2,10 +2,14 @@ package renchaigao.com.zujuba.Json;
 
 import java.util.Map;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Created by Administrator on 2018/7/16/016.
  */
-
+@Getter
+@Setter
 public class Store {
     private Integer id;//数据库中的id
     private String name;//商铺名称

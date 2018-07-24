@@ -1,18 +1,18 @@
 package renchaigao.com.zujuba.Activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -26,13 +26,35 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import renchaigao.com.zujuba.R;
+import renchaigao.com.zujuba.util.FinalDefine;
+import renchaigao.com.zujuba.util.PictureRAR;
 
 public class BusinessActivity extends AppCompatActivity {
+    private String TAG = "This is BusinessActivity ";
     private TextView business_join_introduce_addres_name, business_join_introduce_time_textView_number;
     private LinearLayout linearLayout_part1, linearLayout_part2, linearLayout_part3, linearLayout_part4;
-    private Button business_join_introduce_button_next, business_join_basic_button_next, business_join_detail_button_back, business_join_detail_button_next;
+    private Button business_join_introduce_button_next, business_join_basic_button_next, business_join_detail_button_back,
+            business_join_detail_button_next, business_join_map_end_back, business_join_map_end_next;
     private ScrollView business_join_NestedScrollView;
     private CheckBox business_join_introduce_time_checkBox1, business_join_introduce_time_checkBox2, business_join_introduce_time_checkBox3, business_join_introduce_time_checkBox4;
     private Integer checkBoxNum = 0;
@@ -40,6 +62,7 @@ public class BusinessActivity extends AppCompatActivity {
             business_join_map_image_license_1, business_join_map_image_license_2, business_join_map_image_license_3;
 
     public static final int TAKE_PHOTO = 1;
+
     public static final int PHOTO_1 = 1001;
     public static final int PHOTO_2 = 1002;
     public static final int PHOTO_3 = 1003;
@@ -65,6 +88,8 @@ public class BusinessActivity extends AppCompatActivity {
         business_join_detail_button_next = findViewById(R.id.business_join_detail_button_next);
         business_join_basic_button_next = findViewById(R.id.business_join_basic_button_next);
         business_join_introduce_button_next = findViewById(R.id.business_join_introduce_button_next);
+        business_join_map_end_back = findViewById(R.id.business_join_map_end_back);
+        business_join_map_end_next = findViewById(R.id.business_join_map_end_next);
         business_join_introduce_addres_name = findViewById(R.id.business_join_introduce_addres_name);
         business_join_NestedScrollView = findViewById(R.id.business_join_NestedScrollView);
         business_join_introduce_time_textView_number = findViewById(R.id.business_join_introduce_time_textView_number);
@@ -147,6 +172,18 @@ public class BusinessActivity extends AppCompatActivity {
                 setLinearLayoutVisibile(2);
             }
         });
+        business_join_map_end_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendStoresAddInfoTest();
+            }
+        });
+        business_join_map_end_next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendStoresAddInfo();
+            }
+        });
         business_join_map_image_store_1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -171,7 +208,6 @@ public class BusinessActivity extends AppCompatActivity {
                 takePhoto("photo4", PHOTO_4);
             }
         });
-
         business_join_map_image_license_1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -190,6 +226,155 @@ public class BusinessActivity extends AppCompatActivity {
                 takePhoto("photo7", PHOTO_7);
             }
         });
+    }
+
+    private void sendStoresAddInfo() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+//                String path = "https://47.106.149.105/zujuba/join/addstores";
+                String path = "http://192.168.199.155:7899/join/addpic";
+                OkHttpClient client = new OkHttpClient();
+                OkHttpClient.Builder builder = new OkHttpClient.Builder();
+                builder.sslSocketFactory(createSSLSocketFactory());
+                builder.hostnameVerifier(new HostnameVerifier() {
+                    @Override
+                    public boolean verify(String hostname, SSLSession session) {
+                        return true;
+                    }
+                });
+                RequestBody requestBody = new FormBody.Builder().add("name", "gaoyan").build();
+
+                File file = new File(getExternalCacheDir()+"/photo1.jpg");
+                File file2 = new File(getExternalCacheDir()+"/photo2.jpg");
+                File file3 = new File(getExternalCacheDir()+"/photo9.jpg");
+
+                PictureRAR.qualityCompress(getExternalCacheDir()+"/photo2.jpg",file3);
+
+//                File file = new File(Environment.getExternalStorageDirectory()+"/photo1.jpg");
+
+                Log.e(TAG,Environment.getExternalStorageDirectory().toString());
+
+                String jsonStr = "{\"name\":\"haha11\"}";//json数据.
+                RequestBody body = RequestBody.create(FinalDefine.MEDIA_TYPE_JSON, jsonStr);
+                RequestBody jsonBody = RequestBody.create(FinalDefine.MEDIA_TYPE_JPG,file);
+                RequestBody jsonBody2 = RequestBody.create(FinalDefine.MEDIA_TYPE_JPG,file3);
+//                RequestBody fileBody =;
+                RequestBody multiBody = new MultipartBody.Builder()
+                        .setType(MultipartBody.FORM)
+                        .addFormDataPart("file",file.getName(),jsonBody)
+                        .addFormDataPart("photo2",file3.getName(),jsonBody2)
+//                        .addPart(jsonBody)
+//                        .addPart(body)
+                        .build();
+
+                Request request = new Request.Builder()
+                        .url(path)
+                        .header("Content-Type", "application/json")
+                        .post(body)
+                        .build();
+
+
+                Request mulRrequest = new Request.Builder()
+                        .url(path)
+                        .header("Content-Type", "multipart/form-data")
+                        .post(multiBody)
+                        .build();
+
+                builder.build().newCall(mulRrequest).enqueue(new Callback() {
+//                builder.build().newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+
+                        Log.e(TAG, call.request().body().toString());
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+
+                        Log.e(TAG, response.body().string());
+                    }
+                });
+//                    Response response = client.newCall(request).execute();
+//                    Log.e(TAG, response.body().string());
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//                try {
+//                client.newCall(request).enqueue(new Callback() {
+//                    @Override
+//                    public void onFailure(Call call, IOException e) {
+//
+//                        Log.e(TAG, call.request().body().toString());
+//                    }
+//
+//                    @Override
+//                    public void onResponse(Call call, Response response) throws IOException {
+//
+//                        Log.e(TAG, response.body().string());
+//                    }
+//                });
+////                    Response response = client.newCall(request).execute();
+////                    Log.e(TAG, response.body().string());
+////                } catch (IOException e) {
+////                    e.printStackTrace();
+////                }
+            }
+        }).start();
+    }
+    private void sendStoresAddInfoTest() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String path = "http://192.168.199.155:7899/join/addstores";
+                OkHttpClient client = new OkHttpClient();
+                String jsonStr = "{\"name\":\"sendStoresAddInfoTest\"}";//json数据.
+                RequestBody body = RequestBody.create(FinalDefine.MEDIA_TYPE_JSON, jsonStr);
+                Request request = new Request.Builder()
+                        .url(path)
+                        .header("Content-Type", "application/json")
+                        .post(body)
+                        .build();
+
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+
+                        Log.e(TAG, call.request().body().toString());
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+
+                        Log.e(TAG, response.body().string());
+                    }
+                });
+//                    Response response = client.newCall(request).execute();
+//                    Log.e(TAG, response.body().string());
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//                try {
+//                client.newCall(request).enqueue(new Callback() {
+//                    @Override
+//                    public void onFailure(Call call, IOException e) {
+//
+//                        Log.e(TAG, call.request().body().toString());
+//                    }
+//
+//                    @Override
+//                    public void onResponse(Call call, Response response) throws IOException {
+//
+//                        Log.e(TAG, response.body().string());
+//                    }
+//                });
+////                    Response response = client.newCall(request).execute();
+////                    Log.e(TAG, response.body().string());
+////                } catch (IOException e) {
+////                    e.printStackTrace();
+////                }
+            }
+        }).start();
     }
 
     private void takePhoto(String photoName, int requestCode) {
@@ -400,5 +585,29 @@ public class BusinessActivity extends AppCompatActivity {
             return super.onKeyDown(keyCode, event);
         }
 
+    }
+
+    public static class TrustAllCerts implements X509TrustManager {
+        @Override
+        public void checkClientTrusted(X509Certificate[] chain, String authType) {}
+
+        @Override
+        public void checkServerTrusted(X509Certificate[] chain, String authType) {}
+
+        @Override
+        public X509Certificate[] getAcceptedIssuers() {return new X509Certificate[0];}
+    }
+    private static SSLSocketFactory createSSLSocketFactory() {
+        SSLSocketFactory ssfFactory = null;
+
+        try {
+            SSLContext sc = SSLContext.getInstance("TLS");
+            sc.init(null, new TrustManager[]{new TrustAllCerts()}, new SecureRandom());
+
+            ssfFactory = sc.getSocketFactory();
+        } catch (Exception e) {
+        }
+
+        return ssfFactory;
     }
 }
