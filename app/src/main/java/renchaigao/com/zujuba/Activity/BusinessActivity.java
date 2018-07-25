@@ -6,12 +6,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -39,7 +39,6 @@ import javax.net.ssl.X509TrustManager;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
-import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -48,6 +47,7 @@ import okhttp3.Response;
 import renchaigao.com.zujuba.R;
 import renchaigao.com.zujuba.util.FinalDefine;
 import renchaigao.com.zujuba.util.PictureRAR;
+import renchaigao.com.zujuba.util.PropertiesConfig;
 
 public class BusinessActivity extends AppCompatActivity {
     private String TAG = "This is BusinessActivity ";
@@ -233,7 +233,7 @@ public class BusinessActivity extends AppCompatActivity {
             @Override
             public void run() {
 //                String path = "https://47.106.149.105/zujuba/join/addstores";
-                String path = "http://192.168.199.155:7899/join/addpic";
+                String path = "join/addpic";
                 OkHttpClient client = new OkHttpClient();
                 OkHttpClient.Builder builder = new OkHttpClient.Builder();
                 builder.sslSocketFactory(createSSLSocketFactory());
@@ -264,12 +264,14 @@ public class BusinessActivity extends AppCompatActivity {
                         .setType(MultipartBody.FORM)
                         .addFormDataPart("file",file.getName(),jsonBody)
                         .addFormDataPart("photo2",file3.getName(),jsonBody2)
+                        .addFormDataPart("json",jsonStr)
+                        .addPart(body)
 //                        .addPart(jsonBody)
 //                        .addPart(body)
                         .build();
 
                 Request request = new Request.Builder()
-                        .url(path)
+                        .url(PropertiesConfig.serverUrl + path)
                         .header("Content-Type", "application/json")
                         .post(body)
                         .build();
@@ -322,6 +324,7 @@ public class BusinessActivity extends AppCompatActivity {
             }
         }).start();
     }
+
     private void sendStoresAddInfoTest() {
         new Thread(new Runnable() {
             @Override

@@ -2,6 +2,7 @@ package renchaigao.com.zujuba.Activity;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
@@ -53,6 +54,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        SharedPreferences pref = getSharedPreferences("userData",MODE_PRIVATE);
+
+        Log.e(TAG,pref.getString("token","fail find"));
 
 //        Permission.selfPermissionGranted(Manifest.permission.ACCESS_COARSE_LOCATION, getApplicationContext())){
 //            ActivityCompat.requestPermissions(this,
