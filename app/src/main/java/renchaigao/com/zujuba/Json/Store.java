@@ -4,6 +4,7 @@ import java.util.Map;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Created by Administrator on 2018/7/16/016.
@@ -11,23 +12,62 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Store {
-    private Integer id;//数据库中的id
-    private String name;//商铺名称
-    private String storeClass;//商铺所属类型
-    private String address;//地址
-    private String distance;//相距，单位km、m
-    private Map<String,String> pictureUrls;//图片对应的url地址，key是图片类型；
-    private Integer maxPeopleNum;//最多接待人数；
-    private Integer maxDeskNum;//最多接待桌数；
-    private Map<Integer,Integer> deskDetail;//每桌接待情况；key：桌号，value：接待人数；
-    private Integer status;//0：打样，1：营业；
-    private Map<String,String> workingTime;//每周营业时段；key：星期，value：营业时段，例：18:00~21:00；
-    private String telephoneNum;//手机联系方式；
-    private String phoneNum;//座机电话号码；
-    private String contact;//联系人;
-    private Integer starNum;//星级；
-    private Integer assessId;//评价系统id；
-    private String placeInfo;//场地介绍；
-    private String tipsInfo;//备注；
-    private Integer historyId;//历史组局信息ID；
+    private Integer id;
+
+    private String name;
+
+    private String address;
+
+    private String storeclass;
+
+    private Double latitude;
+
+    private Double longitude;
+
+    private String picturesurl;
+
+    private Integer maxpeoplenum;
+
+    private Integer maxdesknum;
+
+    private String status;
+
+    private Integer workingtimeid;
+
+    private String telephonenum;
+
+    private String phonenum;
+
+    private String contact;
+
+    private Integer starnum;
+
+    private Integer assessid;
+
+    private String placeinfo;
+
+    private String tipsinfo;
+
+    private Integer otherid;
+
+    private Integer ownerid;
+
+    private String city;
+
+    private String citycode;
+
+    private String country;
+
+    private String district;
+
+    private String formataddress;
+
+    private String neighborhood;
+
+    private String province;
+
+    private String towncode;
+
+    private String township;
+    private Integer hardware;
 }

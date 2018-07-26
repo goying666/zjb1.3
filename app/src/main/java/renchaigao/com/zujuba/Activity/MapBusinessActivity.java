@@ -3,6 +3,7 @@ package renchaigao.com.zujuba.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
@@ -55,12 +57,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import renchaigao.com.zujuba.Json.MapLocation;
+import renchaigao.com.zujuba.Json.Store;
 import renchaigao.com.zujuba.R;
 
 import static renchaigao.com.zujuba.Activity.BusinessActivity.ADD_ADDRESS;
 
 public class MapBusinessActivity extends AppCompatActivity implements LocationSource,
-        AMapLocationListener, GeocodeSearch.OnGeocodeSearchListener, PoiSearch.OnPoiSearchListener{
+        AMapLocationListener, GeocodeSearch.OnGeocodeSearchListener, PoiSearch.OnPoiSearchListener {
     MapView mMapView = null;
     final private String TAG = "MapBusinessActivity";
     //声明AMapLocationClient类对象
@@ -77,7 +80,8 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
     private LatLonPoint searchLatlonPoint;
     private GeocodeSearch geocoderSearch;
     private OnLocationChangedListener mListener;
-    private PoiItem firstItem;  private int currentPage = 0;// 当前页面，从0开始计数
+    private PoiItem firstItem;
+    private int currentPage = 0;// 当前页面，从0开始计数
     private PoiSearch.Query query;// Poi查询条件类
     private PoiSearch poiSearch;
     private List<PoiItem> poiItems;// poi数据
@@ -85,21 +89,24 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
     private TextView textView;
     private Button button;
     private ListView timeList;
+    private String addressJsonStr = null;
+    private String addressAllJsonStr = null;
+    private String addressStoreJsonStr = null;
+    private Store store = new Store();
 
     @Override
     protected void onStart() {
         super.onStart();
-        new Handler().postDelayed(new Runnable(){
+        new Handler().postDelayed(new Runnable() {
             public void run() {
                 //execute the task
                 geoAddress();
             }
         }, 1000);
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.e(TAG,"onCreate");
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_business);
 
@@ -107,14 +114,53 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
 
         initView();
     }
-    private void setUpMap(){
-        Log.e(TAG,"setUpMap");
+
+    private void init(Bundle savedInstanceState) {
+        Log.e(TAG, "init");
+        mMapView = findViewById(R.id.map_business);
+        mMapView.onCreate(savedInstanceState);// 此方法必须重写
+        if (aMap == null) {
+            aMap = mMapView.getMap();
+            setUpMap();
+        }
+        aMap.setOnCameraChangeListener(new AMap.OnCameraChangeListener() {
+            @Override
+            public void onCameraChange(CameraPosition cameraPosition) {
+
+            }
+
+            //            在可视范围一系列动作改变完成之后（例如：拖动、缩放）回调此方法。
+            @Override
+            public void onCameraChangeFinish(CameraPosition cameraPosition) {
+                if (!isItemClickAction && !isInputKeySearch) {
+                    geoAddress();
+                    startJumpAnimation();
+                }
+                searchLatlonPoint = new LatLonPoint(cameraPosition.target.latitude, cameraPosition.target.longitude);
+                isInputKeySearch = false;
+                isItemClickAction = false;
+            }
+        });
+
+//
+        aMap.setOnMapLoadedListener(new AMap.OnMapLoadedListener() {
+            @Override
+            public void onMapLoaded() {
+                addMarkerInScreenCenter(null);
+            }
+        });
+    }
+
+    private void setUpMap() {
+        Log.e(TAG, "setUpMap");
         aMap.moveCamera(CameraUpdateFactory.zoomTo(19));
 
         myLocationStyle = new MyLocationStyle();//初始化定位蓝点样式类myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);//连续定位、且将视角移动到地图中心点，定位点依照设备方向旋转，并且会跟随设备移动。（1秒1次定位）如果不设置myLocationType，默认也会执行此种模式。
         myLocationStyle.interval(2000); //设置连续定位模式下的定位间隔，只在连续定位模式下生效，单次定位模式下不会生效。单位为毫秒。
         myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATE);
         myLocationStyle.showMyLocation(true);
+        myLocationStyle.strokeColor(Color.argb(0, 0, 0, 0));// 设置圆形的边框颜色
+        myLocationStyle.radiusFillColor(Color.argb(0, 0, 0, 0));// 设置圆形的填充颜色
         aMap.setMyLocationStyle(myLocationStyle);//设置定位蓝点的Style
         aMap.getUiSettings().setMyLocationButtonEnabled(true); //设置默认定位按钮是否显示，非必需设置。
 //       MyLocationStyle showMyLocation(boolean visible);//设置是否显示定位小蓝点，用于满足只想使用定位，不想使用定位小蓝点的场景，设置false以后图面上不再有定位蓝点的概念，但是会持续回调位置信息。
@@ -153,95 +199,57 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
             mlocationClient.startLocation();
         }
     }
-    private void init(Bundle savedInstanceState){
-        Log.e(TAG,"init");
-        mMapView = (MapView) findViewById(R.id.map_business);
-        mMapView.onCreate(savedInstanceState);// 此方法必须重写
-        if (aMap == null) {
-            aMap = mMapView.getMap();
-            setUpMap();
-        }
-        aMap.setOnCameraChangeListener(new AMap.OnCameraChangeListener() {
-            @Override
-            public void onCameraChange(CameraPosition cameraPosition) {
 
-            }
-
-//            在可视范围一系列动作改变完成之后（例如：拖动、缩放）回调此方法。
-            @Override
-            public void onCameraChangeFinish(CameraPosition cameraPosition) {
-                if (!isItemClickAction && !isInputKeySearch) {
-                    geoAddress();
-                    startJumpAnimation();
-                }
-                searchLatlonPoint = new LatLonPoint(cameraPosition.target.latitude, cameraPosition.target.longitude);
-                isInputKeySearch = false;
-                isItemClickAction = false;
-            }
-        });
-
-        aMap.setOnMapLoadedListener(new AMap.OnMapLoadedListener() {
-
-            @Override
-            public void onMapLoaded() {
-                addMarkerInScreenCenter(null);
-            }
-        });
-    }
-    private void initView(){
-        Log.e(TAG,"initView");
-        button=findViewById(R.id.map_business_button);
+    private void initView() {
+        Log.e(TAG, "initView");
+        button = findViewById(R.id.map_business_button);
         textView = findViewById(R.id.map_business_text);
+
         geocoderSearch = new GeocodeSearch(this);
         geocoderSearch.setOnGeocodeSearchListener(this);
         progDialog = new ProgressDialog(this);
+
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent();
-                if (null!=addressJsonStr){
-                    intent.putExtra("addressJsonStr",addressJsonStr);
-                    intent.putExtra("addressAllJsonStr",addressAllJsonStr);
-                    setResult(ADD_ADDRESS,intent);
+                if (null != addressJsonStr) {
+                    intent.putExtra("addressJsonStr", addressJsonStr);
+                    intent.putExtra("addressAllJsonStr", addressAllJsonStr);
+                    intent.putExtra("addressStoreJsonStr", addressStoreJsonStr);
+                    setResult(ADD_ADDRESS, intent);
                     finish();
-                }else {
-                    Toast.makeText(MapBusinessActivity.this,"请在地图上选取一个地址" ,Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MapBusinessActivity.this, "请在地图上选取一个地址", Toast.LENGTH_SHORT).show();
                 }
             }
         });
-//        setLinearLayoutVisibile(1);
-//        List<String> timeDataList = new ArrayList<String>();
-//        timeDataList.add("09:00~12:00");
-//        timeDataList.add("09:00~12:00");
-//        timeDataList.add("09:00~12:00");
-//        timeDataList.add("09:00~12:00");
-//        timeList = findViewById(R.id.business_join_introduce_time_listview);
-//        ArrayAdapter<String> listAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_multiple_choice);
-//        timeList.setAdapter(listAdapter);
     }
+
     private void addMarkerInScreenCenter(LatLng locationLatLng) {
-        Log.e(TAG,"addMarkerInScreenCenter");
+        Log.e(TAG, "addMarkerInScreenCenter");
         LatLng latLng = aMap.getCameraPosition().target;
         Point screenPosition = aMap.getProjection().toScreenLocation(latLng);
         locationMarker = aMap.addMarker(new MarkerOptions()
-                .anchor(0.5f,0.5f)
+                .anchor(0.5f, 0.5f)
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.purple_pin)));
         //设置Marker在屏幕上,不跟随地图移动
-        locationMarker.setPositionByPixels(screenPosition.x,screenPosition.y);
+        locationMarker.setPositionByPixels(screenPosition.x, screenPosition.y);
         locationMarker.setZIndex(1);
 
     }
+
     /**
      * 屏幕中心marker 跳动
      */
     public void startJumpAnimation() {
-        Log.e(TAG,"startJumpAnimation");
+        Log.e(TAG, "startJumpAnimation");
 
-        if (locationMarker != null ) {
+        if (locationMarker != null) {
             //根据屏幕距离计算需要移动的目标点
             final LatLng latLng = locationMarker.getPosition();
-            Point point =  aMap.getProjection().toScreenLocation(latLng);
-            point.y -= dip2px(this,125);
+            Point point = aMap.getProjection().toScreenLocation(latLng);
+            point.y -= dip2px(this, 125);
             LatLng target = aMap.getProjection()
                     .fromScreenLocation(point);
             //使用TranslateAnimation,填写一个需要移动的目标点
@@ -250,10 +258,10 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
                 @Override
                 public float getInterpolation(float input) {
                     // 模拟重加速度的interpolator
-                    if(input <= 0.5) {
+                    if (input <= 0.5) {
                         return (float) (0.5f - 2 * (0.5 - input) * (0.5 - input));
                     } else {
-                        return (float) (0.5f - Math.sqrt((input - 0.5f)*(1.5f - input)));
+                        return (float) (0.5f - Math.sqrt((input - 0.5f) * (1.5f - input)));
                     }
                 }
             });
@@ -265,9 +273,10 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
             locationMarker.startAnimation();
 
         } else {
-            Log.e("ama","screenMarker is null");
+            Log.e("ama", "screenMarker is null");
         }
     }
+
     //dip和px转换
     private static int dip2px(Context context, float dpValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
@@ -277,6 +286,7 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
 
     /**
      * 更新列表中的item
+     *
      * @param poiItems
      */
     private List<PoiItem> resultData;
@@ -294,14 +304,15 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
 
     @Override
     protected void onResume() {
-        Log.e(TAG,"onResume");
+        Log.e(TAG, "onResume");
         super.onResume();
         //在activity执行onResume时执行mMapView.onResume ()，重新绘制加载地图
         mMapView.onResume();
     }
+
     @Override
     protected void onPause() {
-        Log.e(TAG,"onPause");
+        Log.e(TAG, "onPause");
         super.onPause();
         //在activity执行onPause时执行mMapView.onPause ()，暂停地图的绘制
         mMapView.onPause();
@@ -310,12 +321,13 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
         //停止定位后，本地定位服务并不会被销毁
 //        mlocationClient.stopLocation();
     }
+
     /**
      * 停止定位
      */
     @Override
     public void deactivate() {
-        Log.e(TAG,"deactivate");
+        Log.e(TAG, "deactivate");
         mListener = null;
         if (mlocationClient != null) {
             mlocationClient.stopLocation();
@@ -323,30 +335,33 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
         }
         mlocationClient = null;
     }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        Log.e(TAG,"onSaveInstanceState");
+        Log.e(TAG, "onSaveInstanceState");
         super.onSaveInstanceState(outState);
         //在activity执行onSaveInstanceState时执行mMapView.onSaveInstanceState (outState)，保存地图当前的状态
         mMapView.onSaveInstanceState(outState);
     }
+
     @Override
     protected void onDestroy() {
-        Log.e(TAG,"onDestroy");
+        Log.e(TAG, "onDestroy");
         super.onDestroy();
         //在activity执行onDestroy时执行mMapView.onDestroy()，销毁地图
         mMapView.onDestroy();
         //销毁定位客户端，同时销毁本地定位服务。
-        if(null != mlocationClient){
+        if (null != mlocationClient) {
             mlocationClient.onDestroy();
         }
     }
+
     /**
      * 定位成功后回调函数
      */
     @Override
     public void onLocationChanged(final AMapLocation amapLocation) {
-        Log.e(TAG,"onLocationChanged");
+        Log.e(TAG, "onLocationChanged");
         if (mListener != null && amapLocation != null) {
             if (amapLocation != null
                     && amapLocation.getErrorCode() == 0) {
@@ -365,38 +380,18 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
                 Log.e("AmapErr", errText);
             }
         }
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    Log.e(TAG,"run");
-                    MapLocation location = new MapLocation();
-                    location.setLatitude(amapLocation.getLatitude());
-                    location.setLongitude(amapLocation.getLongitude());
-                    location.setAddress(amapLocation.getAddress());
-                    location.setCountry(amapLocation.getCountry());
-                    location.setCity(amapLocation.getCity());
-                    location.setDistrict(amapLocation.getDistrict());
-                    location.setStreet(amapLocation.getStreet());
-                    location.setStreetNum(amapLocation.getStreetNum());
-                    location.setCityCode(amapLocation.getCityCode());
-                    location.setAdCode(amapLocation.getAdCode());
-                    location.setPoiName(amapLocation.getPoiName());
-                    location.setAoiName(amapLocation.getAoiName());
-                    location.setErrorCode(amapLocation.getErrorCode());
-                    Log.e("map getLatitude", String.valueOf(amapLocation.getLatitude()));
-                    Log.e("map getLongitude", String.valueOf(amapLocation.getLongitude()));
-                    Log.e("map getAccuracy", String.valueOf(amapLocation.getAccuracy()));
-                    Log.e("map getAltitude", String.valueOf(amapLocation.getAltitude()));
-                    Log.e("map getBuildingId", String.valueOf(amapLocation.getBuildingId()));
-                    Log.e("map getAddress", String.valueOf(amapLocation.getAddress()));
-                    Log.e("map getPoiName", String.valueOf(amapLocation.getPoiName()));
-                    Log.e("map getAoiName", String.valueOf(amapLocation.getAoiName()));
-                }
-            }).start();
-        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.e(TAG, "run");
+
+            }
+        }).start();
+    }
+
     @Override
     public void activate(OnLocationChangedListener listener) {
-        Log.e(TAG,"activate");
+        Log.e(TAG, "activate");
         mListener = listener;
         if (mlocationClient == null) {
             mlocationClient = new AMapLocationClient(this);
@@ -419,19 +414,33 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
     //    根据给定的经纬度和最大结果数返回逆地理编码的结果列表。
     @Override
     public void onRegeocodeSearched(RegeocodeResult result, int rCode) {
-        Log.e(TAG,"onRegeocodeSearched");
+        Log.e(TAG, "onRegeocodeSearched");
         dismissDialog();
         if (rCode == AMapException.CODE_AMAP_SUCCESS) {
             if (result != null && result.getRegeocodeAddress() != null
                     && result.getRegeocodeAddress().getFormatAddress() != null) {
-                String address = result.getRegeocodeAddress().getProvince() + result.getRegeocodeAddress().getCity() + result.getRegeocodeAddress().getDistrict() + result.getRegeocodeAddress().getTownship();
+                String address = result.getRegeocodeAddress().getProvince() + result.getRegeocodeAddress().getCity() +
+                        result.getRegeocodeAddress().getDistrict() + result.getRegeocodeAddress().getTownship();
                 String addressNew = result.getRegeocodeAddress().getFormatAddress();
 //                firstItem = new PoiItem("regeo", searchLatlonPoint, address, address);
-                Toast.makeText(MapBusinessActivity.this,"result" +addressNew,Toast.LENGTH_SHORT).show();
+                Toast.makeText(MapBusinessActivity.this, "result" + addressNew, Toast.LENGTH_SHORT).show();
 //                Log.e(TAG,result.getRegeocodeAddress().getCity());
                 textView.setText(addressNew);
                 addressJsonStr = result.getRegeocodeAddress().getFormatAddress();
                 addressAllJsonStr = JSON.toJSONString(result);
+                store.setCity(result.getRegeocodeAddress().getCity());
+                store.setCitycode(result.getRegeocodeAddress().getCityCode());
+                store.setDistrict(result.getRegeocodeAddress().getDistrict());
+                store.setFormataddress(result.getRegeocodeAddress().getFormatAddress());
+                store.setNeighborhood(result.getRegeocodeAddress().getNeighborhood());
+                store.setProvince(result.getRegeocodeAddress().getProvince());
+                store.setTowncode(result.getRegeocodeAddress().getTowncode());
+                store.setTownship(result.getRegeocodeAddress().getTownship());
+                store.setLatitude(result.getRegeocodeQuery().getPoint().getLatitude());
+                store.setLongitude(result.getRegeocodeQuery().getPoint().getLongitude());
+
+                addressStoreJsonStr = JSONObject.toJSONString(store);
+
                 Log.e(TAG, addressJsonStr);
 //                doSearchQuery();//搜索坐标附近的POI
             }
@@ -439,33 +448,35 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
             Toast.makeText(MapBusinessActivity.this, "error code is " + rCode, Toast.LENGTH_SHORT).show();
         }
     }
-    private String addressJsonStr = null;
-    private String addressAllJsonStr = null;
+
     @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
         super.onSaveInstanceState(outState, outPersistentState);
         outState.putString("addressJsonStr", addressJsonStr);
     }
+
     @Override
     public void onGeocodeSearched(GeocodeResult geocodeResult, int i) {
-        Log.e(TAG,"onGeocodeSearched");
+        Log.e(TAG, "onGeocodeSearched");
 
     }
+
     /**
      * POI搜索结果回调
-     * @param poiResult 搜索结果
+     *
+     * @param poiResult  搜索结果
      * @param resultCode 错误码
      */
     @Override
     public void onPoiSearched(PoiResult poiResult, int resultCode) {
-        Log.e(TAG,"onPoiSearched");
+        Log.e(TAG, "onPoiSearched");
         if (resultCode == AMapException.CODE_AMAP_SUCCESS) {
             if (poiResult != null && poiResult.getQuery() != null) {
                 if (poiResult.getQuery().equals(query)) {
                     poiItems = poiResult.getPois();
                     if (poiItems != null && poiItems.size() > 0) {
-                        for (int j=0;j<poiItems.size();j++){
-                            Log.e("poiItems",poiItems.get(j).getAdName());
+                        for (int j = 0; j < poiItems.size(); j++) {
+                            Log.e("poiItems", poiItems.get(j).getAdName());
                         }
                     } else {
                         Toast.makeText(MapBusinessActivity.this, "无搜索结果", Toast.LENGTH_SHORT).show();
@@ -476,9 +487,10 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
             }
         }
     }
+
     @Override
     public void onPoiItemSearched(PoiItem poiItem, int i) {
-        Log.e(TAG,"onPoiItemSearched");
+        Log.e(TAG, "onPoiItemSearched");
 
     }
 
@@ -486,20 +498,21 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
      * 响应逆地理编码
      */
     public void geoAddress() {
-        Log.e(TAG,"geoAddress");
+        Log.e(TAG, "geoAddress");
         progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progDialog.setIndeterminate(false);
         progDialog.setCancelable(true);
         progDialog.setMessage("正在加载...");
         progDialog.show();
-        if (searchLatlonPoint != null){
+        if (searchLatlonPoint != null) {
             // 第一个参数表示一个Latlng，第二参数表示范围多少米，第三个参数表示是火系坐标系还是GPS原生坐标系
             RegeocodeQuery query = new RegeocodeQuery(searchLatlonPoint, 5, GeocodeSearch.AMAP);
-            Log.e("geoAddress", "getLatLonType "+ query.getPoint().getLatitude()+" getPoiType "+query.getPoiType().toString());
+            Log.e("geoAddress", "getLatLonType " + query.getPoint().getLatitude() + " getPoiType " + query.getPoiType().toString());
             geocoderSearch.getFromLocationAsyn(query);
         }
     }
-    private String[] items = {"住宅区", "学校", "楼宇", "商场" };
+
+    private String[] items = {"住宅区", "学校", "楼宇", "商场"};
     private String searchType = items[0];
     private String searchKey = "";
     /**
@@ -509,7 +522,7 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
      * 开始进行poi搜索
      */
     protected void doSearchQuery() {
-        Log.e(TAG,"doSearchQuery");
+        Log.e(TAG, "doSearchQuery");
         currentPage = 0;
         query = new PoiSearch.Query(searchKey, searchType, "");// 第一个参数表示搜索字符串，第二个参数表示poi搜索类型，第三个参数表示poi搜索区域（空字符串代表全国）
         query.setCityLimit(true);
@@ -523,15 +536,17 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
             poiSearch.searchPOIAsyn();
         }
     }
+
     public void dismissDialog() {
-        Log.e(TAG,"dismissDialog");
+        Log.e(TAG, "dismissDialog");
         if (progDialog != null) {
             progDialog.dismiss();
         }
     }
+
     private void hideSoftKey(View view) {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(view,InputMethodManager.SHOW_FORCED);
+        imm.showSoftInput(view, InputMethodManager.SHOW_FORCED);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }

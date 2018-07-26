@@ -37,6 +37,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import renchaigao.com.zujuba.Json.Store;
 import renchaigao.com.zujuba.Json.User;
 import renchaigao.com.zujuba.Json.UserLogin;
 import renchaigao.com.zujuba.R;
@@ -62,12 +63,48 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_login);
         setToolBar();
         initView();
         initData();
         initClick();
     }
+
+//    private void testUse(){
+//        JSONObject fastjsonobj = new JSONObject();
+//        String jsonStr;
+//        Store store1 = new Store();
+//        store1.setName("aaa");
+//        store1.setAddress("bbb");
+//
+//        Log.e(TAG,"Test1 : store(OBJ) to jsonStr");
+//        jsonStr = JSONObject.toJSONString(store1);
+//        Log.e(TAG,jsonStr);
+//
+//        Log.e(TAG,"Test2 : store(OBJ) to json(OBJ)");
+////        测试2 第一步同测试1，先将java对象转为json字符串，然后通过字符串转为json对象；
+//        fastjsonobj = (JSONObject) JSONObject.toJSON(store1);
+//
+//        Log.e(TAG,"Test3 : jsonStr to json(OBJ)");
+//        JSONObject jsonTest3 = JSONObject.parseObject(jsonStr);
+////        测试2 包含了测试3
+//
+//        Log.e(TAG,"Test4 : jsonStr to store(OBJ)");
+//        Store storeTest4 = JSONObject.parseObject(jsonStr,Store.class);
+//
+//        Log.e(TAG,"Test5 : json(OBJ) to jsonStr");
+//        Log.e(TAG,fastjsonobj.toJSONString());
+//
+//        Log.e(TAG,"Test6 : json(OBJ) to store(OBJ)");
+////        Test6 json对象 转 java对象：先将json对象转成json字符串，然后通过字符串转为java对象（同测试4）
+//        Store storeTest6 = JSONObject.parseObject(fastjsonobj.toJSONString(),Store.class);
+//        Log.e(TAG,"Test6 : json(OBJ) to store(OBJ)");
+//
+////        fastjsonobj =(JSONObject) JSONObject.parse(jsonStr);
+////        Log.e(TAG,JSONObject.toJSONString(store1));
+//
+//    }
 
     private void initData() {
         userLogin = new UserLogin();
@@ -90,10 +127,10 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.length() < 6) {
-                    login_pwd_TextInputLayout.setError("请输入大于6位的密码");
+//                    login_pwd_TextInputLayout.setError("请输入大于6位的密码");
                     pwdChangeFlag = false;
                 } else {
-                    login_pwd_TextInputLayout.setError(null);
+//                    login_pwd_TextInputLayout.setError("");
                     pwdChangeFlag = true;
                 }
             }
@@ -125,7 +162,7 @@ public class LoginActivity extends AppCompatActivity {
                     telephoneChangeFlag = false;
                 } else {
                     telephoneChangeFlag = true;
-                    login_telephone_TextInputLayout.setError(null);
+                    login_telephone_TextInputLayout.setError("");
                 }
             }
 
@@ -141,6 +178,7 @@ public class LoginActivity extends AppCompatActivity {
         login_enter_button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                v.requestFocus();
                 addUser(JSONObject.parseObject(userLogin.toString()));
             }
         });
@@ -214,7 +252,10 @@ public class LoginActivity extends AppCompatActivity {
                             JSONObject responseJsonData = (JSONObject) responseJson.getJSONObject("data");
                             int code = Integer.valueOf(responseJson.get("code").toString());
                             switch (code){
+
+//                                    用户首次登陆系统进行创建账号，
                                 case 0:
+//                                    将token信息保存至本地
                                     String token = responseJsonData.get("token").toString();
                                     SharedPreferences.Editor editor = getSharedPreferences("userData",MODE_PRIVATE).edit();
                                     editor.putString("token",token);
@@ -222,6 +263,9 @@ public class LoginActivity extends AppCompatActivity {
                                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                     startActivity(intent);
                                     finish();
+                                    break;
+                                case -1001:
+                                    login_pwd_TextInputLayout.setError("服务器验证完毕，密码有误");
                                     break;
                             }
 //                        switch (jsonObject1)
