@@ -70,4 +70,5 @@ public class Store {
 
     private String township;
     private Integer hardware;
+    private String storeinfo;
 }

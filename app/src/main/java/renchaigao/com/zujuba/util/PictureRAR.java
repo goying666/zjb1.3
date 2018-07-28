@@ -44,7 +44,7 @@ public class PictureRAR {
     public static void qualityCompress(String filePath, File file) {
         Bitmap bitmap = fileToBitmap(filePath);
         // 0-100 100为不压缩
-        int quality = 15;
+        int quality = 100;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         // 把压缩后的数据存放到baos中
         bitmap.compress(Bitmap.CompressFormat.JPEG, quality, baos);
@@ -57,6 +57,8 @@ public class PictureRAR {
             e.printStackTrace();
         }
     }
+
+
 
     /**
      * 4.尺寸压缩（通过缩放图片像素来减少图片占用内存大小）

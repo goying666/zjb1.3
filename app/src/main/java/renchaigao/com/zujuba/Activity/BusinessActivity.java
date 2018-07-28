@@ -1,5 +1,7 @@
 package renchaigao.com.zujuba.Activity;
 
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -13,6 +15,7 @@ import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.AppCompatSpinner;
@@ -27,6 +30,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,16 +59,19 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import renchaigao.com.zujuba.Json.Store;
 import renchaigao.com.zujuba.R;
+import renchaigao.com.zujuba.util.DataUtil;
 import renchaigao.com.zujuba.util.FinalDefine;
+import renchaigao.com.zujuba.util.ImgUtil;
+import renchaigao.com.zujuba.util.PatternUtil;
 import renchaigao.com.zujuba.util.PictureRAR;
 import renchaigao.com.zujuba.util.PropertiesConfig;
 
 public class BusinessActivity extends AppCompatActivity {
     private String TAG = "This is BusinessActivity ";
     private TextView business_join_introduce_addres_name, business_join_introduce_time_textView_number, business_join_introduce_time_textView_title_note;
-    private LinearLayout linearLayout_part1, linearLayout_part2, linearLayout_part3, linearLayout_part4;
+    private LinearLayout linearLayout_part1, linearLayout_part2, linearLayout_part3, linearLayout_part4, business_join_introduce_part5;
     private Button business_join_introduce_button_next, business_join_basic_button_next, business_join_detail_button_back,
-            business_join_detail_button_next, business_join_map_end_back, business_join_map_end_next;
+            business_join_detail_button_next, business_join_map_image_back, business_join_map_image_next, business_join_map_end_back, business_join_map_end_next;
     private ScrollView business_join_NestedScrollView;
     private CheckBox business_join_introduce_time_checkBox1, business_join_introduce_time_checkBox2, business_join_introduce_time_checkBox3, business_join_introduce_time_checkBox4;
     private Integer checkBoxNum = 0;
@@ -78,9 +85,16 @@ public class BusinessActivity extends AppCompatActivity {
     private AppCompatSpinner business_join_class;
     private AppCompatCheckBox business_join_other_equipment_air, business_join_other_equipment_wifi,
             business_join_other_equipment_hot, business_join_other_equipment_wc;
+    private AlertDialog.Builder builder, builderPhoto;
+    private ProgressDialog progDialog;
+    private boolean imageFinish1, imageFinish2, imageFinish3, imageFinish4, imageFinish5, imageFinish6, imageFinish7;
+    private Integer imageFlag = 0;
+    private Bitmap bitmapPhoto;
 
+    private class photoImage {
 
-    public static final int TAKE_PHOTO = 1;
+    }
+
 
     public static final int PHOTO_1 = 1001;
     public static final int PHOTO_2 = 1002;
@@ -90,151 +104,45 @@ public class BusinessActivity extends AppCompatActivity {
     public static final int PHOTO_6 = 1006;
     public static final int PHOTO_7 = 1007;
 
+    public static final int PICK_PHOTO_1 = 1011;
+    public static final int PICK_PHOTO_2 = 1012;
+    public static final int PICK_PHOTO_3 = 1013;
+    public static final int PICK_PHOTO_4 = 1014;
+    public static final int PICK_PHOTO_5 = 1015;
+    public static final int PICK_PHOTO_6 = 1016;
+    public static final int PICK_PHOTO_7 = 1017;
+
+    public static final int TAKE_PHOTO = 1;
     public static final int CHOOSE_PHOTO = 2;
     public static final int ADD_ADDRESS = 3;
 
     private Uri imageUri;
 
-    private Store store;
+    private Store store = new Store();
 
     private void initView() {
         store = new Store();
         store.setWorkingtimeid(0x0);
-
-        business_join_map_image_store_1 = findViewById(R.id.business_join_map_image_store_1);
-        business_join_map_image_store_2 = findViewById(R.id.business_join_map_image_store_2);
-        business_join_map_image_store_3 = findViewById(R.id.business_join_map_image_store_3);
-        business_join_map_image_store_4 = findViewById(R.id.business_join_map_image_store_4);
-        business_join_map_image_license_1 = findViewById(R.id.business_join_map_image_license_1);
-        business_join_map_image_license_2 = findViewById(R.id.business_join_map_image_license_2);
-        business_join_map_image_license_3 = findViewById(R.id.business_join_map_image_license_3);
-        business_join_detail_button_back = findViewById(R.id.business_join_detail_button_back);
-        business_join_detail_button_next = findViewById(R.id.business_join_detail_button_next);
-        business_join_basic_button_next = findViewById(R.id.business_join_basic_button_next);
+        store.setHardware(0x0);
+        builder = new AlertDialog.Builder(this);
         business_join_introduce_button_next = findViewById(R.id.business_join_introduce_button_next);
-        business_join_map_end_back = findViewById(R.id.business_join_map_end_back);
-        business_join_map_end_next = findViewById(R.id.business_join_map_end_next);
         business_join_NestedScrollView = findViewById(R.id.business_join_NestedScrollView);
-        business_join_introduce_time_textView_number = findViewById(R.id.business_join_introduce_time_textView_number);
 
+        business_join_introduce_button_next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setLinearLayoutVisibile(2);
+            }
+        });
         linearLayout_part1 = findViewById(R.id.business_join_introduce_part1);
-        linearLayout_part2 = findViewById(R.id.business_join_introduce_part2);
-        linearLayout_part3 = findViewById(R.id.business_join_introduce_part3);
-        linearLayout_part4 = findViewById(R.id.business_join_introduce_part4);
-        setLinearLayoutVisibile(1);
+
     }
 
-    //        附加信息部分
-    private void initExtraPart() {
-        business_join_desk_layout = findViewById(R.id.business_join_desk_layout);
-        business_join_maxpeople_layout = findViewById(R.id.business_join_maxpeople_layout);
-        business_join_desk_num = findViewById(R.id.business_join_desk_num);
-        business_join_maxpeople_num = findViewById(R.id.business_join_maxpeople_num);
-        business_join_other_equipment_air = findViewById(R.id.business_join_other_equipment_air);
-        business_join_other_equipment_wifi = findViewById(R.id.business_join_other_equipment_wifi);
-        business_join_other_equipment_hot = findViewById(R.id.business_join_other_equipment_hot);
-        business_join_other_equipment_wc = findViewById(R.id.business_join_other_equipment_wc);
-        business_join_extra_storeinfo_TextInputLayout = findViewById(R.id.business_join_extra_storeinfo_TextInputLayout);
-        business_join_extra_storeinfo = findViewById(R.id.business_join_extra_storeinfo);
-
-//        绑定监听
-        business_join_desk_num.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (s.toString() != null)
-                    store.setMaxdesknum(Integer.valueOf(s.toString()));
-            }
-        });
-        business_join_maxpeople_num.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (s.toString() != null)
-                    store.setMaxpeoplenum(Integer.valueOf(s.toString()));
-            }
-        });
-        business_join_extra_storeinfo.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (s.toString() != null)
-                    store.setPlaceinfo(s.toString());
-                else {
-                }
-            }
-        });
-        business_join_other_equipment_air.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    store.setHardware(store.getHardware() | 0x1);
-                } else {
-                    store.setHardware(store.getHardware() & 0x1110);
-                }
-            }
-        });
-        business_join_other_equipment_wifi.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    store.setHardware(store.getHardware() | 0x10);
-                } else {
-                    store.setHardware(store.getHardware() & 0x1101);
-                }
-            }
-        });
-        business_join_other_equipment_hot.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    store.setHardware(store.getHardware() | 0x100);
-                } else {
-                    store.setHardware(store.getHardware() & 0x1011);
-                }
-            }
-        });
-        business_join_other_equipment_wc.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    store.setHardware(store.getHardware() | 0x1000);
-                } else {
-                    store.setHardware(store.getHardware() & 0x111);
-                }
-            }
-        });
-    }
-
+    //        基础信息部分
     private void initBasicPart() {
-        //        基础信息部分
+        business_join_introduce_time_textView_number = findViewById(R.id.business_join_introduce_time_textView_number);
+        business_join_basic_button_next = findViewById(R.id.business_join_basic_button_next);
+        linearLayout_part2 = findViewById(R.id.business_join_introduce_part2);
         business_join_name = findViewById(R.id.business_join_name);
         business_join_class = findViewById(R.id.business_join_class);
         business_join_introduce_addres_image = findViewById(R.id.business_join_introduce_addres_image);
@@ -253,8 +161,6 @@ public class BusinessActivity extends AppCompatActivity {
         business_join_introduce_time_checkBox2 = findViewById(R.id.business_join_introduce_time_checkBox2);
         business_join_introduce_time_checkBox3 = findViewById(R.id.business_join_introduce_time_checkBox3);
         business_join_introduce_time_checkBox4 = findViewById(R.id.business_join_introduce_time_checkBox4);
-
-
         business_join_class.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -266,7 +172,6 @@ public class BusinessActivity extends AppCompatActivity {
 
             }
         });
-
         business_join_name.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -290,7 +195,6 @@ public class BusinessActivity extends AppCompatActivity {
                 }
             }
         });
-
         business_join_introduce_addres_name.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -298,7 +202,6 @@ public class BusinessActivity extends AppCompatActivity {
                 startActivityForResult(intent, ADD_ADDRESS);
             }
         });
-
         business_join_introduce_addres_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -306,7 +209,6 @@ public class BusinessActivity extends AppCompatActivity {
                 startActivityForResult(intent, ADD_ADDRESS);
             }
         });
-
         business_join_introduce_addres_addinfo.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -439,30 +341,131 @@ public class BusinessActivity extends AppCompatActivity {
                 business_join_introduce_time_textView_number.setText(checkBoxNum.toString());
             }
         });
-
-    }
-
-    private void initClick() {
-
-
-        business_join_introduce_button_next.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setLinearLayoutVisibile(2);
-            }
-        });
-
         business_join_basic_button_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (checkInfoPartOne())
+                if (checkBasicPart())
                     setLinearLayoutVisibile(3);
             }
         });
-        business_join_detail_button_next.setOnClickListener(new View.OnClickListener() {
+    }
+
+    //          附加信息部分
+    private void initExtraPart() {
+        business_join_detail_button_back = findViewById(R.id.business_join_detail_button_back);
+        business_join_detail_button_next = findViewById(R.id.business_join_detail_button_next);
+        linearLayout_part3 = findViewById(R.id.business_join_introduce_part3);
+        business_join_desk_layout = findViewById(R.id.business_join_desk_layout);
+        business_join_maxpeople_layout = findViewById(R.id.business_join_maxpeople_layout);
+        business_join_desk_num = findViewById(R.id.business_join_desk_num);
+        business_join_maxpeople_num = findViewById(R.id.business_join_maxpeople_num);
+        business_join_other_equipment_air = findViewById(R.id.business_join_other_equipment_air);
+        business_join_other_equipment_wifi = findViewById(R.id.business_join_other_equipment_wifi);
+        business_join_other_equipment_hot = findViewById(R.id.business_join_other_equipment_hot);
+        business_join_other_equipment_wc = findViewById(R.id.business_join_other_equipment_wc);
+        business_join_extra_storeinfo_TextInputLayout = findViewById(R.id.business_join_extra_storeinfo_TextInputLayout);
+        business_join_extra_storeinfo = findViewById(R.id.business_join_extra_storeinfo);
+
+//        绑定监听
+        business_join_desk_num.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onClick(View v) {
-                setLinearLayoutVisibile(4);
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (PatternUtil.strMatcher(s.toString(), PatternUtil.FUNC_NUMBER_1_99)) {
+                    business_join_desk_layout.setError("");
+                } else business_join_desk_layout.setError("请输入1到99的数字");
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (PatternUtil.strMatcher(s.toString(), PatternUtil.FUNC_NUMBER_1_99)) {
+                    store.setMaxdesknum(Integer.valueOf(s.toString()));
+                    business_join_desk_layout.setError("");
+                } else business_join_desk_layout.setError("请输入1到99的数字");
+            }
+        });
+        business_join_maxpeople_num.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (PatternUtil.strMatcher(s.toString(), PatternUtil.FUNC_NUMBER_1_99)) {
+                    business_join_maxpeople_layout.setError("");
+                } else business_join_maxpeople_layout.setError("请输入1到99的数字");
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (PatternUtil.strMatcher(s.toString(), PatternUtil.FUNC_NUMBER_1_99)) {
+                    store.setMaxpeoplenum(Integer.valueOf(s.toString()));
+                    business_join_maxpeople_layout.setError("");
+                } else business_join_maxpeople_layout.setError("请输入1到99的数字");
+            }
+        });
+        business_join_extra_storeinfo.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.toString() != null)
+                    store.setStoreinfo(s.toString());
+                else {
+                }
+            }
+        });
+        business_join_other_equipment_air.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    store.setHardware(store.getHardware() | 0x1);
+                } else {
+                    store.setHardware(store.getHardware() & 0x1110);
+                }
+            }
+        });
+        business_join_other_equipment_wifi.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    store.setHardware(store.getHardware() | 0x10);
+                } else {
+                    store.setHardware(store.getHardware() & 0x1101);
+                }
+            }
+        });
+        business_join_other_equipment_hot.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    store.setHardware(store.getHardware() | 0x100);
+                } else {
+                    store.setHardware(store.getHardware() & 0x1011);
+                }
+            }
+        });
+        business_join_other_equipment_wc.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    store.setHardware(store.getHardware() | 0x1000);
+                } else {
+                    store.setHardware(store.getHardware() & 0x111);
+                }
             }
         });
         business_join_detail_button_back.setOnClickListener(new View.OnClickListener() {
@@ -471,63 +474,154 @@ public class BusinessActivity extends AppCompatActivity {
                 setLinearLayoutVisibile(2);
             }
         });
-        business_join_map_end_back.setOnClickListener(new View.OnClickListener() {
+        business_join_detail_button_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendStoresAddInfoTest();
+                if (checkExtraPart())
+                    setLinearLayoutVisibile(4);
             }
         });
-        business_join_map_end_next.setOnClickListener(new View.OnClickListener() {
+    }
+
+    //          图片信息部分
+    private void initPhotoPart() {
+        business_join_map_end_back = findViewById(R.id.business_join_map_end_back);
+        business_join_map_end_next = findViewById(R.id.business_join_map_end_next);
+        linearLayout_part4 = findViewById(R.id.business_join_introduce_part4);
+        business_join_map_image_store_1 = findViewById(R.id.business_join_map_image_store_1);
+        business_join_map_image_store_2 = findViewById(R.id.business_join_map_image_store_2);
+        business_join_map_image_store_3 = findViewById(R.id.business_join_map_image_store_3);
+        business_join_map_image_store_4 = findViewById(R.id.business_join_map_image_store_4);
+        business_join_map_image_license_1 = findViewById(R.id.business_join_map_image_license_1);
+        business_join_map_image_license_2 = findViewById(R.id.business_join_map_image_license_2);
+        business_join_map_image_license_3 = findViewById(R.id.business_join_map_image_license_3);
+        business_join_map_image_back = findViewById(R.id.business_join_map_image_back);
+        business_join_map_image_next = findViewById(R.id.business_join_map_image_next);
+        imageFinish1 = false;
+        imageFinish2 = false;
+        imageFinish3 = false;
+        imageFinish4 = false;
+        imageFinish5 = false;
+        imageFinish6 = false;
+        imageFinish7 = false;
+        builderPhoto = new AlertDialog.Builder(this);
+        builderPhoto.setTitle("图片来源");
+        builderPhoto.setMessage("选择图片获取方式");
+        builderPhoto.setNegativeButton("本地相册", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                sendStoresAddInfo();
+            public void onClick(DialogInterface dialog, int which) {
+                openAlbum();
             }
         });
         business_join_map_image_store_1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                takePhoto("photo1", PHOTO_1);
+                imageFlag = PICK_PHOTO_1;
+                choosePhoto(PHOTO_1);
             }
         });
         business_join_map_image_store_2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                takePhoto("photo2", PHOTO_2);
+                imageFlag = PICK_PHOTO_2;
+                choosePhoto(PHOTO_2);
             }
         });
         business_join_map_image_store_3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                takePhoto("photo3", PHOTO_3);
+                imageFlag = PICK_PHOTO_3;
+                choosePhoto(PHOTO_3);
             }
         });
         business_join_map_image_store_4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                takePhoto("photo4", PHOTO_4);
+                imageFlag = PICK_PHOTO_4;
+                choosePhoto(PHOTO_4);
             }
         });
         business_join_map_image_license_1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                takePhoto("photo5", PHOTO_5);
+                imageFlag = PICK_PHOTO_5;
+                choosePhoto(PHOTO_5);
             }
         });
         business_join_map_image_license_2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                takePhoto("photo6", PHOTO_6);
+                imageFlag = PICK_PHOTO_6;
+                choosePhoto(PHOTO_6);
             }
         });
         business_join_map_image_license_3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                takePhoto("photo7", PHOTO_7);
+                imageFlag = PICK_PHOTO_7;
+                choosePhoto(PHOTO_7);
+            }
+        });
+        business_join_map_image_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setLinearLayoutVisibile(3);
+            }
+        });
+        business_join_map_image_next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (checkMapPart())
+                    setLinearLayoutVisibile(5);
+                else
+                    Toast.makeText(BusinessActivity.this, "请完善所有图片", Toast.LENGTH_LONG).show();
             }
         });
     }
 
-    private boolean checkInfoPartOne() {
+    private void choosePhoto(final Integer j) {
+        builderPhoto.setPositiveButton("相机", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                takePhoto("photo" + imageFlag.toString(), j);
+            }
+        });
+        builderPhoto.show();
+    }
+
+    //          所有信息展示部分
+    private void initFinishPart() {
+        progDialog = new ProgressDialog(BusinessActivity.this);
+        progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progDialog.setIndeterminate(false);
+        progDialog.setCancelable(true);
+        progDialog.setMessage("正在加载...");
+        builder.setTitle("确认");
+        builder.setMessage("确定提交吗？");
+        builder.setNegativeButton("否", null);
+        builder.setPositiveButton("是", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                sendStoresAddInfo();
+                Toast.makeText(BusinessActivity.this, "你点击了确定发送", Toast.LENGTH_LONG).show();
+            }
+        });
+        business_join_introduce_part5 = findViewById(R.id.business_join_introduce_part5);
+        business_join_map_end_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setLinearLayoutVisibile(4);
+            }
+        });
+        business_join_map_end_next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                builder.show();
+            }
+        });
+    }
+
+    private boolean checkBasicPart() {
         if (store.getName() != null) {
             if (store.getFormataddress() != null) {
                 if (store.getContact() != null) {
@@ -563,14 +657,26 @@ public class BusinessActivity extends AppCompatActivity {
         }
     }
 
-    
+    private boolean checkExtraPart() {
+        return true;
+    }
+
+    private boolean checkMapPart() {
+        if (imageFinish1 & imageFinish2 & imageFinish3 & imageFinish4 & imageFinish5 & imageFinish6 & imageFinish7)
+            return true;
+        else return false;
+    }
 
     private void sendStoresAddInfo() {
+        /*进度条后续优化*/
+        progDialog.show();
+
         new Thread(new Runnable() {
             @Override
             public void run() {
 //                String path = "https://47.106.149.105/zujuba/join/addstores";
-                String path = "join/addpic";
+
+                String path = PropertiesConfig.serverUrl + "store/join";
                 OkHttpClient client = new OkHttpClient();
                 OkHttpClient.Builder builder = new OkHttpClient.Builder();
                 builder.sslSocketFactory(createSSLSocketFactory());
@@ -580,40 +686,84 @@ public class BusinessActivity extends AppCompatActivity {
                         return true;
                     }
                 });
-                RequestBody requestBody = new FormBody.Builder().add("name", "gaoyan").build();
+                File photo1 = new File(getExternalCacheDir() + "/photo1.jpg");
+                File photo2 = new File(getExternalCacheDir() + "/photo2.jpg");
+                File photo3 = new File(getExternalCacheDir() + "/photo3.jpg");
+                File photo4 = new File(getExternalCacheDir() + "/photo4.jpg");
+                File photo5 = new File(getExternalCacheDir() + "/photo5.jpg");
+                File photo6 = new File(getExternalCacheDir() + "/photo6.jpg");
+                File photo7 = new File(getExternalCacheDir() + "/photo7.jpg");
+                PictureRAR.qualityCompress(getExternalCacheDir() + "/photo1.jpg", photo1);
+                PictureRAR.qualityCompress(getExternalCacheDir() + "/photo2.jpg", photo2);
+                PictureRAR.qualityCompress(getExternalCacheDir() + "/photo3.jpg", photo3);
+                PictureRAR.qualityCompress(getExternalCacheDir() + "/photo4.jpg", photo4);
+                PictureRAR.qualityCompress(getExternalCacheDir() + "/photo5.jpg", photo5);
+                PictureRAR.qualityCompress(getExternalCacheDir() + "/photo6.jpg", photo6);
+                PictureRAR.qualityCompress(getExternalCacheDir() + "/photo7.jpg", photo7);
 
-                File file = new File(getExternalCacheDir() + "/photo1.jpg");
-                File file2 = new File(getExternalCacheDir() + "/photo2.jpg");
-                File file3 = new File(getExternalCacheDir() + "/photo9.jpg");
+                RequestBody fileBodyPhoto1 = RequestBody.create(FinalDefine.MEDIA_TYPE_JPG, photo1);
+                RequestBody fileBodyPhoto2 = RequestBody.create(FinalDefine.MEDIA_TYPE_JPG, photo2);
+                RequestBody fileBodyPhoto3 = RequestBody.create(FinalDefine.MEDIA_TYPE_JPG, photo3);
+                RequestBody fileBodyPhoto4 = RequestBody.create(FinalDefine.MEDIA_TYPE_JPG, photo4);
+                RequestBody fileBodyPhoto5 = RequestBody.create(FinalDefine.MEDIA_TYPE_JPG, photo5);
+                RequestBody fileBodyPhoto6 = RequestBody.create(FinalDefine.MEDIA_TYPE_JPG, photo6);
+                RequestBody fileBodyPhoto7 = RequestBody.create(FinalDefine.MEDIA_TYPE_JPG, photo7);
 
-                PictureRAR.qualityCompress(getExternalCacheDir() + "/photo2.jpg", file3);
+                store.setOwnerid(DataUtil.getUserData(BusinessActivity.this).getId());
+                String storeString = JSONObject.toJSONString(store);
+                RequestBody jsonBody = RequestBody.create(FinalDefine.MEDIA_TYPE_JSON, storeString);
+
+                RequestBody multiBody = new MultipartBody.Builder()
+                        .setType(MultipartBody.FORM)
+                        .addFormDataPart("json", storeString)
+                        .addFormDataPart("photo", photo1.getName(), fileBodyPhoto1)
+                        .addFormDataPart("photo", photo2.getName(), fileBodyPhoto2)
+                        .addFormDataPart("photo", photo3.getName(), fileBodyPhoto3)
+                        .addFormDataPart("photo", photo4.getName(), fileBodyPhoto4)
+                        .addFormDataPart("photo", photo5.getName(), fileBodyPhoto5)
+                        .addFormDataPart("photo", photo6.getName(), fileBodyPhoto6)
+                        .addFormDataPart("photo", photo7.getName(), fileBodyPhoto7)
+                        .build();
+//                File rarphoto1 = new File(getExternalCacheDir() + "/rarphoto1,jpg");
+//                File rarphoto2 = new File(getExternalCacheDir() + "/rarphoto2,jpg");
+//                File rarphoto3 = new File(getExternalCacheDir() + "/rarphoto3,jpg");
+//                File rarphoto4 = new File(getExternalCacheDir() + "/rarphoto4,jpg");
+//                File rarphoto5 = new File(getExternalCacheDir() + "/rarphoto5,jpg");
+//                File rarphoto6 = new File(getExternalCacheDir() + "/rarphoto6,jpg");
+//                File rarphoto7 = new File(getExternalCacheDir() + "/rarphoto7,jpg");
+
+
+//                PictureRAR.qualityCompress(getExternalCacheDir() + "/photo1.jpg", rarphoto1);
+//                PictureRAR.qualityCompress(getExternalCacheDir() + "/photo2.jpg", rarphoto2);
+//                PictureRAR.qualityCompress(getExternalCacheDir() + "/photo3.jpg", rarphoto3);
+//                PictureRAR.qualityCompress(getExternalCacheDir() + "/photo4.jpg", rarphoto4);
+//                PictureRAR.qualityCompress(getExternalCacheDir() + "/photo5.jpg", rarphoto5);
+//                PictureRAR.qualityCompress(getExternalCacheDir() + "/photo6.jpg", rarphoto6);
+//                PictureRAR.qualityCompress(getExternalCacheDir() + "/photo7.jpg", rarphoto7);
 
 //                File file = new File(Environment.getExternalStorageDirectory()+"/photo1.jpg");
 
-                Log.e(TAG, Environment.getExternalStorageDirectory().toString());
-
-                String jsonStr = "{\"name\":\"haha11\"}";//json数据.
-                RequestBody body = RequestBody.create(FinalDefine.MEDIA_TYPE_JSON, jsonStr);
-                RequestBody jsonBody = RequestBody.create(FinalDefine.MEDIA_TYPE_JPG, file);
-                RequestBody jsonBody2 = RequestBody.create(FinalDefine.MEDIA_TYPE_JPG, file3);
-//                RequestBody fileBody =;
-                RequestBody multiBody = new MultipartBody.Builder()
-                        .setType(MultipartBody.FORM)
-                        .addFormDataPart("file", file.getName(), jsonBody)
-                        .addFormDataPart("photo2", file3.getName(), jsonBody2)
-                        .addFormDataPart("json", jsonStr)
-                        .addPart(body)
-//                        .addPart(jsonBody)
+//                String jsonStr = "{\"name\":\"haha11\"}";//json数据.
+//
+//                RequestBody body = RequestBody.create(FinalDefine.MEDIA_TYPE_JSON, jsonStr);
+//                RequestBody jsonBody = RequestBody.create(FinalDefine.MEDIA_TYPE_JPG, file);
+//                RequestBody jsonBody2 = RequestBody.create(FinalDefine.MEDIA_TYPE_JPG, file3);
+////                RequestBody fileBody =;
+//                RequestBody multiBody = new MultipartBody.Builder()
+//                        .setType(MultipartBody.FORM)
+//                        .addFormDataPart("file", file.getName(), jsonBody)
+//                        .addFormDataPart("photo2", file3.getName(), jsonBody2)
+//                        .addFormDataPart("json", jsonStr)
 //                        .addPart(body)
-                        .build();
+////                        .addPart(jsonBody)
+////                        .addPart(body)
+//                        .build();
 
-                Request request = new Request.Builder()
-                        .url(PropertiesConfig.serverUrl + path)
-                        .header("Content-Type", "application/json")
-                        .post(body)
-                        .build();
-
-
+//                Request request = new Request.Builder()
+//                        .url(PropertiesConfig.serverUrl + path)
+//                        .header("Content-Type", "application/json")
+//                        .post(body)
+//                        .build();
                 Request mulRrequest = new Request.Builder()
                         .url(path)
                         .header("Content-Type", "multipart/form-data")
@@ -624,14 +774,26 @@ public class BusinessActivity extends AppCompatActivity {
                     //                builder.build().newCall(request).enqueue(new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
-
+                        dismissDialog();
                         Log.e(TAG, call.request().body().toString());
                     }
 
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
-
-                        Log.e(TAG, response.body().string());
+//                        确认上传成功，结束当前活动；
+                        JSONObject responseJson = JSONObject.parseObject(response.body().string());
+                        int code = Integer.valueOf(responseJson.get("code").toString());
+                        JSONObject responseJsonData = (JSONObject) responseJson.getJSONObject("data");
+                        switch (code) {
+                            case 0:
+                                dismissDialog();
+                                finish();
+                                break;
+                            case 1:
+                                Toast.makeText(BusinessActivity.this, "Throw an exception", Toast.LENGTH_LONG).show();
+                                dismissDialog();
+                                break;
+                        }
                     }
                 });
 //                    Response response = client.newCall(request).execute();
@@ -662,59 +824,11 @@ public class BusinessActivity extends AppCompatActivity {
         }).start();
     }
 
-    private void sendStoresAddInfoTest() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String path = "http://192.168.199.155:7899/join/addstores";
-                OkHttpClient client = new OkHttpClient();
-                String jsonStr = "{\"name\":\"sendStoresAddInfoTest\"}";//json数据.
-                RequestBody body = RequestBody.create(FinalDefine.MEDIA_TYPE_JSON, jsonStr);
-                Request request = new Request.Builder()
-                        .url(path)
-                        .header("Content-Type", "application/json")
-                        .post(body)
-                        .build();
-
-                client.newCall(request).enqueue(new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-
-                        Log.e(TAG, call.request().body().toString());
-                    }
-
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-
-                        Log.e(TAG, response.body().string());
-                    }
-                });
-//                    Response response = client.newCall(request).execute();
-//                    Log.e(TAG, response.body().string());
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//                try {
-//                client.newCall(request).enqueue(new Callback() {
-//                    @Override
-//                    public void onFailure(Call call, IOException e) {
-//
-//                        Log.e(TAG, call.request().body().toString());
-//                    }
-//
-//                    @Override
-//                    public void onResponse(Call call, Response response) throws IOException {
-//
-//                        Log.e(TAG, response.body().string());
-//                    }
-//                });
-////                    Response response = client.newCall(request).execute();
-////                    Log.e(TAG, response.body().string());
-////                } catch (IOException e) {
-////                    e.printStackTrace();
-////                }
-            }
-        }).start();
+    public void dismissDialog() {
+        Log.e(TAG, "dismissDialog");
+        if (progDialog != null) {
+            progDialog.dismiss();
+        }
     }
 
     private void takePhoto(String photoName, int requestCode) {
@@ -745,11 +859,10 @@ public class BusinessActivity extends AppCompatActivity {
                 if (resultCode == RESULT_OK) {
                     try {
                         // 将拍摄的照片显示出来
-                        Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
+                        bitmapPhoto = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
                         business_join_map_image_store_1.setAdjustViewBounds(true);
-                        business_join_map_image_store_1.setImageBitmap(bitmap);
-                        business_join_map_image_store_1.setMaxWidth(600);
-                        business_join_map_image_store_1.setMaxHeight(600);
+                        business_join_map_image_store_1.setImageBitmap(bitmapPhoto);
+                        imageFinish1 = true;
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -759,8 +872,9 @@ public class BusinessActivity extends AppCompatActivity {
                 if (resultCode == RESULT_OK) {
                     try {
                         // 将拍摄的照片显示出来
-                        Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
-                        business_join_map_image_store_2.setImageBitmap(bitmap);
+                        bitmapPhoto = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
+                        business_join_map_image_store_2.setImageBitmap(bitmapPhoto);
+                        imageFinish2 = true;
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -770,8 +884,9 @@ public class BusinessActivity extends AppCompatActivity {
                 if (resultCode == RESULT_OK) {
                     try {
                         // 将拍摄的照片显示出来
-                        Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
-                        business_join_map_image_store_3.setImageBitmap(bitmap);
+                        bitmapPhoto = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
+                        business_join_map_image_store_3.setImageBitmap(bitmapPhoto);
+                        imageFinish3 = true;
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -781,8 +896,9 @@ public class BusinessActivity extends AppCompatActivity {
                 if (resultCode == RESULT_OK) {
                     try {
                         // 将拍摄的照片显示出来
-                        Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
-                        business_join_map_image_store_4.setImageBitmap(bitmap);
+                        bitmapPhoto = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
+                        business_join_map_image_store_4.setImageBitmap(bitmapPhoto);
+                        imageFinish4 = true;
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -792,8 +908,9 @@ public class BusinessActivity extends AppCompatActivity {
                 if (resultCode == RESULT_OK) {
                     try {
                         // 将拍摄的照片显示出来
-                        Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
-                        business_join_map_image_license_1.setImageBitmap(bitmap);
+                        bitmapPhoto = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
+                        business_join_map_image_license_1.setImageBitmap(bitmapPhoto);
+                        imageFinish5 = true;
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -803,8 +920,9 @@ public class BusinessActivity extends AppCompatActivity {
                 if (resultCode == RESULT_OK) {
                     try {
                         // 将拍摄的照片显示出来
-                        Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
-                        business_join_map_image_license_2.setImageBitmap(bitmap);
+                        bitmapPhoto = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
+                        business_join_map_image_license_2.setImageBitmap(bitmapPhoto);
+                        imageFinish6 = true;
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -814,8 +932,9 @@ public class BusinessActivity extends AppCompatActivity {
                 if (resultCode == RESULT_OK) {
                     try {
                         // 将拍摄的照片显示出来
-                        Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
-                        business_join_map_image_license_3.setImageBitmap(bitmap);
+                        bitmapPhoto = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
+                        business_join_map_image_license_3.setImageBitmap(bitmapPhoto);
+                        imageFinish7 = true;
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -835,20 +954,59 @@ public class BusinessActivity extends AppCompatActivity {
                 store.setLatitude(storeUse.getLatitude());
                 store.setLongitude(storeUse.getLongitude());
                 business_join_introduce_addres_name.setText(data.getStringExtra("addressJsonStr"));
-
                 break;
-//            case CHOOSE_PHOTO:
-//                if (resultCode == RESULT_OK) {
-//                    // 判断手机系统版本号
-//                    if (Build.VERSION.SDK_INT >= 19) {
-//                        // 4.4及以上系统使用这个方法处理图片
-//                        handleImageOnKitKat(data);
-//                    } else {
-//                        // 4.4以下系统使用这个方法处理图片
-//                        handleImageBeforeKitKat(data);
-//                    }
-//                }
-//                break;
+//                通过相册选择的图片和对应的显示设置；
+            case CHOOSE_PHOTO:
+                if (resultCode == RESULT_OK) {
+                    Bitmap bitmapPhoto;
+                    // 判断手机系统版本号
+                    if (Build.VERSION.SDK_INT >= 19) {
+                        // 4.4及以上系统使用这个方法处理图片
+                        bitmapPhoto = ImgUtil.handleImageOnKitKat(this, data);
+                    } else {
+                        // 4.4以下系统使用这个方法处理图片
+                        bitmapPhoto = ImgUtil.handleImageBeforeKitKat(this, data);
+                    }
+                    switch (imageFlag) {
+                        case PICK_PHOTO_1:
+                            imageFinish1 = true;
+                            String test = getExternalCacheDir() + "/photo1.jpg";
+                            ImgUtil.bitmapToFile(bitmapPhoto, getExternalCacheDir() + "/photo1.jpg");
+                            business_join_map_image_store_1.setImageBitmap(bitmapPhoto);
+                            break;
+                        case PICK_PHOTO_2:
+                            imageFinish2 = true;
+                            ImgUtil.bitmapToFile(bitmapPhoto, getExternalCacheDir() + "/photo2.jpg");
+                            business_join_map_image_store_2.setImageBitmap(bitmapPhoto);
+                            break;
+                        case PICK_PHOTO_3:
+                            imageFinish3 = true;
+                            ImgUtil.bitmapToFile(bitmapPhoto, getExternalCacheDir() + "/photo3.jpg");
+                            business_join_map_image_store_3.setImageBitmap(bitmapPhoto);
+                            break;
+                        case PICK_PHOTO_4:
+                            imageFinish4 = true;
+                            ImgUtil.bitmapToFile(bitmapPhoto, getExternalCacheDir() + "/photo4.jpg");
+                            business_join_map_image_store_4.setImageBitmap(bitmapPhoto);
+                            break;
+                        case PICK_PHOTO_5:
+                            imageFinish5 = true;
+                            ImgUtil.bitmapToFile(bitmapPhoto, getExternalCacheDir() + "/photo5.jpg");
+                            business_join_map_image_license_1.setImageBitmap(bitmapPhoto);
+                            break;
+                        case PICK_PHOTO_6:
+                            imageFinish6 = true;
+                            ImgUtil.bitmapToFile(bitmapPhoto, getExternalCacheDir() + "/photo6.jpg");
+                            business_join_map_image_license_2.setImageBitmap(bitmapPhoto);
+                            break;
+                        case PICK_PHOTO_7:
+                            imageFinish7 = true;
+                            ImgUtil.bitmapToFile(bitmapPhoto, getExternalCacheDir() + "/photo7.jpg");
+                            business_join_map_image_license_3.setImageBitmap(bitmapPhoto);
+                            break;
+                    }
+                }
+                break;
             default:
                 break;
         }
@@ -879,6 +1037,7 @@ public class BusinessActivity extends AppCompatActivity {
         linearLayout_part2.setVisibility(View.GONE);
         linearLayout_part3.setVisibility(View.GONE);
         linearLayout_part4.setVisibility(View.GONE);
+        business_join_introduce_part5.setVisibility(View.GONE);
         switch (whichOne) {
             case 1:
                 linearLayout_part1.setVisibility(View.VISIBLE);
@@ -896,26 +1055,30 @@ public class BusinessActivity extends AppCompatActivity {
                 linearLayout_part4.setVisibility(View.VISIBLE);
                 business_join_NestedScrollView.fullScroll(View.FOCUS_UP);
                 break;
+            case 5:
+                business_join_introduce_part5.setVisibility(View.VISIBLE);
+                business_join_NestedScrollView.fullScroll(View.FOCUS_UP);
+                break;
         }
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setToolBar();
         setContentView(R.layout.activity_business);
+        setToolBar();
         initView();
-        initClick();
         initBasicPart();
         initExtraPart();
-
+        initPhotoPart();
+        initFinishPart();
+        setLinearLayoutVisibile(1);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
     }
-
 
     private void setToolBar() {
         ActionBar actionBar = getSupportActionBar();

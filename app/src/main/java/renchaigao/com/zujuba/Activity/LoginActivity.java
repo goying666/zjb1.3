@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -42,6 +43,7 @@ import renchaigao.com.zujuba.Json.User;
 import renchaigao.com.zujuba.Json.UserLogin;
 import renchaigao.com.zujuba.R;
 import renchaigao.com.zujuba.util.FinalDefine;
+import renchaigao.com.zujuba.util.OkhttpFunc;
 import renchaigao.com.zujuba.util.PictureRAR;
 import renchaigao.com.zujuba.util.PropertiesConfig;
 import renchaigao.com.zujuba.util.RespCode;
@@ -63,13 +65,41 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+//        autoLogin();
+        startPage();
         setContentView(R.layout.activity_login);
         setToolBar();
         initView();
         initData();
         initClick();
     }
+
+    private void startPage() {
+        setContentView(R.layout.activity_start);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(3000);       //此界面沉睡5秒
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    public void autoLogin() {
+        try {
+            SharedPreferences pref = getSharedPreferences("userData", MODE_PRIVATE);
+            String dataJsonString = pref.getString("responseJsonDataString", null);
+            JSONObject jsonObject = JSONObject.parseObject(dataJsonString);
+            if (null != jsonObject)
+                addUser(jsonObject, "auto");
+        } catch (Exception e) {
+            Log.e(TAG, e.toString());
+        }
+    }
+
 
 //    private void testUse(){
 //        JSONObject fastjsonobj = new JSONObject();
@@ -179,7 +209,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 v.requestFocus();
-                addUser(JSONObject.parseObject(userLogin.toString()));
+                addUser(JSONObject.parseObject(userLogin.toString()), "user");
             }
         });
     }
@@ -204,27 +234,14 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private static SSLSocketFactory createSSLSocketFactory() {
-        SSLSocketFactory ssfFactory = null;
-
-        try {
-            SSLContext sc = SSLContext.getInstance("TLS");
-            sc.init(null, new TrustManager[]{new BusinessActivity.TrustAllCerts()}, new SecureRandom());
-
-            ssfFactory = sc.getSocketFactory();
-        } catch (Exception e) {
-        }
-
-        return ssfFactory;
-    }
-
-    private void addUser(final JSONObject jsonObject) {
+    private void addUser(final JSONObject jsonObject, final String mode) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String path = PropertiesConfig.testServerUrl + "user/add";
+                String path = PropertiesConfig.testServerUrl + "user/add/" + mode;
                 OkHttpClient.Builder builder = new OkHttpClient.Builder();
-                builder.sslSocketFactory(createSSLSocketFactory());
+                OkhttpFunc okhttpFunc = new OkhttpFunc();
+                builder.sslSocketFactory(okhttpFunc.createSSLSocketFactory());
                 builder.hostnameVerifier(new HostnameVerifier() {
                     @Override
                     public boolean verify(String hostname, SSLSession session) {
@@ -249,26 +266,52 @@ public class LoginActivity extends AppCompatActivity {
                     public void onResponse(Call call, Response response) throws IOException {
                         try {
                             JSONObject responseJson = JSONObject.parseObject(response.body().string());
-                            JSONObject responseJsonData = (JSONObject) responseJson.getJSONObject("data");
                             int code = Integer.valueOf(responseJson.get("code").toString());
-                            switch (code){
-
-//                                    用户首次登陆系统进行创建账号，
-                                case 0:
-//                                    将token信息保存至本地
-                                    String token = responseJsonData.get("token").toString();
-                                    SharedPreferences.Editor editor = getSharedPreferences("userData",MODE_PRIVATE).edit();
-                                    editor.putString("token",token);
+                            JSONObject responseJsonData = (JSONObject) responseJson.getJSONObject("data");
+                            String token;
+                            SharedPreferences.Editor editor;
+                            Intent intent;
+                            switch (code) {
+                                //                                    用户首次登陆系统进行创建账号，
+                                case 0://创建新用户账号，成功
+                                    //                                    将token信息保存至本地
+                                    token = responseJsonData.get("token").toString();
+                                    editor = getSharedPreferences("userData", MODE_PRIVATE).edit();
+                                    editor.putString("token", token);
+                                    editor.putString("responseJsonDataString", responseJsonData.toJSONString());
                                     editor.apply();
-                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                    intent = new Intent(LoginActivity.this, MainActivity.class);
                                     startActivity(intent);
                                     finish();
                                     break;
-                                case -1001:
-                                    login_pwd_TextInputLayout.setError("服务器验证完毕，密码有误");
+                                case 1: //在数据库中更新用户数据出错；
+                                    Toast.makeText(LoginActivity.this, "在数据库中更新用户数据出错", Toast.LENGTH_LONG).show();
+                                    break;
+                                case 1002: //用户是存在的，更新数据成功；
+                                    //将token信息保存至本地
+                                    token = responseJsonData.get("token").toString();
+                                    editor = getSharedPreferences("userData", MODE_PRIVATE).edit();
+                                    editor.putString("token", token);
+                                    editor.putString("responseJsonDataString", responseJsonData.toJSONString());
+                                    editor.apply();
+                                    intent = new Intent(LoginActivity.this, MainActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                    break;
+                                case -1001://用户登录，密码错误；
+                                    Toast.makeText(LoginActivity.this, "用户登录，密码错误", Toast.LENGTH_LONG).show();
+                                    break;
+                                case -1002: //创建新用户，电话号码错误
+                                    Toast.makeText(LoginActivity.this, "创建新用户，电话号码错误", Toast.LENGTH_LONG).show();
+                                    break;
+                                case -1003: //用户是存在的，本地的TOKEN超时，需要重新登录；
+                                    Toast.makeText(LoginActivity.this, "本地的TOKEN超时，需要重新登录", Toast.LENGTH_LONG).show();
+                                    break;
+                                case -1004: //用户是存在的，本地的TOKEN错误；
+                                    Toast.makeText(LoginActivity.this, "本地的TOKEN错误", Toast.LENGTH_LONG).show();
                                     break;
                             }
-//                        switch (jsonObject1)
+                            //                        switch (jsonObject1)
                             Log.e(TAG, response.body().string());
 
                         } catch (Exception e) {

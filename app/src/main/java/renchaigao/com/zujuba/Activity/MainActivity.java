@@ -77,6 +77,24 @@ public class MainActivity extends AppCompatActivity {
         setUpDrawer();
     }
 
+    private void updateSystemData(){
+        updateUserData();
+        updateTeamData();
+        updateBusinessData();
+        updateGameData();
+    }
+    private void updateUserData(){
+
+    }
+    private void updateTeamData(){
+
+    }
+    private void updateBusinessData(){
+
+    }
+    private void updateGameData(){
+
+    }
 
     private void setToolBar() {
         ActionBar actionBar = getSupportActionBar();
@@ -95,7 +113,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
 
     private void setViewPager() {
         final CustomViewPager customViewPager = findViewById(R.id.main_customView);

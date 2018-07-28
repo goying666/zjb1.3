@@ -3,11 +3,27 @@ package renchaigao.com.zujuba.Json;
 public class User {
     private Integer id;
 
-    private String nickname;
-
     private Integer age;
 
+    private Integer whiteuserid;
+
+    private Integer blackuserid;
+
+    private Integer userloginid;
+
+    private Integer gameid;
+
+    private Integer roomid;
+
+    private Integer integration;
+
+    private Integer storeid;
+
+    private Integer otherinfoid;
+
     private String realname;
+
+    private String nickname;
 
     private String idcard;
 
@@ -21,27 +37,29 @@ public class User {
 
     private String marriage;
 
-    private Integer whiteuserid;
-
-    private Integer blackuserid;
-
-    private Integer userloginid;
-
-    private Integer roomid;
-
-    private Integer gameid;
-
-    private Integer storeid;
-
-    private Integer integration;
-
-    private Integer otherinfoid;
-
     private String photosn;
 
     private String userpwd;
 
     private String token;
+
+    private String city;
+
+    private String citycode;
+
+    private String district;
+
+    private String formataddress;
+
+    private Double latitude;
+
+    private Double longitude;
+
+    private String province;
+
+    private String towncode;
+
+    private String township;
 
     public Integer getId() {
         return id;
@@ -49,14 +67,6 @@ public class User {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname == null ? null : nickname.trim();
     }
 
     public Integer getAge() {
@@ -67,12 +77,84 @@ public class User {
         this.age = age;
     }
 
+    public Integer getWhiteuserid() {
+        return whiteuserid;
+    }
+
+    public void setWhiteuserid(Integer whiteuserid) {
+        this.whiteuserid = whiteuserid;
+    }
+
+    public Integer getBlackuserid() {
+        return blackuserid;
+    }
+
+    public void setBlackuserid(Integer blackuserid) {
+        this.blackuserid = blackuserid;
+    }
+
+    public Integer getUserloginid() {
+        return userloginid;
+    }
+
+    public void setUserloginid(Integer userloginid) {
+        this.userloginid = userloginid;
+    }
+
+    public Integer getGameid() {
+        return gameid;
+    }
+
+    public void setGameid(Integer gameid) {
+        this.gameid = gameid;
+    }
+
+    public Integer getRoomid() {
+        return roomid;
+    }
+
+    public void setRoomid(Integer roomid) {
+        this.roomid = roomid;
+    }
+
+    public Integer getIntegration() {
+        return integration;
+    }
+
+    public void setIntegration(Integer integration) {
+        this.integration = integration;
+    }
+
+    public Integer getStoreid() {
+        return storeid;
+    }
+
+    public void setStoreid(Integer storeid) {
+        this.storeid = storeid;
+    }
+
+    public Integer getOtherinfoid() {
+        return otherinfoid;
+    }
+
+    public void setOtherinfoid(Integer otherinfoid) {
+        this.otherinfoid = otherinfoid;
+    }
+
     public String getRealname() {
         return realname;
     }
 
     public void setRealname(String realname) {
         this.realname = realname == null ? null : realname.trim();
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname == null ? null : nickname.trim();
     }
 
     public String getIdcard() {
@@ -123,70 +205,6 @@ public class User {
         this.marriage = marriage == null ? null : marriage.trim();
     }
 
-    public Integer getWhiteuserid() {
-        return whiteuserid;
-    }
-
-    public void setWhiteuserid(Integer whiteuserid) {
-        this.whiteuserid = whiteuserid;
-    }
-
-    public Integer getBlackuserid() {
-        return blackuserid;
-    }
-
-    public void setBlackuserid(Integer blackuserid) {
-        this.blackuserid = blackuserid;
-    }
-
-    public Integer getUserloginid() {
-        return userloginid;
-    }
-
-    public void setUserloginid(Integer userloginid) {
-        this.userloginid = userloginid;
-    }
-
-    public Integer getRoomid() {
-        return roomid;
-    }
-
-    public void setRoomid(Integer roomid) {
-        this.roomid = roomid;
-    }
-
-    public Integer getGameid() {
-        return gameid;
-    }
-
-    public void setGameid(Integer gameid) {
-        this.gameid = gameid;
-    }
-
-    public Integer getStoreid() {
-        return storeid;
-    }
-
-    public void setStoreid(Integer storeid) {
-        this.storeid = storeid;
-    }
-
-    public Integer getIntegration() {
-        return integration;
-    }
-
-    public void setIntegration(Integer integration) {
-        this.integration = integration;
-    }
-
-    public Integer getOtherinfoid() {
-        return otherinfoid;
-    }
-
-    public void setOtherinfoid(Integer otherinfoid) {
-        this.otherinfoid = otherinfoid;
-    }
-
     public String getPhotosn() {
         return photosn;
     }
@@ -210,4 +228,77 @@ public class User {
     public void setToken(String token) {
         this.token = token == null ? null : token.trim();
     }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city == null ? null : city.trim();
+    }
+
+    public String getCitycode() {
+        return citycode;
+    }
+
+    public void setCitycode(String citycode) {
+        this.citycode = citycode == null ? null : citycode.trim();
+    }
+
+    public String getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(String district) {
+        this.district = district == null ? null : district.trim();
+    }
+
+    public String getFormataddress() {
+        return formataddress;
+    }
+
+    public void setFormataddress(String formataddress) {
+        this.formataddress = formataddress == null ? null : formataddress.trim();
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getProvince() {
+        return province;
+    }
+
+    public void setProvince(String province) {
+        this.province = province == null ? null : province.trim();
+    }
+
+    public String getTowncode() {
+        return towncode;
+    }
+
+    public void setTowncode(String towncode) {
+        this.towncode = towncode == null ? null : towncode.trim();
+    }
+
+    public String getTownship() {
+        return township;
+    }
+
+    public void setTownship(String township) {
+        this.township = township == null ? null : township.trim();
+    }
+
 }

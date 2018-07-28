@@ -3,7 +3,9 @@ package renchaigao.com.zujuba.Fragment;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -19,6 +21,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.bumptech.glide.Glide;
 import com.youth.banner.Banner;
 import com.youth.banner.BannerConfig;
@@ -26,14 +30,26 @@ import com.youth.banner.Transformer;
 import com.youth.banner.listener.OnBannerListener;
 import com.youth.banner.loader.ImageLoader;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSession;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import renchaigao.com.zujuba.Activity.BusinessActivity;
 import renchaigao.com.zujuba.Activity.JoinUsActivity;
 import renchaigao.com.zujuba.Activity.MapBusinessActivity;
 import renchaigao.com.zujuba.Adapter.HallFragmentAdapter;
 import renchaigao.com.zujuba.Json.Store;
 import renchaigao.com.zujuba.R;
+import renchaigao.com.zujuba.util.OkhttpFunc;
+import renchaigao.com.zujuba.util.PropertiesConfig;
 import renchaigao.com.zujuba.widgets.DividerItemDecoration;
 
 /**
@@ -131,8 +147,10 @@ public class HallFragment extends Fragment implements OnBannerListener {
         });
         setBanner(rootView);
         setButton(rootView);
+        initDataServer();
         return rootView;
     }
+
     //刷新列表
     public void reloadAdapter(){
         ArrayList<Store> mStores = new ArrayList<>();
@@ -140,6 +158,127 @@ public class HallFragment extends Fragment implements OnBannerListener {
             mStores.add(new Store());
         }
         hallFragmentAdapter.updateResults(mStores);
+
+    }
+
+ /*   class MAsyncTask extends AsyncTask {
+
+        private int next;
+
+        public MAsyncTask(int next) {
+            this.next = next;
+        }
+
+        @Override
+        protected Object doInBackground(Object[] params) {
+
+            JsonObject result = HttpUtil.getResposeJsonObject(BMA.GeDan.geDan(next, 10));
+            if (result == null) {
+                return null;
+            }
+            //热门歌单
+            JsonArray pArray = result.get("content").getAsJsonArray();
+            if (pArray == null) {
+                return null;
+            }
+
+            int plen = pArray.size();
+
+            for (int i = 0; i < plen; i++) {
+                GedanInfo gedanInfo = gson.fromJson(pArray.get(i), GedanInfo.class);
+                recommendList.add(gedanInfo);
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            super.onPostExecute(o);
+            recomendAdapter.update(recommendList);
+        }
+
+    }
+    */
+    private void initDataServer() {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+            }
+
+            @Override
+            protected void onCancelled() {
+                super.onCancelled();
+            }
+
+            @Override
+            protected void onCancelled(Void aVoid) {
+                super.onCancelled(aVoid);
+            }
+
+            @Override
+            protected void onProgressUpdate(Void... values) {
+                super.onProgressUpdate(values);
+            }
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                SharedPreferences pref = getActivity().getSharedPreferences("userData", getActivity().MODE_PRIVATE);
+                String dataJsonString = pref.getString("responseJsonDataString", null);
+                JSONObject jsonObject = JSONObject.parseObject(dataJsonString);
+                String userId = jsonObject.get("id").toString();
+
+                String path = PropertiesConfig.serverUrl + "store/get/storeinfo/" + userId;
+                OkHttpClient.Builder builder = new OkHttpClient.Builder()
+                        .connectTimeout(15, TimeUnit.SECONDS)
+                        .readTimeout(15, TimeUnit.SECONDS)
+                        .writeTimeout(15, TimeUnit.SECONDS)
+                        .retryOnConnectionFailure(true);
+                builder.sslSocketFactory(OkhttpFunc.createSSLSocketFactory());
+                builder.hostnameVerifier(new HostnameVerifier() {
+                    @Override
+                    public boolean verify(String hostname, SSLSession session) {
+                        return true;
+                    }
+                });
+                final Request request = new Request.Builder()
+                        .url(path)
+                        .header("Content-Type", "application/json")
+                        .get()
+                        .build();
+                builder.build().newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        Log.e("onFailure",e.toString());
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        try {
+                            JSONObject responseJson = JSONObject.parseObject(response.body().string());
+                            String responseJsoStr = responseJson.toJSONString();
+                            int code = Integer.valueOf(responseJson.get("code").toString());
+                            JSONArray responseJsonData = responseJson.getJSONArray("data");
+                            switch (code) {
+                                case 0: //在数据库中更新用户数据出错；
+                                    Log.e("responseJsonData",responseJsonData.toJSONString());
+                                    break;
+                            }
+                        } catch (Exception e) {
+                        }
+                    }
+                });
+
+
+               return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+            }
+        }.execute();
     }
 
 
