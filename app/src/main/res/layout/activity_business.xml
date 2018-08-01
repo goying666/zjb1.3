@@ -87,15 +87,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="@dimen/margin_16dp"
-                android:layout_marginTop="@dimen/margin_8dp"
+                android:layout_marginTop="@dimen/margin_16dp"
                 android:orientation="vertical"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_gravity="center_horizontal"
                     android:text="基本信息"
+                    android:layout_marginTop="@dimen/margin_64dp"
                     android:textSize="26sp"
                     android:textStyle="bold" />
 
@@ -106,7 +107,7 @@
                     android:layout_marginBottom="@dimen/margin_16dp"
                     android:layout_marginEnd="@dimen/margin_16dp"
                     android:layout_marginStart="@dimen/margin_16dp"
-                    android:layout_marginTop="@dimen/margin_8dp">
+                    android:layout_marginTop="@dimen/margin_64dp">
 
                     <android.support.design.widget.TextInputEditText
                         android:id="@+id/business_join_name"
@@ -122,7 +123,7 @@
                     android:layout_marginBottom="@dimen/margin_16dp"
                     android:layout_marginEnd="@dimen/margin_16dp"
                     android:layout_marginStart="@dimen/margin_16dp"
-                    android:layout_marginTop="@dimen/margin_8dp">
+                    android:layout_marginTop="@dimen/margin_64dp">
 
                     <TextView
                         android:id="@+id/textView5"
@@ -172,7 +173,7 @@
                     android:layout_marginBottom="@dimen/margin_16dp"
                     android:layout_marginEnd="@dimen/margin_16dp"
                     android:layout_marginStart="@dimen/margin_16dp"
-                    android:layout_marginTop="@dimen/margin_8dp">
+                    android:layout_marginTop="@dimen/margin_64dp">
 
                     <TextView
                         android:id="@+id/textView4"
@@ -245,7 +246,7 @@
                     android:layout_marginBottom="@dimen/margin_16dp"
                     android:layout_marginEnd="@dimen/margin_16dp"
                     android:layout_marginStart="@dimen/margin_16dp"
-                    android:layout_marginTop="@dimen/margin_8dp">
+                    android:layout_marginTop="@dimen/margin_64dp">
 
                     <TextView
                         android:id="@+id/business_join_introduce_time_textView_title"
@@ -300,7 +301,7 @@
                         android:id="@+id/business_join_introduce_time_linear1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="@dimen/margin_16dp"
                         android:gravity="center_horizontal"
                         android:orientation="horizontal"
                         app:layout_constraintTop_toBottomOf="@+id/textView">
@@ -404,7 +405,7 @@
                     android:layout_marginBottom="@dimen/margin_16dp"
                     android:layout_marginEnd="@dimen/margin_16dp"
                     android:layout_marginStart="@dimen/margin_16dp"
-                    android:layout_marginTop="@dimen/margin_8dp">
+                    android:layout_marginTop="@dimen/margin_64dp">
 
                     <TextView
                         android:id="@+id/business_join_introduce_content_textView_title"
@@ -424,7 +425,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="8dp"
                         android:layout_marginStart="8dp"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="@dimen/margin_32dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/business_join_introduce_content_textView_title">
@@ -433,7 +434,7 @@
                             android:id="@+id/business_telephone_name"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="联系人称呼（例：高先生、王女士）"
+                            android:hint="联系人（例：高先生、王女士）"
                             android:lines="1" />
                     </android.support.design.widget.TextInputLayout>
 
@@ -443,6 +444,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="8dp"
                         android:layout_marginStart="8dp"
+                        android:layout_marginTop="@dimen/margin_32dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/business_join_introduce_content_TextInputLayout_name">
@@ -462,7 +464,7 @@
                         android:layout_marginBottom="8dp"
                         android:layout_marginEnd="8dp"
                         android:layout_marginStart="8dp"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="@dimen/margin_32dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -493,7 +495,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="@dimen/margin_16dp"
-                    android:layout_marginTop="@dimen/margin_8dp"
+                    android:layout_marginTop="@dimen/margin_32dp"
                     android:background="@color/colorAccent"
                     android:text="下一步"
                     android:textColor="@color/colorPrimaryDark" />
@@ -503,9 +505,9 @@
                 android:id="@+id/business_join_introduce_part3"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="@dimen/margin_8dp"
+                android:layout_marginTop="@dimen/margin_64dp"
                 android:orientation="vertical"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -522,7 +524,7 @@
                     android:layout_marginBottom="@dimen/margin_16dp"
                     android:layout_marginEnd="@dimen/margin_16dp"
                     android:layout_marginStart="@dimen/margin_16dp"
-                    android:layout_marginTop="@dimen/margin_8dp">
+                    android:layout_marginTop="@dimen/margin_64dp">
 
                     <android.support.design.widget.TextInputEditText
                         android:id="@+id/business_join_desk_num"
@@ -539,7 +541,7 @@
                     android:layout_marginBottom="@dimen/margin_16dp"
                     android:layout_marginEnd="@dimen/margin_16dp"
                     android:layout_marginStart="@dimen/margin_16dp"
-                    android:layout_marginTop="@dimen/margin_8dp">
+                    android:layout_marginTop="@dimen/margin_64dp">
 
                     <android.support.design.widget.TextInputEditText
                         android:id="@+id/business_join_maxpeople_num"
@@ -556,7 +558,7 @@
                     android:layout_marginBottom="@dimen/margin_16dp"
                     android:layout_marginEnd="@dimen/margin_16dp"
                     android:layout_marginStart="@dimen/margin_16dp"
-                    android:layout_marginTop="@dimen/margin_8dp"
+                    android:layout_marginTop="@dimen/margin_64dp"
                     android:orientation="vertical">
 
                     <TextView
@@ -709,7 +711,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">>
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="@dimen/margin_16dp">
 
                     <Button
                         android:id="@+id/business_join_detail_button_back"
@@ -735,12 +738,14 @@
                 android:layout_height="match_parent"
                 android:layout_marginBottom="@dimen/margin_16dp"
                 android:layout_marginTop="@dimen/margin_8dp"
+                android:visibility="gone"
                 android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="@dimen/margin_64dp"
                     android:text="图片信息"
                     android:textSize="26sp"
                     android:textStyle="bold" />
@@ -751,7 +756,7 @@
                     android:layout_marginBottom="@dimen/margin_16dp"
                     android:layout_marginEnd="@dimen/margin_16dp"
                     android:layout_marginStart="@dimen/margin_16dp"
-                    android:layout_marginTop="@dimen/margin_8dp">
+                    android:layout_marginTop="@dimen/margin_64dp">
 
                     <TextView
                         android:id="@+id/business_join_map_store_title"
@@ -841,7 +846,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="32dp"
-                        android:layout_marginTop="@dimen/margin_16dp"
+                        android:layout_marginTop="@dimen/margin_32dp"
                         android:text="上传室内照片"
                         android:textSize="16sp"
                         app:layout_constraintStart_toEndOf="@+id/business_join_map_store_title"
@@ -910,7 +915,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="32dp"
-                        android:layout_marginTop="@dimen/margin_16dp"
+                        android:layout_marginTop="@dimen/margin_32dp"
                         android:text="上传桌子照片"
                         android:textSize="16sp"
                         app:layout_constraintStart_toEndOf="@+id/business_join_map_store_title"
@@ -982,7 +987,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="32dp"
-                        android:layout_marginTop="@dimen/margin_16dp"
+                        android:layout_marginTop="@dimen/margin_32dp"
                         android:text="上传座椅照片"
                         android:textSize="16sp"
                         app:layout_constraintStart_toEndOf="@+id/business_join_map_store_title"
@@ -1156,7 +1161,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="32dp"
-                        android:layout_marginTop="@dimen/margin_16dp"
+                        android:layout_marginTop="@dimen/margin_32dp"
                         android:text="法人手持身份证照片"
                         android:textSize="16sp"
                         app:layout_constraintStart_toEndOf="@+id/business_join_map_license_title"
@@ -1227,7 +1232,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="32dp"
-                        android:layout_marginTop="@dimen/margin_16dp"
+                        android:layout_marginTop="@dimen/margin_32dp"
                         android:text="餐饮服务许可证"
                         android:textSize="16sp"
                         app:layout_constraintStart_toEndOf="@+id/business_join_map_license_title"
@@ -1310,7 +1315,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">>
+                    android:orientation="horizontal">
 
                     <Button
                         android:id="@+id/business_join_map_image_back"
@@ -1335,8 +1340,26 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:visibility="gone">
+                android:visibility="visible">
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                </TextView>
+                <android.support.constraint.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="信息确认"/>
+                    <TextView
+                        android:id="@+id/business_join_all_info"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="店铺名称："/>
+                </android.support.constraint.ConstraintLayout>
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

@@ -1,16 +1,20 @@
 package renchaigao.com.zujuba.Fragment;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SimpleItemAnimator;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,6 +36,7 @@ import com.youth.banner.loader.ImageLoader;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
@@ -47,6 +52,7 @@ import renchaigao.com.zujuba.Activity.JoinUsActivity;
 import renchaigao.com.zujuba.Activity.MapBusinessActivity;
 import renchaigao.com.zujuba.Adapter.HallFragmentAdapter;
 import renchaigao.com.zujuba.Json.Store;
+import renchaigao.com.zujuba.Json.StoreInfo;
 import renchaigao.com.zujuba.R;
 import renchaigao.com.zujuba.util.OkhttpFunc;
 import renchaigao.com.zujuba.util.PropertiesConfig;
@@ -110,8 +116,19 @@ public class HallFragment extends Fragment implements OnBannerListener {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        pref = getActivity().getSharedPreferences("userData", getActivity().MODE_PRIVATE);
+        dataJsonString = pref.getString("responseJsonDataString", null);
+        jsonObject = JSONObject.parseObject(dataJsonString);
+        userId = jsonObject.get("id").toString();
+//        userId = JSONObject.parseObject(getActivity().getSharedPreferences("userData",getActivity().MODE_PRIVATE).getString("responseJsonDataString",null)).get("id").toString();
     }
 
+    SharedPreferences pref;
+    String dataJsonString;
+    JSONObject jsonObject;
+    String userId;
+    final private String TAG = "HallFragment";
     private Banner banner;
     private ArrayList<String> list_path;
     private ArrayList<String> list_title;
@@ -123,84 +140,83 @@ public class HallFragment extends Fragment implements OnBannerListener {
     private LinearLayoutManager layoutManager;
     private FloatingActionButton floatingActionButton;
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View rootView = inflater.inflate(
-                R.layout.fragment_hall, container, false);
-        // Inflate the layout for this fragment
-//        swipeRefreshLayout = rootView.findViewById(R.id.hall_SwipeRefreshLayout);
-        recyclerView = rootView.findViewById(R.id.hall_recyclerView);
+    private void setSwipeRefresh(View view) {
+        swipeRefreshLayout = view.findViewById(R.id.hall_SwipeRefreshLayout); //设置没有item动画
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                reloadAdapter();
+            }
+
+        });
+    }
+
+    private void setRecyclerView(View view) {
+        recyclerView = view.findViewById(R.id.hall_recyclerView);
         layoutManager = new LinearLayoutManager(mContext);
         recyclerView.setLayoutManager(layoutManager);
         hallFragmentAdapter = new HallFragmentAdapter(mContext);
         recyclerView.setAdapter(hallFragmentAdapter);
+        recyclerView.setHasFixedSize(true);
         recyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL_LIST));
-        reloadAdapter();
-//        toolbar = rootView.findViewById(R.id.hall_Toolbar);
-        floatingActionButton = rootView.findViewById(R.id.hall_float_button);
+        ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
+    }
+
+    private void setFloatingActionButton(View view) {
+        floatingActionButton = view.findViewById(R.id.hall_float_button);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 recyclerView.scrollToPosition(1);
             }
         });
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View rootView = inflater.inflate(
+                R.layout.fragment_hall, container, false);
+        setSwipeRefresh(rootView);
+        setRecyclerView(rootView);
+        setFloatingActionButton(rootView);
         setBanner(rootView);
         setButton(rootView);
-        initDataServer();
+        reloadAdapter();
+        Log.e(TAG,"onCreateView");
         return rootView;
     }
 
-    //刷新列表
-    public void reloadAdapter(){
-        ArrayList<Store> mStores = new ArrayList<>();
-        for (Integer i = 0; i < 16; i++) {
-            mStores.add(new Store());
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+            //相当于Fragment的onResume
+            reloadAdapter();
         }
-        hallFragmentAdapter.updateResults(mStores);
-
     }
 
- /*   class MAsyncTask extends AsyncTask {
-
-        private int next;
-
-        public MAsyncTask(int next) {
-            this.next = next;
-        }
-
-        @Override
-        protected Object doInBackground(Object[] params) {
-
-            JsonObject result = HttpUtil.getResposeJsonObject(BMA.GeDan.geDan(next, 10));
-            if (result == null) {
-                return null;
-            }
-            //热门歌单
-            JsonArray pArray = result.get("content").getAsJsonArray();
-            if (pArray == null) {
-                return null;
-            }
-
-            int plen = pArray.size();
-
-            for (int i = 0; i < plen; i++) {
-                GedanInfo gedanInfo = gson.fromJson(pArray.get(i), GedanInfo.class);
-                recommendList.add(gedanInfo);
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Object o) {
-            super.onPostExecute(o);
-            recomendAdapter.update(recommendList);
-        }
-
+    /**
+     * Called when the fragment is visible to the user and actively running.
+     * This is generally
+     * tied to {@link Activity#onResume() Activity.onResume} of the containing
+     * Activity's lifecycle.
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        reloadAdapter();
+        Log.e(TAG,"onResume");
     }
-    */
-    private void initDataServer() {
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//        if (requestCode == 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//        }
+        reloadAdapter();
+    }
+
+    public void reloadAdapter() {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected void onPreExecute() {
@@ -224,12 +240,10 @@ public class HallFragment extends Fragment implements OnBannerListener {
 
             @Override
             protected Void doInBackground(Void... params) {
-                SharedPreferences pref = getActivity().getSharedPreferences("userData", getActivity().MODE_PRIVATE);
-                String dataJsonString = pref.getString("responseJsonDataString", null);
-                JSONObject jsonObject = JSONObject.parseObject(dataJsonString);
-                String userId = jsonObject.get("id").toString();
+                Log.e(TAG,"doInBackground");
 
                 String path = PropertiesConfig.serverUrl + "store/get/storeinfo/" + userId;
+//                String path = PropertiesConfig.serverUrl + "store/get/storeinfo/" + JSONObject.parseObject(getActivity().getSharedPreferences("userData",getActivity().MODE_PRIVATE).getString("responseJsonDataString",null)).get("id").toString();
                 OkHttpClient.Builder builder = new OkHttpClient.Builder()
                         .connectTimeout(15, TimeUnit.SECONDS)
                         .readTimeout(15, TimeUnit.SECONDS)
@@ -250,7 +264,7 @@ public class HallFragment extends Fragment implements OnBannerListener {
                 builder.build().newCall(request).enqueue(new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
-                        Log.e("onFailure",e.toString());
+                         Log.e("onFailure", e.toString());
                     }
 
                     @Override
@@ -260,23 +274,41 @@ public class HallFragment extends Fragment implements OnBannerListener {
                             String responseJsoStr = responseJson.toJSONString();
                             int code = Integer.valueOf(responseJson.get("code").toString());
                             JSONArray responseJsonData = responseJson.getJSONArray("data");
+
+                            Log.e(TAG,"onResponse CODE OUT");
+                            Log.e(TAG,"onResponse CODE is" + code);
+
+//                            ArrayList<StoreInfo> mStores = new ArrayList<>();
                             switch (code) {
                                 case 0: //在数据库中更新用户数据出错；
-                                    Log.e("responseJsonData",responseJsonData.toJSONString());
+                                    ArrayList<StoreInfo> mStores = new ArrayList();
+                                    for (Object m : responseJsonData) {
+                                        mStores.add(JSONObject.parseObject(JSONObject.toJSONString(m), StoreInfo.class));
+                                    }
+//                                    Log.e("responseJsonData",responseJsonData.toJSONString());
+                                    if (hallFragmentAdapter == null) {
+                                        hallFragmentAdapter = new HallFragmentAdapter(mContext);
+                                    }
+                                    hallFragmentAdapter.updateResults(mStores);
+//                                    hallFragmentAdapter.notifyDataSetChanged();
+                                    Log.e(TAG,"onResponse");
                                     break;
                             }
+//                            swipeRefreshLayout.setRefreshing(false);
                         } catch (Exception e) {
                         }
                     }
                 });
-
-
-               return null;
+                return null;
             }
-
             @Override
-            protected void onPostExecute(Void aVoid) {
+            protected void onPostExecute(Void aVoid){
                 super.onPostExecute(aVoid);
+                Log.e(TAG,"onPostExecute");
+                if (mContext == null)
+                    return;
+                hallFragmentAdapter.notifyDataSetChanged();
+                swipeRefreshLayout.setRefreshing(false);
             }
         }.execute();
     }
@@ -380,3 +412,43 @@ public class HallFragment extends Fragment implements OnBannerListener {
         void onFragmentInteraction(Uri uri);
     }
 }
+
+  /*   class MAsyncTask extends AsyncTask {
+
+           private int next;
+
+           public MAsyncTask(int next) {
+               this.next = next;
+           }
+
+           @Override
+           protected Object doInBackground(Object[] params) {
+
+               JsonObject result = HttpUtil.getResposeJsonObject(BMA.GeDan.geDan(next, 10));
+               if (result == null) {
+                   return null;
+               }
+               //热门歌单
+               JsonArray pArray = result.get("content").getAsJsonArray();
+               if (pArray == null) {
+                   return null;
+               }
+
+               int plen = pArray.size();
+
+               for (int i = 0; i < plen; i++) {
+                   GedanInfo gedanInfo = gson.fromJson(pArray.get(i), GedanInfo.class);
+                   recommendList.add(gedanInfo);
+               }
+
+               return null;
+           }
+
+           @Override
+           protected void onPostExecute(Object o) {
+               super.onPostExecute(o);
+               recomendAdapter.update(recommendList);
+           }
+
+       }
+       */

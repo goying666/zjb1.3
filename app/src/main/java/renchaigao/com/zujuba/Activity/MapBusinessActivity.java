@@ -113,6 +113,9 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
         init(savedInstanceState);
 
         initView();
+
+        geoAddress();
+        startJumpAnimation();
     }
 
     private void init(Bundle savedInstanceState) {

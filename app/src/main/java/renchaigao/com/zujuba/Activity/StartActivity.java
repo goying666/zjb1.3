@@ -3,6 +3,7 @@ package renchaigao.com.zujuba.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
@@ -38,10 +39,15 @@ public class StartActivity extends AppCompatActivity {
 
     private final String TAG = "StartActivity";
     private boolean hasGo = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.hide();
+        }
         autoLogin();
         new Thread(new Runnable() {
             @Override
@@ -51,15 +57,16 @@ public class StartActivity extends AppCompatActivity {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                if (!hasGo){//hasGo为false说明还没有离开当前界面，说明后面的登录请求还没有返回响应；这种情况下就通过条件内代码启动login活动；
+                if (!hasGo) {//hasGo为false说明还没有离开当前界面，说明后面的登录请求还没有返回响应；这种情况下就通过条件内代码启动login活动；
                     hasGo = true;
-                    Intent intent=new Intent(StartActivity.this,LoginActivity.class);
+                    Intent intent = new Intent(StartActivity.this, LoginActivity.class);
                     startActivity(intent);
                     finish();
                 }
             }
         }).start();
     }
+
     public void autoLogin() {
         try {
             SharedPreferences pref = getSharedPreferences("userData", MODE_PRIVATE);
@@ -71,6 +78,7 @@ public class StartActivity extends AppCompatActivity {
             Log.e(TAG, e.toString());
         }
     }
+
     private void addUser(final JSONObject jsonObject, final String mode) {
         new Thread(new Runnable() {
             @Override
@@ -119,8 +127,8 @@ public class StartActivity extends AppCompatActivity {
                                     editor.putString("token", token);
                                     editor.putString("responseJsonDataString", responseJsonData.toJSONString());
                                     editor.apply();
-                                    if(!hasGo){//程序执行到这一步说明返回的数据已经回来，
-                                        hasGo=true;
+                                    if (!hasGo) {//程序执行到这一步说明返回的数据已经回来，
+                                        hasGo = true;
                                         intent = new Intent(StartActivity.this, MainActivity.class);
                                         startActivity(intent);
                                         finish();

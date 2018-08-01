@@ -4,7 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +37,11 @@ public class TeamFragment extends Fragment {
 
     public Activity mContext;
 
+    private RecyclerView recyclerView;
+    private LinearLayoutManager layoutManager;
+    private FloatingActionButton floatingActionButton;
+    private SwipeRefreshLayout swipeRefreshLayout;
+
     @Override
     public void onAttach(Activity activity){
         super.onAttach(activity);
@@ -40,6 +49,30 @@ public class TeamFragment extends Fragment {
     }
     public TeamFragment() {
         // Required empty public constructor
+    }
+
+    private void setSwipeRefresh(View view) {
+        swipeRefreshLayout = view.findViewById(R.id.hall_SwipeRefreshLayout); //设置没有item动画
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+            }
+        });
+    }
+    private void initView(View view){
+        recyclerView = view.findViewById(R.id.team_page_recycler_view);
+        layoutManager = new LinearLayoutManager(mContext);
+        recyclerView.setLayoutManager(layoutManager);
+    }
+    private void setFloatingActionButton(View view) {
+        floatingActionButton = view.findViewById(R.id.hall_float_button);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                recyclerView.scrollToPosition(1);
+            }
+        });
     }
 
     /**
@@ -73,6 +106,7 @@ public class TeamFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
         return inflater.inflate(R.layout.fragment_team, container, false);
     }
 

@@ -176,20 +176,22 @@ public class BusinessActivity extends AppCompatActivity {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+                business_join_name_layout.setError("请输入店铺的真实名字");
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.length() < 3) {
-                    business_join_name.setError("请输入大于3个字符的名字");
-                }
+
+                    business_join_name_layout.setError("请输入店铺的真实名字");
+
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (s.length() > 3) {
+                if (s.length() > 0) {
                     store.setName(s.toString());
                     business_join_name.setError(null);
+                    business_join_name_layout.setError(null);
                 } else {
                     business_join_name.setError("请输入正确的商铺名称，方便客户上门。");
                 }
@@ -239,7 +241,10 @@ public class BusinessActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 if (null != s.toString()) {
-                    store.setContact(s.toString());
+                    if(s.toString().length()<10)
+                        store.setContact(s.toString());
+                    else
+                        business_join_introduce_content_TextInputLayout_name.setError("联系人需要小于10个字");
                 } else
                     business_join_introduce_content_TextInputLayout_name.setError("请输入联系人");
             }
@@ -248,6 +253,7 @@ public class BusinessActivity extends AppCompatActivity {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+                business_join_introduce_content_TextInputLayout_person.setError("请输入11位手机号码");
             }
 
             @Override
@@ -257,10 +263,10 @@ public class BusinessActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (null != s.toString()) {
+                if (null != s.toString() && PatternUtil.strMatcher(s.toString(),PatternUtil.FUNC_TELEPHONE_NUMBER)) {
                     store.setTelephonenum(s.toString());
                 } else
-                    business_join_introduce_content_TextInputLayout_person.setError("请输入号码");
+                    business_join_introduce_content_TextInputLayout_person.setError("请输入正确的11位手机号码");
             }
         });
         business_telephone2.addTextChangedListener(new TextWatcher() {
@@ -292,6 +298,7 @@ public class BusinessActivity extends AppCompatActivity {
                     store.setWorkingtimeid(store.getWorkingtimeid() & 0x1110);
                     checkBoxNum--;
                 }
+                timeNoteCheckView();
                 Log.e(TAG, JSONObject.toJSONString(store));
                 business_join_introduce_time_textView_number.setText(checkBoxNum.toString());
             }
@@ -307,6 +314,7 @@ public class BusinessActivity extends AppCompatActivity {
                     store.setWorkingtimeid(store.getWorkingtimeid() & 0x1101);
                     checkBoxNum--;
                 }
+                timeNoteCheckView();
                 Log.e(TAG, JSONObject.toJSONString(store));
                 business_join_introduce_time_textView_number.setText(checkBoxNum.toString());
             }
@@ -322,6 +330,7 @@ public class BusinessActivity extends AppCompatActivity {
                     store.setWorkingtimeid(store.getWorkingtimeid() & 0x1011);
                     checkBoxNum--;
                 }
+                timeNoteCheckView();
                 Log.e(TAG, JSONObject.toJSONString(store));
                 business_join_introduce_time_textView_number.setText(checkBoxNum.toString());
             }
@@ -337,6 +346,7 @@ public class BusinessActivity extends AppCompatActivity {
                     store.setWorkingtimeid(store.getWorkingtimeid() & 0x111);
                     checkBoxNum--;
                 }
+                timeNoteCheckView();
                 Log.e(TAG, JSONObject.toJSONString(store));
                 business_join_introduce_time_textView_number.setText(checkBoxNum.toString());
             }
@@ -621,6 +631,12 @@ public class BusinessActivity extends AppCompatActivity {
         });
     }
 
+    private void timeNoteCheckView(){
+        if (store.getWorkingtimeid() > 0)
+            business_join_introduce_time_textView_title_note.setVisibility(View.GONE);
+         else
+            business_join_introduce_time_textView_title_note.setVisibility(View.VISIBLE);
+    }
     private boolean checkBasicPart() {
         if (store.getName() != null) {
             if (store.getFormataddress() != null) {
@@ -1072,7 +1088,7 @@ public class BusinessActivity extends AppCompatActivity {
         initExtraPart();
         initPhotoPart();
         initFinishPart();
-        setLinearLayoutVisibile(1);
+        setLinearLayoutVisibile(3);
     }
 
     @Override

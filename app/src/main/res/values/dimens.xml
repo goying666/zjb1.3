@@ -6,8 +6,18 @@
     <dimen name="button_width_style1">110dp</dimen>
     <dimen name="button_height_style1">46dp</dimen>
 
+    <dimen name="margin_24dp">24dp</dimen>
+    <dimen name="margin_32dp">32dp</dimen>
+    <dimen name="margin_40dp">40dp</dimen>
+    <dimen name="margin_48dp">48dp</dimen>
+    <dimen name="margins_56dp">56dp</dimen>
+    <dimen name="margin_64dp">64dp</dimen>
+    <dimen name="margin_72dp">72dp</dimen>
     <dimen name="margin_8dp">8dp</dimen>
     <dimen name="margin_16dp">16dp</dimen>
+
+    <dimen name="icon_style_m">12dp</dimen>
+    <dimen name="icon_style_XL">36dp</dimen>
 
     <!--Material Design Text Size-->
     <dimen name="md_text_size_display4">112sp</dimen>
@@ -57,5 +67,6 @@ http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
     <dimen name="image_size_height">110dp</dimen>
     <dimen name="icon_size_width">15dp</dimen>
     <dimen name="icon_size_height">15dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
 
 </resources>
