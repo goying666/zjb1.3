@@ -427,6 +427,7 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
                 String addressNew = result.getRegeocodeAddress().getFormatAddress();
 //                firstItem = new PoiItem("regeo", searchLatlonPoint, address, address);
                 Toast.makeText(MapBusinessActivity.this, "result" + addressNew, Toast.LENGTH_SHORT).show();
+                String strresult = JSONObject.toJSONString(result);
 //                Log.e(TAG,result.getRegeocodeAddress().getCity());
                 textView.setText(addressNew);
                 addressJsonStr = result.getRegeocodeAddress().getFormatAddress();

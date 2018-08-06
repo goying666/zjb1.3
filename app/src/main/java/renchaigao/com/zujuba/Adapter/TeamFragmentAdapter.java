@@ -5,12 +5,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 
 import java.util.ArrayList;
 
 import renchaigao.com.zujuba.R;
-import renchaigao.com.zujuba.info.TeamInfo;
+import renchaigao.com.zujuba.Json.Team;
 
 /**
  * Created by Administrator on 2018/8/1/001.
@@ -20,7 +19,7 @@ public class TeamFragmentAdapter extends RecyclerView.Adapter<TeamFragmentAdapte
 
 
     final static String TAG = "TeamFragmentAdapter";
-    private ArrayList<TeamInfo> mTeamList;
+    private ArrayList<Team> mTeamList;
     private Context mContext;
 
 
@@ -28,7 +27,7 @@ public class TeamFragmentAdapter extends RecyclerView.Adapter<TeamFragmentAdapte
         this.mContext = context;
     }
 
-    public void updateResults(ArrayList<TeamInfo> mStore) {
+    public void updateResults(ArrayList<Team> mStore) {
         this.mTeamList = mStore;
     }
 

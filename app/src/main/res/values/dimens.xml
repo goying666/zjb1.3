@@ -16,6 +16,13 @@
     <dimen name="margin_8dp">8dp</dimen>
     <dimen name="margin_16dp">16dp</dimen>
 
+
+    <!--Material Design Image Size-->
+    <dimen name="md_image">40dp</dimen>
+    <dimen name="md_icon">20dp</dimen>
+    <dimen name="app_bar_height">180dp</dimen>
+    <dimen name="text_margin">16dp</dimen>
+
     <dimen name="icon_style_m">12dp</dimen>
     <dimen name="icon_style_XL">36dp</dimen>
 
@@ -68,5 +75,11 @@ http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
     <dimen name="icon_size_width">15dp</dimen>
     <dimen name="icon_size_height">15dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+
+
+    <!--create team place image -->
+    <dimen name="image_three_x_size">110dp</dimen>
+    <dimen name="image_three_y_size">110dp</dimen>
+    <dimen name="image_user_size_m">25dp</dimen>
 
 </resources>

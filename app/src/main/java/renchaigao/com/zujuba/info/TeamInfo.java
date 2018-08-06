@@ -1,8 +1,17 @@
 package renchaigao.com.zujuba.info;
 
-/**
- * Created by Administrator on 2018/7/16/016.
- */
+import lombok.Getter;
+import lombok.Setter;
+import renchaigao.com.zujuba.Json.Team;
 
-public class TeamInfo {
+/**
+ * Created by Administrator on 2018/8/3/003.
+ */
+@Setter
+@Getter
+public class TeamInfo extends Team {
+    private String scoreFilter;
+    private Integer scoreFilterID;
+    private AddressInfo addressInfo;
+    private FilterInfo filterInfo;
 }

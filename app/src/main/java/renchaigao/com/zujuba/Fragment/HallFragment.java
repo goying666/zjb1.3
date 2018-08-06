@@ -124,9 +124,9 @@ public class HallFragment extends Fragment implements OnBannerListener {
 //        userId = JSONObject.parseObject(getActivity().getSharedPreferences("userData",getActivity().MODE_PRIVATE).getString("responseJsonDataString",null)).get("id").toString();
     }
 
-    SharedPreferences pref;
-    String dataJsonString;
-    JSONObject jsonObject;
+    private SharedPreferences pref;
+    private String dataJsonString;
+    private JSONObject jsonObject;
     String userId;
     final private String TAG = "HallFragment";
     private Banner banner;
@@ -135,10 +135,14 @@ public class HallFragment extends Fragment implements OnBannerListener {
     private Button button_joinUs, button_business;
     private SwipeRefreshLayout swipeRefreshLayout;
     private Toolbar toolbar;
+    private FloatingActionButton floatingActionButton;
+
     private HallFragmentAdapter hallFragmentAdapter;
     private RecyclerView recyclerView;
     private LinearLayoutManager layoutManager;
-    private FloatingActionButton floatingActionButton;
+
+
+    private String reloadFlag;
 
     private void setSwipeRefresh(View view) {
         swipeRefreshLayout = view.findViewById(R.id.hall_SwipeRefreshLayout); //设置没有item动画
@@ -147,7 +151,6 @@ public class HallFragment extends Fragment implements OnBannerListener {
             public void onRefresh() {
                 reloadAdapter();
             }
-
         });
     }
 
@@ -182,7 +185,7 @@ public class HallFragment extends Fragment implements OnBannerListener {
         setFloatingActionButton(rootView);
         setBanner(rootView);
         setButton(rootView);
-        reloadAdapter();
+//        reloadAdapter();
         Log.e(TAG,"onCreateView");
         return rootView;
     }
@@ -192,7 +195,7 @@ public class HallFragment extends Fragment implements OnBannerListener {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
             //相当于Fragment的onResume
-            reloadAdapter();
+//            reloadAdapter();
         }
     }
 
@@ -213,7 +216,7 @@ public class HallFragment extends Fragment implements OnBannerListener {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 //        if (requestCode == 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 //        }
-        reloadAdapter();
+//        reloadAdapter();
     }
 
     public void reloadAdapter() {
@@ -221,6 +224,7 @@ public class HallFragment extends Fragment implements OnBannerListener {
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
+                reloadFlag = "onPreExecute";
             }
 
             @Override
@@ -265,6 +269,7 @@ public class HallFragment extends Fragment implements OnBannerListener {
                     @Override
                     public void onFailure(Call call, IOException e) {
                          Log.e("onFailure", e.toString());
+                        reloadFlag = "doInBackground";
                     }
 
                     @Override
@@ -294,11 +299,13 @@ public class HallFragment extends Fragment implements OnBannerListener {
                                     Log.e(TAG,"onResponse");
                                     break;
                             }
+                            reloadFlag = "doInBackground";
 //                            swipeRefreshLayout.setRefreshing(false);
                         } catch (Exception e) {
                         }
                     }
                 });
+                while (!reloadFlag.equals("doInBackground"));
                 return null;
             }
             @Override

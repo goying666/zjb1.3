@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
         });
         initBottomNavigationView(customViewPager);
 
-        hallFragment.reloadAdapter();
+//        hallFragment.reloadAdapter();
     }
 
     private void initBottomNavigationView(final CustomViewPager customViewPager) {

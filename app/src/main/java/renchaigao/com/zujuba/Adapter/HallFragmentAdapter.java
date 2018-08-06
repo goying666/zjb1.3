@@ -2,25 +2,21 @@ package renchaigao.com.zujuba.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.icu.util.ValueIterator;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
+import renchaigao.com.zujuba.Activity.PlaceListActivity;
 import renchaigao.com.zujuba.Activity.StoreActivity;
-import renchaigao.com.zujuba.Json.Store;
 import renchaigao.com.zujuba.Json.StoreInfo;
 import renchaigao.com.zujuba.R;
 
@@ -80,6 +76,14 @@ public class HallFragmentAdapter extends RecyclerView.Adapter<HallFragmentAdapte
                 mContext.startActivity(intent);
             }
         });
+        if (mOnItemClickListener != null) {
+            holder.thisView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mOnItemClickListener.onItemClick(holder.thisView, position);
+                }
+            });
+        }
     }
 
     @Override
@@ -90,8 +94,15 @@ public class HallFragmentAdapter extends RecyclerView.Adapter<HallFragmentAdapte
             return mStore.size();
     }
 
+    private PlaceListActivity.OnItemClickListener mOnItemClickListener;//声明接口
+
+    public void setOnItemClickListener(PlaceListActivity.OnItemClickListener onItemClickListener) {
+        mOnItemClickListener = onItemClickListener;
+    }
+
     public class ItemHolder extends RecyclerView.ViewHolder {
 
+        private View thisView;
         private CardView cardView;
         private ImageView store_cardview_place_icon, store_time_icon, store_image, store_boy_icon, store_girl_icon;
         private RatingBar place_star_num;
@@ -101,6 +112,7 @@ public class HallFragmentAdapter extends RecyclerView.Adapter<HallFragmentAdapte
 
         public ItemHolder(View view) {
             super(view);
+            this.thisView = view;
             this.cardView =(CardView) view;
             this.store_cardview_place_icon = view.findViewById(R.id.store_cardview_place_icon);
             this.store_time_icon = view.findViewById(R.id.store_time_icon);
