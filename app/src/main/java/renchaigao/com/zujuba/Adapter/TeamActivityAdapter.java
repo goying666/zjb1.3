@@ -38,9 +38,8 @@ public class TeamActivityAdapter extends RecyclerView.Adapter<TeamActivityAdapte
 
     @Override
     public void onBindViewHolder(TeamActivityAdapter.ViewHolder holder, int position) {
-        TeamInfo teamInfo = new TeamInfo();
-
-        holder.card_player_name.setText(teamInfo.getAddressInfo().getStoreInfo());
+        TeamInfo teamInfo ;
+        teamInfo = new TeamInfo();
         holder.card_player_name.setText(teamInfo.getAddressInfo().getStoreInfo());
 //        holder.card_player_zu_number.setText(teamInfo.getName());
 //        holder.card_player_you_number.setText(teamInfo.getName());
