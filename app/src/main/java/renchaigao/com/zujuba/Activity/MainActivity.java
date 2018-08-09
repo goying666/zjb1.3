@@ -13,15 +13,18 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -67,14 +70,24 @@ public class MainActivity extends AppCompatActivity {
 
 
         drawerLayout = findViewById(R.id.main_drawerLayout);
-        navigationView = findViewById(R.id.main_navigationView);
         customViewPager = findViewById(R.id.main_customView);
         bottomNavigationView = findViewById(R.id.main_bootomNavigationView);
         BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
-
+        setNavigationView();
         setToolBar();
         setViewPager();
         setUpDrawer();
+    }
+    private LinearLayout nva_1;
+    private void setNavigationView(){
+        navigationView = findViewById(R.id.main_navigationView);
+//        Menu  menu =navigationView.getMenu();
+//        MenuItem menuItem = menu.findItem(R.id.nav_person);
+//        View actionView = menuItem.getActionView();
+//        nva_1 = (LinearLayout)actionView;
+        nva_1=(LinearLayout) navigationView.getMenu().findItem(R.id.nav_person).getActionView();
+        TextView textView= (TextView) nva_1.findViewById(R.id.menu_use_text);
+        textView.setText("1");
     }
 
     private void updateSystemData(){
@@ -104,14 +117,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setUpDrawer() {
-        navigationView.setCheckedItem(R.id.nav_call);
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                drawerLayout.closeDrawers();
-                return true;
-            }
-        });
+//        navigationView.setCheckedItem(R.id.nav_call);
+//        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+//            @Override
+//            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+//                drawerLayout.closeDrawers();
+//                return true;
+//            }
+//        });
     }
 
     private void setViewPager() {

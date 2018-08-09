@@ -66,6 +66,7 @@ import renchaigao.com.zujuba.util.OkhttpFunc;
 import renchaigao.com.zujuba.util.PatternUtil;
 import renchaigao.com.zujuba.util.PictureRAR;
 import renchaigao.com.zujuba.util.PropertiesConfig;
+import renchaigao.com.zujuba.util.dateUse;
 
 import static renchaigao.com.zujuba.util.OkhttpFunc.createSSLSocketFactory;
 
@@ -1018,7 +1019,7 @@ public class CreateTeamActivity extends AppCompatActivity {
             nestedScrollView.scrollTo(1, 1);
             return false;
         }else {
-            teamInfo.setCreateTime(new Date());
+            teamInfo.setCreateTime(dateUse.getTodayDate());
             teamInfo.setStartDate(textview_creat_team_date.getText().toString());
         }
 //        2、检查时间；
@@ -1036,9 +1037,9 @@ public class CreateTeamActivity extends AppCompatActivity {
 //        3、检查人数；
         if (Integer.valueOf(ct_people_selectinfo_textview_value_min.getText().toString()) > 2) {
             if(Integer.valueOf(ct_people_selectinfo_textview_value_max.getText().toString())>2){
-                teamInfo.setPlayerMin(Integer.valueOf(ct_people_selectinfo_textview_value_min.getText().toString()));
-                teamInfo.setPlayerMax(Integer.valueOf(ct_people_selectinfo_textview_value_max.getText().toString()));
-                teamInfo.setPlayerNow(1);
+                teamInfo.setPlayerMin(ct_people_selectinfo_textview_value_min.getText().toString());
+                teamInfo.setPlayerMax(ct_people_selectinfo_textview_value_max.getText().toString());
+                teamInfo.setPlayerNow("1");
             }else {
                 new AlertDialog.Builder(this)
                         .setTitle("成员数量设置有误")

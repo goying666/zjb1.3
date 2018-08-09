@@ -5,14 +5,16 @@
     <string name="title_notifications">Notifications</string>
     <string name="business_join_introduce">oin sodales pulvinar lis oda dolor dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc egetLorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc egetLorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc egetLorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc egetLorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc eget.</string>
     <string-array name="business_class_array">　　　　　　
-        <item>餐馆</item>        　　　　　　
+        <item>餐馆</item>
+        　　　　　　
         <item>棋牌室</item>
         <item>桌游吧</item>
         <item>民宿</item>
         <item>其他</item>
     </string-array>
     <string-array name="create_team_game_array">　　　　　　
-        <item>狼人杀</item>        　　　　　　
+        <item>狼人杀</item>
+        　　　　　　
         <item>天黑请闭眼</item>
         <item>捕猫</item>
         <item>其他</item>
@@ -122,8 +124,6 @@
 
     <string name="ct_end_note">一次组局，一些人，一段回忆。</string>
     <string name="ct_end_note_author">——Goying</string>
-
-
 
 
 </resources>

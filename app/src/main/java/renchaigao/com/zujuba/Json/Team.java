@@ -13,29 +13,29 @@ import lombok.Setter;
 public class Team {
     private Integer id;
 
-    private Integer playerinfoId;
+    private String playerinfoId;
 
-    private Integer gameId;
+    private String gameId;
 
-    private Integer addressId;
+    private String addressId;
 
-    private Integer spendId;
+    private String spendId;
 
-    private Integer messageId;
+    private String messageId;
 
-    private Integer filterId;
+    private String filterId;
 
-    private Integer playerMax;
+    private String playerMax;
 
-    private Integer playerMin;
+    private String playerMin;
 
-    private Integer playerNow;
+    private String playerNow;
 
     private Integer createrId;
 
     private Integer ownerId;
 
-    private Date createTime;
+    private String createTime;
 
     private String startDate;
 

@@ -1,5 +1,6 @@
 package renchaigao.com.zujuba.Fragment;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -23,6 +24,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
@@ -38,6 +40,7 @@ import renchaigao.com.zujuba.Activity.MyTeamActivity;
 import renchaigao.com.zujuba.Adapter.TeamFragmentAdapter;
 import renchaigao.com.zujuba.R;
 import renchaigao.com.zujuba.Json.Team;
+import renchaigao.com.zujuba.info.TeamInfo;
 import renchaigao.com.zujuba.util.OkhttpFunc;
 import renchaigao.com.zujuba.util.PropertiesConfig;
 import renchaigao.com.zujuba.widgets.DividerItemDecoration;
@@ -123,6 +126,7 @@ public class TeamFragment extends Fragment {
     final static private int MAIN_TEAM_CREAT_TEAM = 1;
     final static private int MAIN_TEAM_MY_TEAM = 2;
     final static private int MAIN_TEAM_JOIN_TEAM = 3;
+
     private void setButton(View view) {
         button_creatTeam = view.findViewById(R.id.button_creatTeam);
         button_myTeam = view.findViewById(R.id.button_myTeam);
@@ -132,14 +136,14 @@ public class TeamFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 final Intent intent = new Intent(getActivity(), CreateTeamActivity.class);
-                getActivity().startActivityForResult(intent,MAIN_TEAM_CREAT_TEAM);
+                getActivity().startActivityForResult(intent, MAIN_TEAM_CREAT_TEAM);
             }
         });
         button_myTeam.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final Intent intent = new Intent(getActivity(), MyTeamActivity.class);
-                getActivity().startActivityForResult(intent,MAIN_TEAM_MY_TEAM);
+                getActivity().startActivityForResult(intent, MAIN_TEAM_MY_TEAM);
             }
         });
         button_joinTeam.setOnClickListener(new View.OnClickListener() {
@@ -154,13 +158,13 @@ public class TeamFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode){
+        switch (requestCode) {
             case MAIN_TEAM_CREAT_TEAM:
-                Log.e(TAG,"MAIN_TEAM_CREAT_TEAM");
+                Log.e(TAG, "MAIN_TEAM_CREAT_TEAM");
                 break;
 
             case MAIN_TEAM_MY_TEAM:
-                Log.e(TAG,"MAIN_TEAM_MY_TEAM");
+                Log.e(TAG, "MAIN_TEAM_MY_TEAM");
                 break;
 
 
@@ -213,11 +217,15 @@ public class TeamFragment extends Fragment {
         return rootView;
     }
 
+    private String reloadFlag;
+
+    @SuppressLint("StaticFieldLeak")
     public void reloadAdapter() {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
+                reloadFlag = "onPreExecute";
             }
 
             @Override
@@ -239,7 +247,7 @@ public class TeamFragment extends Fragment {
             protected Void doInBackground(Void... params) {
                 Log.e(TAG, "doInBackground");
 
-                String path = PropertiesConfig.serverUrl + "team/get/teaminfo/" + userId;
+                String path = PropertiesConfig.serverUrl + "team/get/" + userId;
 //                String path = PropertiesConfig.serverUrl + "store/get/storeinfo/" + JSONObject.parseObject(getActivity().getSharedPreferences("userData",getActivity().MODE_PRIVATE).getString("responseJsonDataString",null)).get("id").toString();
                 OkHttpClient.Builder builder = new OkHttpClient.Builder()
                         .connectTimeout(15, TimeUnit.SECONDS)
@@ -262,6 +270,7 @@ public class TeamFragment extends Fragment {
                     @Override
                     public void onFailure(Call call, IOException e) {
                         Log.e("onFailure", e.toString());
+                        reloadFlag = "doInBackground";
                     }
 
                     @Override
@@ -278,24 +287,31 @@ public class TeamFragment extends Fragment {
 //                            ArrayList<StoreInfo> mStores = new ArrayList<>();
                             switch (code) {
                                 case 0: //在数据库中更新用户数据出错；
-                                    ArrayList<Team> mTeam = new ArrayList();
+                                    ArrayList<TeamInfo> mTeam = new ArrayList();
                                     for (Object m : responseJsonData) {
-                                        mTeam.add(JSONObject.parseObject(JSONObject.toJSONString(m), Team.class));
+                                        String testStr = JSONObject.toJSONString(m);
+                                        JSONObject json = JSONObject.parseObject(testStr);
+                                        Date dateTest = json.getDate("createTime");
+                                        TeamInfo testTeamInfo = JSONObject.parseObject(testStr, TeamInfo.class);
+                                        mTeam.add(JSONObject.parseObject(JSONObject.toJSONString(m), TeamInfo.class));
                                     }
 //                                    Log.e("responseJsonData",responseJsonData.toJSONString());
                                     if (teamFragmentAdapter == null) {
                                         teamFragmentAdapter = new TeamFragmentAdapter(mContext);
                                     }
                                     teamFragmentAdapter.updateResults(mTeam);
-//                                    hallFragmentAdapter.notifyDataSetChanged();
+
                                     Log.e(TAG, "onResponse");
                                     break;
                             }
 //                            swipeRefreshLayout.setRefreshing(false);
                         } catch (Exception e) {
                         }
+                        reloadFlag = "doInBackground";
                     }
+
                 });
+                while (!reloadFlag.equals("doInBackground")) ;
                 return null;
             }
 

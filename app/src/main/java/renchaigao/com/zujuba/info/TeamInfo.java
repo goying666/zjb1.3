@@ -10,8 +10,7 @@ import renchaigao.com.zujuba.Json.Team;
 @Setter
 @Getter
 public class TeamInfo extends Team {
-    private String scoreFilter;
-    private Integer scoreFilterID;
     private AddressInfo addressInfo;
     private FilterInfo filterInfo;
+    private PlayerInfo playerInfo;
 }

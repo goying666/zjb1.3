@@ -80,27 +80,28 @@
             android:name=".Activity.LoginActivity"
             android:label="@string/app_name" />
         <activity android:name=".Activity.StartActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-             <intent-filter>
-             <action android:name="android.intent.action.MAIN" />
-
-
-             <category android:name="android.intent.category.LAUNCHER" />
-             </intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".Activity.StoreActivity"
             android:label="@string/title_activity_store"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".Activity.CreateTeamActivity">
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
 
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
         </activity>
         <activity android:name=".Activity.MyTeamActivity" />
-        <activity android:name=".Activity.PlaceListActivity"></activity>
+        <activity android:name=".Activity.PlaceListActivity" />
+        <activity android:name=".Activity.TeamActivity"></activity>
     </application>
 
 </manifest>

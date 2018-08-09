@@ -41,6 +41,7 @@ import renchaigao.com.zujuba.widgets.DividerItemDecoration;
 import static renchaigao.com.zujuba.Activity.BusinessActivity.ADD_ADDRESS;
 import static renchaigao.com.zujuba.Activity.CreateTeamActivity.CREATE_TEAM_ADDRESS_STORE;
 
+/******     该活动用于创建Team时选择地点，展示地点list使用。    ******/
 public class PlaceListActivity extends AppCompatActivity {
 
     final private String TAG = "PlaceListActivity";
@@ -88,7 +89,6 @@ public class PlaceListActivity extends AppCompatActivity {
         hallFragmentAdapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-
                 final Intent intent = new Intent(PlaceListActivity.this, CreateTeamActivity.class);
                 intent.putExtra("storeInfo",JSONObject.toJSONString(mStoreInfo.get(position)));
                 intent.putExtra("name", mStoreInfo.get(position).getName());

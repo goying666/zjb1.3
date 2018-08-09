@@ -24,6 +24,7 @@
     <dimen name="text_margin">16dp</dimen>
 
     <dimen name="icon_style_m">12dp</dimen>
+    <dimen name="icon_style_2m">24dp</dimen>
     <dimen name="icon_style_XL">36dp</dimen>
 
     <!--Material Design Text Size-->
@@ -81,5 +82,7 @@ http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
     <dimen name="image_three_x_size">110dp</dimen>
     <dimen name="image_three_y_size">110dp</dimen>
     <dimen name="image_user_size_m">25dp</dimen>
+
+    <dimen name="user_image_size">58dp</dimen>
 
 </resources>
