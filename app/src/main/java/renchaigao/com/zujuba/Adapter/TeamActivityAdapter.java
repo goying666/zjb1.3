@@ -41,6 +41,7 @@ public class TeamActivityAdapter extends RecyclerView.Adapter<TeamActivityAdapte
         TeamInfo teamInfo = new TeamInfo();
 
         holder.card_player_name.setText(teamInfo.getAddressInfo().getStoreInfo());
+        holder.card_player_name.setText(teamInfo.getAddressInfo().getStoreInfo());
 //        holder.card_player_zu_number.setText(teamInfo.getName());
 //        holder.card_player_you_number.setText(teamInfo.getName());
 //        holder.card_player_state.setText(teamInfo.getName());
