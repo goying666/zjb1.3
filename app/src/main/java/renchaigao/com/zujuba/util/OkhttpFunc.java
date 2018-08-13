@@ -1,24 +1,12 @@
 package renchaigao.com.zujuba.util;
 
-import com.alibaba.fastjson.JSONObject;
-
-import java.io.IOException;
 import java.security.SecureRandom;
-import java.util.concurrent.TimeUnit;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import renchaigao.com.zujuba.Activity.BusinessActivity;
+import renchaigao.com.zujuba.Activity.CreateStoreActivity;
 
 /**
  * Created by Administrator on 2018/7/27/027.
@@ -126,7 +114,7 @@ public class OkhttpFunc {
 
         try {
             SSLContext sc = SSLContext.getInstance("TLS");
-            sc.init(null, new TrustManager[]{new BusinessActivity.TrustAllCerts()}, new SecureRandom());
+            sc.init(null, new TrustManager[]{new CreateStoreActivity.TrustAllCerts()}, new SecureRandom());
 
             ssfFactory = sc.getSocketFactory();
         } catch (Exception e) {

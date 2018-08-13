@@ -1,11 +1,9 @@
 package renchaigao.com.zujuba.Fragment;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -23,7 +21,6 @@ import android.view.ViewGroup;
 import android.support.v4.app.Fragment;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -36,7 +33,6 @@ import com.youth.banner.loader.ImageLoader;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
@@ -47,11 +43,9 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import renchaigao.com.zujuba.Activity.BusinessActivity;
+import renchaigao.com.zujuba.Activity.CreateStoreActivity;
 import renchaigao.com.zujuba.Activity.JoinUsActivity;
-import renchaigao.com.zujuba.Activity.MapBusinessActivity;
 import renchaigao.com.zujuba.Adapter.HallFragmentAdapter;
-import renchaigao.com.zujuba.Json.Store;
 import renchaigao.com.zujuba.Json.StoreInfo;
 import renchaigao.com.zujuba.R;
 import renchaigao.com.zujuba.util.OkhttpFunc;
@@ -334,7 +328,7 @@ public class HallFragment extends Fragment implements OnBannerListener {
         button_business.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Intent intent = new Intent(getActivity(), BusinessActivity.class);
+                final Intent intent = new Intent(getActivity(), CreateStoreActivity.class);
                 getActivity().startActivity(intent);
             }
         });

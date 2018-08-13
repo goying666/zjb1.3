@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="renchaigao.com.zujuba.Activity.AdvertisingActivity">
+    <com.youth.banner.Banner
+        android:id="@+id/adver_banner"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+    <!--<ImageView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:src="@drawable/place_2"/>-->
+</android.support.constraint.ConstraintLayout>

@@ -12,8 +12,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSONArray;
@@ -38,7 +36,6 @@ import renchaigao.com.zujuba.util.OkhttpFunc;
 import renchaigao.com.zujuba.util.PropertiesConfig;
 import renchaigao.com.zujuba.widgets.DividerItemDecoration;
 
-import static renchaigao.com.zujuba.Activity.BusinessActivity.ADD_ADDRESS;
 import static renchaigao.com.zujuba.Activity.CreateTeamActivity.CREATE_TEAM_ADDRESS_STORE;
 
 /******     该活动用于创建Team时选择地点，展示地点list使用。    ******/

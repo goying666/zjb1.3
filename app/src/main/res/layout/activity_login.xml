@@ -6,6 +6,21 @@
     android:layout_height="match_parent"
     tools:context="renchaigao.com.zujuba.Activity.LoginActivity">
 
+    <ProgressBar
+        android:id="@+id/join_progressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"/>
+
     <ImageView
         android:id="@+id/login_back_button"
         android:layout_width="30dp"
@@ -35,7 +50,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="32dp"
-        android:text="欢迎登陆组局吧"
+        android:text="组局吧欢迎您"
         android:textSize="29sp"
         android:textStyle="normal"
         app:layout_constraintStart_toEndOf="@+id/login_back_button"
@@ -65,18 +80,21 @@
         android:layout_marginEnd="4dp"
         android:layout_marginTop="16dp"
         android:src="@drawable/login_delete"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="@+id/login_telephone_TextInputLayout"
         app:layout_constraintTop_toTopOf="@+id/login_telephone_TextInputLayout" />
 
-    <ImageView
-        android:id="@+id/login_view_pwd"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="4dp"
-        android:src="@drawable/login_view"
-        app:layout_constraintBottom_toBottomOf="@+id/login_pwd_TextInputLayout"
-        app:layout_constraintEnd_toEndOf="@+id/login_pwd_TextInputLayout" />
+
+    <TextView
+        android:id="@+id/login_recode_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:text="获取验证码"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@+id/login_pwd_TextInputLayout"
+        app:layout_constraintTop_toBottomOf="@+id/login_pwd_TextInputLayout" />
     <android.support.design.widget.TextInputLayout
         android:id="@+id/login_pwd_TextInputLayout"
         android:layout_width="0dp"
@@ -98,16 +116,25 @@
         android:id="@+id/login_enter_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="登陆"
+        android:layout_marginTop="58dp"
+        android:background="@drawable/login_button_shape"
+        android:text="密码登陆"
         android:textColor="#ffffff"
         android:textSize="19sp"
-        android:layout_marginTop="32dp"
-        android:background="@drawable/login_button_shape"
-
         app:layout_constraintEnd_toEndOf="@+id/login_pwd_TextInputLayout"
         app:layout_constraintStart_toStartOf="@+id/login_pwd_TextInputLayout"
         app:layout_constraintTop_toBottomOf="@+id/login_pwd_TextInputLayout" />
 
+    <TextView
+        android:id="@+id/login_join_app"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="@dimen/margin_16dp"
+        android:textColor="#00dbc3"
+        android:text="手机注册"
+        app:layout_constraintEnd_toEndOf="@+id/login_pwd_TextInputLayout"
+        app:layout_constraintTop_toBottomOf="@+id/login_pwd_TextInputLayout" />
     <TextView
         android:id="@+id/login_yzm_text"
         android:layout_width="wrap_content"

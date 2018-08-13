@@ -1,7 +1,9 @@
 package renchaigao.com.zujuba.Activity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +14,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -39,6 +42,7 @@ public class StartActivity extends AppCompatActivity {
 
     private final String TAG = "StartActivity";
     private boolean hasGo = false;
+    private String dataJsonString = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,63 +52,68 @@ public class StartActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.hide();
         }
-        autoLogin();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(4000);       //此界面沉睡5秒
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                if (!hasGo) {//hasGo为false说明还没有离开当前界面，说明后面的登录请求还没有返回响应；这种情况下就通过条件内代码启动login活动；
-                    hasGo = true;
-                    Intent intent = new Intent(StartActivity.this, LoginActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
-            }
-        }).start();
-    }
-
-    public void autoLogin() {
-        try {
-            SharedPreferences pref = getSharedPreferences("userData", MODE_PRIVATE);
-            String dataJsonString = pref.getString("responseJsonDataString", null);
-            JSONObject jsonObject = JSONObject.parseObject(dataJsonString);
-            if (null != jsonObject)
-                addUser(jsonObject, "auto");
-        } catch (Exception e) {
-            Log.e(TAG, e.toString());
+        SharedPreferences pref = getSharedPreferences("userData", MODE_PRIVATE);
+        dataJsonString = pref.getString("user", null);
+        if (null != dataJsonString)
+            sendAutoLogin();
+        else {
+            Intent intent = new Intent(StartActivity.this, LoginActivity.class);
+            startActivity(intent);
+            finish();
         }
     }
 
-    private void addUser(final JSONObject jsonObject, final String mode) {
-        new Thread(new Runnable() {
+    @SuppressLint("StaticFieldLeak")
+    private void sendAutoLogin() {
+        new AsyncTask<Void, Void, Void>() {
             @Override
-            public void run() {
-                String path = PropertiesConfig.testServerUrl + "user/add/" + mode;
-                OkHttpClient.Builder builder = new OkHttpClient.Builder();
-                OkhttpFunc okhttpFunc = new OkhttpFunc();
-                builder.sslSocketFactory(okhttpFunc.createSSLSocketFactory());
+            protected void onPreExecute() {
+                super.onPreExecute();
+            }
+
+            @Override
+            protected void onCancelled() {
+                super.onCancelled();
+            }
+
+            @Override
+            protected void onCancelled(Void aVoid) {
+                super.onCancelled(aVoid);
+            }
+
+            @Override
+            protected void onProgressUpdate(Void... values) {
+                super.onProgressUpdate(values);
+            }
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                String path = PropertiesConfig.testServerUrl + "user/login/auto/0";
+                OkHttpClient.Builder builder = new OkHttpClient.Builder()
+                        .connectTimeout(15, TimeUnit.SECONDS)
+                        .readTimeout(15, TimeUnit.SECONDS)
+                        .writeTimeout(15, TimeUnit.SECONDS)
+                        .retryOnConnectionFailure(true);
+                builder.sslSocketFactory(OkhttpFunc.createSSLSocketFactory());
                 builder.hostnameVerifier(new HostnameVerifier() {
                     @Override
                     public boolean verify(String hostname, SSLSession session) {
                         return true;
                     }
                 });
-                String jsonStr = jsonObject.toString();
-                final RequestBody body = RequestBody.create(FinalDefine.MEDIA_TYPE_JSON, jsonStr);
+                final RequestBody body = RequestBody.create(FinalDefine.MEDIA_TYPE_JSON, dataJsonString);
                 final Request request = new Request.Builder()
                         .url(path)
                         .header("Content-Type", "application/json")
                         .post(body)
                         .build();
-
                 builder.build().newCall(request).enqueue(new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
                         Log.e(TAG, call.request().body().toString());
+                        Intent intent = new Intent(StartActivity.this, LoginActivity.class);
+                        startActivity(intent);
+                        finish();
                     }
 
                     @Override
@@ -117,22 +126,19 @@ public class StartActivity extends AppCompatActivity {
                             SharedPreferences.Editor editor;
                             Intent intent;
                             switch (code) {
-                                case 1: //在数据库中更新用户数据出错；
-                                    Toast.makeText(StartActivity.this, "在数据库中更新用户数据出错", Toast.LENGTH_LONG).show();
-                                    break;
-                                case 1002: //用户是存在的，更新数据成功；
+                                case 0: //用户是存在的，更新数据成功；
                                     //将token信息保存至本地
                                     token = responseJsonData.get("token").toString();
                                     editor = getSharedPreferences("userData", MODE_PRIVATE).edit();
                                     editor.putString("token", token);
-                                    editor.putString("responseJsonDataString", responseJsonData.toJSONString());
+                                    editor.putString("user", responseJsonData.toJSONString());
                                     editor.apply();
-                                    if (!hasGo) {//程序执行到这一步说明返回的数据已经回来，
-                                        hasGo = true;
-                                        intent = new Intent(StartActivity.this, MainActivity.class);
-                                        startActivity(intent);
-                                        finish();
-                                    }
+                                    intent = new Intent(StartActivity.this, AdvertisingActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                    break;
+                                case 1: //在数据库中更新用户数据出错；
+                                    Toast.makeText(StartActivity.this, "在数据库中更新用户数据出错", Toast.LENGTH_LONG).show();
                                     break;
                                 case -1003: //用户是存在的，本地的TOKEN超时，需要重新登录；
                                     Toast.makeText(StartActivity.this, "本地的TOKEN超时，需要重新登录", Toast.LENGTH_LONG).show();
@@ -140,13 +146,94 @@ public class StartActivity extends AppCompatActivity {
                                 case -1004: //用户是存在的，本地的TOKEN错误；
                                     Toast.makeText(StartActivity.this, "本地的TOKEN错误", Toast.LENGTH_LONG).show();
                                     break;
+                                case -1005: //生成token错误；
+                                    Toast.makeText(StartActivity.this, "生成TOKEN错误", Toast.LENGTH_LONG).show();
+                                    break;
                             }
                         } catch (Exception e) {
                             Log.e(TAG, e.toString());
                         }
+                        Intent intent = new Intent(StartActivity.this, LoginActivity.class);
+                        startActivity(intent);
+                        finish();
                     }
                 });
+                return null;
             }
-        }).start();
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                Log.e(TAG, "onPostExecute");
+            }
+        }.execute();
     }
+//    private void addUser(final String dataJsonString) {
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                String path = PropertiesConfig.testServerUrl + "user/login/auto/0";
+//                OkHttpClient.Builder builder = new OkHttpClient.Builder();
+//                OkhttpFunc okhttpFunc = new OkhttpFunc();
+//                builder.sslSocketFactory(okhttpFunc.createSSLSocketFactory());
+//                builder.hostnameVerifier(new HostnameVerifier() {
+//                    @Override
+//                    public boolean verify(String hostname, SSLSession session) {
+//                        return true;
+//                    }
+//                });
+//                final RequestBody body = RequestBody.create(FinalDefine.MEDIA_TYPE_JSON, dataJsonString);
+//                final Request request = new Request.Builder()
+//                        .url(path)
+//                        .header("Content-Type", "application/json")
+//                        .post(body)
+//                        .build();
+//                builder.build().newCall(request).enqueue(new Callback() {
+//                    @Override
+//                    public void onFailure(Call call, IOException e) {
+//                        Log.e(TAG, call.request().body().toString());
+//                    }
+//
+//                    @Override
+//                    public void onResponse(Call call, Response response) throws IOException {
+//                        try {
+//                            JSONObject responseJson = JSONObject.parseObject(response.body().string());
+//                            int code = Integer.valueOf(responseJson.get("code").toString());
+//                            JSONObject responseJsonData = (JSONObject) responseJson.getJSONObject("data");
+//                            String token;
+//                            SharedPreferences.Editor editor;
+//                            Intent intent;
+//                            switch (code) {
+//                                case 1: //在数据库中更新用户数据出错；
+//                                    Toast.makeText(StartActivity.this, "在数据库中更新用户数据出错", Toast.LENGTH_LONG).show();
+//                                    break;
+//                                case 1002: //用户是存在的，更新数据成功；
+//                                    //将token信息保存至本地
+//                                    token = responseJsonData.get("token").toString();
+//                                    editor = getSharedPreferences("userData", MODE_PRIVATE).edit();
+//                                    editor.putString("token", token);
+//                                    editor.putString("responseJsonDataString", responseJsonData.toJSONString());
+//                                    editor.apply();
+//                                    if (!hasGo) {//程序执行到这一步说明返回的数据已经回来，
+//                                        hasGo = true;
+//                                        intent = new Intent(StartActivity.this, MainActivity.class);
+//                                        startActivity(intent);
+//                                        finish();
+//                                    }
+//                                    break;
+//                                case -1003: //用户是存在的，本地的TOKEN超时，需要重新登录；
+//                                    Toast.makeText(StartActivity.this, "本地的TOKEN超时，需要重新登录", Toast.LENGTH_LONG).show();
+//                                    break;
+//                                case -1004: //用户是存在的，本地的TOKEN错误；
+//                                    Toast.makeText(StartActivity.this, "本地的TOKEN错误", Toast.LENGTH_LONG).show();
+//                                    break;
+//                            }
+//                        } catch (Exception e) {
+//                            Log.e(TAG, e.toString());
+//                        }
+//                    }
+//                });
+//            }
+//        }).start();
+//    }
 }

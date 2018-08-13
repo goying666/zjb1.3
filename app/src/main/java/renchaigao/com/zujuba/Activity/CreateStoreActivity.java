@@ -9,7 +9,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
@@ -30,12 +29,12 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
+import com.renchaigao.zujuba.dao.User;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,7 +50,6 @@ import javax.net.ssl.X509TrustManager;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.FormBody;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -66,8 +64,8 @@ import renchaigao.com.zujuba.util.PatternUtil;
 import renchaigao.com.zujuba.util.PictureRAR;
 import renchaigao.com.zujuba.util.PropertiesConfig;
 
-public class BusinessActivity extends AppCompatActivity {
-    private String TAG = "This is BusinessActivity ";
+public class CreateStoreActivity extends AppCompatActivity {
+    private String TAG = "This is CreateStoreActivity ";
     private TextView business_join_introduce_addres_name, business_join_introduce_time_textView_number, business_join_introduce_time_textView_title_note;
     private LinearLayout linearLayout_part1, linearLayout_part2, linearLayout_part3, linearLayout_part4, business_join_introduce_part5;
     private Button business_join_introduce_button_next, business_join_basic_button_next, business_join_detail_button_back,
@@ -95,7 +93,6 @@ public class BusinessActivity extends AppCompatActivity {
 
     }
 
-
     public static final int PHOTO_1 = 1001;
     public static final int PHOTO_2 = 1002;
     public static final int PHOTO_3 = 1003;
@@ -119,8 +116,11 @@ public class BusinessActivity extends AppCompatActivity {
     private Uri imageUri;
 
     private Store store = new Store();
+    
+
 
     private void initView() {
+
         store = new Store();
         store.setWorkingtimeid(0x0);
         store.setHardware(0x0);
@@ -200,14 +200,14 @@ public class BusinessActivity extends AppCompatActivity {
         business_join_introduce_addres_name.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(BusinessActivity.this, MapBusinessActivity.class);
+                Intent intent = new Intent(CreateStoreActivity.this, MapBusinessActivity.class);
                 startActivityForResult(intent, ADD_ADDRESS);
             }
         });
         business_join_introduce_addres_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(BusinessActivity.this, MapBusinessActivity.class);
+                Intent intent = new Intent(CreateStoreActivity.this, MapBusinessActivity.class);
                 startActivityForResult(intent, ADD_ADDRESS);
             }
         });
@@ -584,7 +584,7 @@ public class BusinessActivity extends AppCompatActivity {
                 if (checkMapPart())
                     setLinearLayoutVisibile(5);
                 else
-                    Toast.makeText(BusinessActivity.this, "请完善所有图片", Toast.LENGTH_LONG).show();
+                    Toast.makeText(CreateStoreActivity.this, "请完善所有图片", Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -601,7 +601,7 @@ public class BusinessActivity extends AppCompatActivity {
 
     //          所有信息展示部分
     private void initFinishPart() {
-        progDialog = new ProgressDialog(BusinessActivity.this);
+        progDialog = new ProgressDialog(CreateStoreActivity.this);
         progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progDialog.setIndeterminate(false);
         progDialog.setCancelable(true);
@@ -613,7 +613,7 @@ public class BusinessActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 sendStoresAddInfo();
-                Toast.makeText(BusinessActivity.this, "你点击了确定发送", Toast.LENGTH_LONG).show();
+                Toast.makeText(CreateStoreActivity.this, "你点击了确定发送", Toast.LENGTH_LONG).show();
             }
         });
         business_join_introduce_part5 = findViewById(R.id.business_join_introduce_part5);
@@ -725,7 +725,7 @@ public class BusinessActivity extends AppCompatActivity {
                 RequestBody fileBodyPhoto6 = RequestBody.create(FinalDefine.MEDIA_TYPE_JPG, photo6);
                 RequestBody fileBodyPhoto7 = RequestBody.create(FinalDefine.MEDIA_TYPE_JPG, photo7);
 
-                store.setOwnerid(DataUtil.getUserData(BusinessActivity.this).getId());
+                store.setOwnerid(DataUtil.getUserData(CreateStoreActivity.this).getId());
                 String storeString = JSONObject.toJSONString(store);
                 RequestBody jsonBody = RequestBody.create(FinalDefine.MEDIA_TYPE_JSON, storeString);
 
@@ -806,7 +806,7 @@ public class BusinessActivity extends AppCompatActivity {
                                 finish();
                                 break;
                             case 1:
-                                Toast.makeText(BusinessActivity.this, "Throw an exception", Toast.LENGTH_LONG).show();
+                                Toast.makeText(CreateStoreActivity.this, "Throw an exception", Toast.LENGTH_LONG).show();
                                 dismissDialog();
                                 break;
                         }
@@ -860,7 +860,7 @@ public class BusinessActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT < 24) {
             imageUri = Uri.fromFile(outputImage);
         } else {
-            imageUri = FileProvider.getUriForFile(BusinessActivity.this, "com.example.cameraalbumtest.fileprovider", outputImage);
+            imageUri = FileProvider.getUriForFile(CreateStoreActivity.this, "com.example.cameraalbumtest.fileprovider", outputImage);
         }
         // 启动相机程序
         Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
