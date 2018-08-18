@@ -1,4 +1,4 @@
-package renchaigao.com.zujuba.Json;
+package renchaigao.com.zujuba.widgets;
 
 import android.support.constraint.ConstraintLayout;
 import android.widget.TextView;
@@ -11,7 +11,7 @@ import lombok.Setter;
  */
 @Setter
 @Getter
-public class date_week_select {
+public class WidgetDateAndWeekSelect {
     private ConstraintLayout constraint;
     private TextView date_textView;
     private TextView week_textView;

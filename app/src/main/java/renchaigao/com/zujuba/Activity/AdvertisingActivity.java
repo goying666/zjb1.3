@@ -5,11 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -33,10 +32,12 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import renchaigao.com.zujuba.Data.dao.User;
-import renchaigao.com.zujuba.Data.info.user.UserInfo;
-import renchaigao.com.zujuba.Fragment.HallFragment;
+
+import com.renchaigao.zujuba.dao.User;
+import com.renchaigao.zujuba.mongoDB.info.user.UserInfo;
+
 import renchaigao.com.zujuba.R;
+import renchaigao.com.zujuba.util.DataPart.DataUtil;
 import renchaigao.com.zujuba.util.FinalDefine;
 import renchaigao.com.zujuba.util.OkhttpFunc;
 import renchaigao.com.zujuba.util.PropertiesConfig;
@@ -45,6 +46,7 @@ public class AdvertisingActivity extends AppCompatActivity implements OnBannerLi
     final static String TAG = "AdvertisingActivity";
     private User userApp;
     private String userString;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,12 +59,7 @@ public class AdvertisingActivity extends AppCompatActivity implements OnBannerLi
         SharedPreferences pref = getSharedPreferences("userData", MODE_PRIVATE);
         userString = pref.getString("user", null);
 //        userApp = JSONObject.parseObject(userString,User.class);
-        getUserInfo();
-        try {
-            Thread.sleep(7000);       //此界面沉睡5秒
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
 
     }
 
@@ -70,6 +67,7 @@ public class AdvertisingActivity extends AppCompatActivity implements OnBannerLi
     private Banner banner;
     private ArrayList<String> list_path;
     private ArrayList<String> list_title;
+
     //自定义的图片加载器
     private class MyLoader extends ImageLoader {
         @Override
@@ -77,6 +75,7 @@ public class AdvertisingActivity extends AppCompatActivity implements OnBannerLi
             Glide.with(context).load((String) path).into(imageView);
         }
     }
+
     private void setBanner() {
         banner = findViewById(R.id.adver_banner);
         //放图片地址的集合
@@ -114,6 +113,16 @@ public class AdvertisingActivity extends AppCompatActivity implements OnBannerLi
                 .start();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        getUserInfo();
+        try {
+            Thread.sleep(2000);       //此界面沉睡5秒
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
     @SuppressLint("StaticFieldLeak")
     private void getUserInfo() {
@@ -140,7 +149,7 @@ public class AdvertisingActivity extends AppCompatActivity implements OnBannerLi
 
             @Override
             protected Void doInBackground(Void... params) {
-                String path = PropertiesConfig.testServerUrl + "user/info/get";
+                String path = PropertiesConfig.userServerUrl + "info/get";
                 OkHttpClient.Builder builder = new OkHttpClient.Builder();
                 OkhttpFunc okhttpFunc = new OkhttpFunc();
                 builder.sslSocketFactory(okhttpFunc.createSSLSocketFactory());
@@ -182,11 +191,8 @@ public class AdvertisingActivity extends AppCompatActivity implements OnBannerLi
                                     break;
                                 case 0://
                                     responseJsonData = (JSONObject) responseJson.getJSONObject("data");
-
                                     String userInfoString = JSONObject.toJSONString(responseJsonData);
-                                    editor = getSharedPreferences("userData", MODE_PRIVATE).edit();
-                                    editor.putString("userInfo", responseJsonData.toJSONString());
-                                    editor.apply();
+                                    DataUtil.saveUserInfoData(AdvertisingActivity.this, userInfoString);
                                     intent = new Intent(AdvertisingActivity.this, MainActivity.class);
                                     startActivity(intent);
                                     finish();

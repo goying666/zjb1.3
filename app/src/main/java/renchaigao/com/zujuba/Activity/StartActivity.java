@@ -5,22 +5,21 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
+import com.renchaigao.zujuba.domain.response.RespCode;
 
 import java.io.IOException;
-import java.security.SecureRandom;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -43,7 +42,17 @@ public class StartActivity extends AppCompatActivity {
     private final String TAG = "StartActivity";
     private boolean hasGo = false;
     private String dataJsonString = null;
+    // Handler内部类，它的引用在子线程中被使用，发送mesage，被handlerMesage方法接收
+    @SuppressLint("HandlerLeak")
+    private Handler handler = new Handler() {
 
+        public void handleMessage(Message msg) {
+            String str = (String) msg.obj;
+            Toast.makeText(StartActivity.this, str, Toast.LENGTH_SHORT).show();
+        }
+
+        ;
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,9 +97,9 @@ public class StartActivity extends AppCompatActivity {
 
             @Override
             protected Void doInBackground(Void... params) {
-                String path = PropertiesConfig.testServerUrl + "user/login/auto/0";
+                String path = PropertiesConfig.userServerUrl + "login/auto/0";
                 OkHttpClient.Builder builder = new OkHttpClient.Builder()
-                        .connectTimeout(15, TimeUnit.SECONDS)
+                        .connectTimeout(3, TimeUnit.SECONDS)
                         .readTimeout(15, TimeUnit.SECONDS)
                         .writeTimeout(15, TimeUnit.SECONDS)
                         .retryOnConnectionFailure(true);
@@ -101,6 +110,7 @@ public class StartActivity extends AppCompatActivity {
                         return true;
                     }
                 });
+                String str = dataJsonString;
                 final RequestBody body = RequestBody.create(FinalDefine.MEDIA_TYPE_JSON, dataJsonString);
                 final Request request = new Request.Builder()
                         .url(path)
@@ -125,6 +135,7 @@ public class StartActivity extends AppCompatActivity {
                             String token;
                             SharedPreferences.Editor editor;
                             Intent intent;
+                            Message msg = new Message();
                             switch (code) {
                                 case 0: //用户是存在的，更新数据成功；
                                     //将token信息保存至本地
@@ -135,27 +146,54 @@ public class StartActivity extends AppCompatActivity {
                                     editor.apply();
                                     intent = new Intent(StartActivity.this, AdvertisingActivity.class);
                                     startActivity(intent);
+                                    msg.obj = "登录成功";
+                                    // 把消息发送到主线程，在主线程里现实Toast
+                                    handler.sendMessage(msg);
                                     finish();
                                     break;
                                 case 1: //在数据库中更新用户数据出错；
-                                    Toast.makeText(StartActivity.this, "在数据库中更新用户数据出错", Toast.LENGTH_LONG).show();
+                                    intent = new Intent(StartActivity.this, LoginActivity.class);
+                                    startActivity(intent);
+                                    finish();
                                     break;
                                 case -1003: //用户是存在的，本地的TOKEN超时，需要重新登录；
-                                    Toast.makeText(StartActivity.this, "本地的TOKEN超时，需要重新登录", Toast.LENGTH_LONG).show();
+                                    intent = new Intent(StartActivity.this, LoginActivity.class);
+                                    startActivity(intent);
+                                    msg.obj = "token过期";
+                                    // 把消息发送到主线程，在主线程里现实Toast
+                                    handler.sendMessage(msg);
+                                    finish();
                                     break;
                                 case -1004: //用户是存在的，本地的TOKEN错误；
-                                    Toast.makeText(StartActivity.this, "本地的TOKEN错误", Toast.LENGTH_LONG).show();
+                                    intent = new Intent(StartActivity.this, LoginActivity.class);
+                                    startActivity(intent);
+                                    msg.obj = "token错误";
+                                    // 把消息发送到主线程，在主线程里现实Toast
+                                    handler.sendMessage(msg);
+                                    finish();
                                     break;
                                 case -1005: //生成token错误；
-                                    Toast.makeText(StartActivity.this, "生成TOKEN错误", Toast.LENGTH_LONG).show();
+                                    intent = new Intent(StartActivity.this, LoginActivity.class);
+                                    startActivity(intent);
+                                    msg.obj = "生成token错误";
+                                    // 把消息发送到主线程，在主线程里现实Toast
+                                    handler.sendMessage(msg);
+                                    finish();
                                     break;
+
+                                case -1010: //没有找到用户；
+                                    intent = new Intent(StartActivity.this, LoginActivity.class);
+                                    startActivity(intent);
+                                    msg.obj = "用户不存在，请确认手机号正确";
+                                    // 把消息发送到主线程，在主线程里现实Toast
+                                    handler.sendMessage(msg);
+                                    finish();
+                                    break;
+
                             }
                         } catch (Exception e) {
                             Log.e(TAG, e.toString());
                         }
-                        Intent intent = new Intent(StartActivity.this, LoginActivity.class);
-                        startActivity(intent);
-                        finish();
                     }
                 });
                 return null;

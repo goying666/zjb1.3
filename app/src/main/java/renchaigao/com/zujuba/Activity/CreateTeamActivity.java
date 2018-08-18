@@ -31,13 +31,14 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.bumptech.glide.Glide;
+import com.renchaigao.zujuba.dao.Address;
+import com.renchaigao.zujuba.mongoDB.info.AddressInfo;
+import com.renchaigao.zujuba.mongoDB.info.team.TeamInfo;
+import com.renchaigao.zujuba.mongoDB.info.user.UserInfo;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -46,29 +47,20 @@ import javax.net.ssl.SSLSession;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import renchaigao.com.zujuba.Adapter.HallFragmentAdapter;
-import renchaigao.com.zujuba.Json.StoreInfo;
-import renchaigao.com.zujuba.Json.date_week_select;
-import renchaigao.com.zujuba.R;
-import renchaigao.com.zujuba.Json.Team;
-import renchaigao.com.zujuba.info.AddressInfo;
 import renchaigao.com.zujuba.info.FilterInfo;
-import renchaigao.com.zujuba.info.TeamInfo;
+import renchaigao.com.zujuba.util.DataPart.DataUtil;
+import renchaigao.com.zujuba.widgets.WidgetDateAndWeekSelect;
+import renchaigao.com.zujuba.R;
 import renchaigao.com.zujuba.util.CalendarUtil;
-import renchaigao.com.zujuba.util.DataUtil;
 import renchaigao.com.zujuba.util.FinalDefine;
 import renchaigao.com.zujuba.util.OkhttpFunc;
 import renchaigao.com.zujuba.util.PatternUtil;
-import renchaigao.com.zujuba.util.PictureRAR;
 import renchaigao.com.zujuba.util.PropertiesConfig;
 import renchaigao.com.zujuba.util.dateUse;
-
-import static renchaigao.com.zujuba.util.OkhttpFunc.createSSLSocketFactory;
 
 
 public class CreateTeamActivity extends AppCompatActivity {
@@ -115,155 +107,196 @@ public class CreateTeamActivity extends AppCompatActivity {
             create_team_address_constraintlayout,
             create_team_address_button_cons1,
             create_team_address_button_cons2;
-    private date_week_select
-            today_date_week_select,
-            tomorrow_date_week_select,
-            aftertom_date_week_select,
-            friday_date_week_select,
-            saturday_date_week_select,
-            sunday_date_week_select;
+    private WidgetDateAndWeekSelect
+            today_widgetDateAndWeekSelect,
+            tomorrow_widgetDateAndWeekSelect,
+            aftertom_widgetDateAndWeekSelect,
+            friday_widgetDateAndWeekSelect,
+            saturday_widgetDateAndWeekSelect,
+            sunday_widgetDateAndWeekSelect;
     private SeekBar people_min_select, people_max_select;
     private AppCompatSpinner create_team_game_class;
+
+    private ConstraintLayout create_team_game_lrs, create_team_game_thqby;
+    private TextView create_team_game_number_lrs, create_team_game_number_thqby, create_team_game_title;
+    private AppCompatCheckBox create_team_game_CheckBox_lrs, create_team_game_CheckBox_thqby;
+
+    private Integer gameNumber = 0;
     private TeamInfo teamInfo;
     private FilterInfo filterInfo;
     final static public int CREATE_TEAM_ADDRESS_STORE = 1;
     final static public int CREATE_TEAM_ADDRESS_OPEN_PLACE = 2;
-
+    private UserInfo userInfo;
     private String userId;
 
-    //      初始化日期相关默认选项
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_create_team);
+        initData();
+        setToolBar();
+        initDate();
+        initTime();
+        initPeople();
+        setAllClickListener();
+        initAddress();
+        setGame();
+        initExtraInfoPart();
+        setButton();
+//        Glide.with(CreateTeamActivity.this).load("http://ww4.sinaimg.cn/large/006uZZy8jw1faic2e7vsaj30ci08cglz.jpg").into(create_team_place_pic1);
+    }
+
+    //    初始化一些准备数据；
+    private void initData() {
+        userInfo = DataUtil.getUserInfoData(this);
+        userId = userInfo.getId();
+        teamInfo = new TeamInfo();
+        teamInfo.setCreaterId(userId);
+        teamInfo.setState("WAITING");
+        teamInfo.setCreaterStyle("STORE");
+
+        filterInfo = new FilterInfo();
+//        date选项部分，点击后是否打开
+        click_id_activity_create_team_datetime_image_more = true;
+//        time选项部分，点击后是否打开
+        click_id_activity_create_team_time_image_more = true;
+
+        nestedScrollView = findViewById(R.id.ct_nestedScrollView);
+    }
+
+    //    初始化日期相关默认选项
     private void initDate() {
 
         create_team_date_title = findViewById(R.id.create_team_date_title);
         id_activity_create_team_datetime_con = findViewById(R.id.id_activity_create_team_datetime_con);
         id_activity_create_team_datetime_image_more = findViewById(R.id.id_activity_create_team_datetime_image_more);
         id_activity_create_team_datetime_selectinfo = findViewById(R.id.id_activity_create_team_datetime_selectinfo);
-
         id_activity_create_team_datetime_selectinfo.setVisibility(View.GONE);
 //      默认设置今日日期
         textview_creat_team_date = findViewById(R.id.textview_creat_team_date);
 
 //        实例化各选项
-        today_date_week_select = new date_week_select();
-        tomorrow_date_week_select = new date_week_select();
-        aftertom_date_week_select = new date_week_select();
-        friday_date_week_select = new date_week_select();
-        saturday_date_week_select = new date_week_select();
-        sunday_date_week_select = new date_week_select();
+        today_widgetDateAndWeekSelect = new WidgetDateAndWeekSelect();
+        tomorrow_widgetDateAndWeekSelect = new WidgetDateAndWeekSelect();
+        aftertom_widgetDateAndWeekSelect = new WidgetDateAndWeekSelect();
+        friday_widgetDateAndWeekSelect = new WidgetDateAndWeekSelect();
+        saturday_widgetDateAndWeekSelect = new WidgetDateAndWeekSelect();
+        sunday_widgetDateAndWeekSelect = new WidgetDateAndWeekSelect();
 //        将后三天的总布局定位
-        today_date_week_select.setConstraint((ConstraintLayout) findViewById(R.id.id_activity_create_team_date_selectinfo_today));
-        tomorrow_date_week_select.setConstraint((ConstraintLayout) findViewById(R.id.id_activity_create_team_date_selectinfo_tomorrow));
-        aftertom_date_week_select.setConstraint((ConstraintLayout) findViewById(R.id.id_activity_create_team_date_selectinfo_aftowmor));
-        friday_date_week_select.setConstraint((ConstraintLayout) findViewById(R.id.id_activity_create_team_date_selectinfo_friday));
-        saturday_date_week_select.setConstraint((ConstraintLayout) findViewById(R.id.id_activity_create_team_date_selectinfo_saturday));
-        sunday_date_week_select.setConstraint((ConstraintLayout) findViewById(R.id.id_activity_create_team_date_selectinfo_sunday));
+        today_widgetDateAndWeekSelect.setConstraint((ConstraintLayout) findViewById(R.id.id_activity_create_team_date_selectinfo_today));
+        tomorrow_widgetDateAndWeekSelect.setConstraint((ConstraintLayout) findViewById(R.id.id_activity_create_team_date_selectinfo_tomorrow));
+        aftertom_widgetDateAndWeekSelect.setConstraint((ConstraintLayout) findViewById(R.id.id_activity_create_team_date_selectinfo_aftowmor));
+        friday_widgetDateAndWeekSelect.setConstraint((ConstraintLayout) findViewById(R.id.id_activity_create_team_date_selectinfo_friday));
+        saturday_widgetDateAndWeekSelect.setConstraint((ConstraintLayout) findViewById(R.id.id_activity_create_team_date_selectinfo_saturday));
+        sunday_widgetDateAndWeekSelect.setConstraint((ConstraintLayout) findViewById(R.id.id_activity_create_team_date_selectinfo_sunday));
 //        锁定各选项的date信息
-        today_date_week_select.setDate_textView((TextView) findViewById(R.id.id_activity_create_team_date_selectinfo_today_date));
-        tomorrow_date_week_select.setDate_textView((TextView) findViewById(R.id.id_activity_create_team_date_selectinfo_tomorrow_date));
-        aftertom_date_week_select.setDate_textView((TextView) findViewById(R.id.id_activity_create_team_date_selectinfo_aftowmor_date));
-        friday_date_week_select.setDate_textView((TextView) findViewById(R.id.id_activity_create_team_date_selectinfo_friday_date));
-        saturday_date_week_select.setDate_textView((TextView) findViewById(R.id.id_activity_create_team_date_selectinfo_saturday_date));
-        sunday_date_week_select.setDate_textView((TextView) findViewById(R.id.id_activity_create_team_date_selectinfo_sunday_date));
+        today_widgetDateAndWeekSelect.setDate_textView((TextView) findViewById(R.id.id_activity_create_team_date_selectinfo_today_date));
+        tomorrow_widgetDateAndWeekSelect.setDate_textView((TextView) findViewById(R.id.id_activity_create_team_date_selectinfo_tomorrow_date));
+        aftertom_widgetDateAndWeekSelect.setDate_textView((TextView) findViewById(R.id.id_activity_create_team_date_selectinfo_aftowmor_date));
+        friday_widgetDateAndWeekSelect.setDate_textView((TextView) findViewById(R.id.id_activity_create_team_date_selectinfo_friday_date));
+        saturday_widgetDateAndWeekSelect.setDate_textView((TextView) findViewById(R.id.id_activity_create_team_date_selectinfo_saturday_date));
+        sunday_widgetDateAndWeekSelect.setDate_textView((TextView) findViewById(R.id.id_activity_create_team_date_selectinfo_sunday_date));
 //        锁定各选项的week信息
-        today_date_week_select.setWeek_textView((TextView) findViewById(R.id.id_activity_create_team_date_selectinfo_today_week));
-        tomorrow_date_week_select.setWeek_textView((TextView) findViewById(R.id.id_activity_create_team_date_selectinfo_tomorrow_week));
-        aftertom_date_week_select.setWeek_textView((TextView) findViewById(R.id.id_activity_create_team_date_selectinfo_aftowmor_week));
-        friday_date_week_select.setWeek_textView((TextView) findViewById(R.id.id_activity_create_team_date_selectinfo_friday_week));
-        saturday_date_week_select.setWeek_textView((TextView) findViewById(R.id.id_activity_create_team_date_selectinfo_saturday_week));
-        sunday_date_week_select.setWeek_textView((TextView) findViewById(R.id.id_activity_create_team_date_selectinfo_sunday_week));
+        today_widgetDateAndWeekSelect.setWeek_textView((TextView) findViewById(R.id.id_activity_create_team_date_selectinfo_today_week));
+        tomorrow_widgetDateAndWeekSelect.setWeek_textView((TextView) findViewById(R.id.id_activity_create_team_date_selectinfo_tomorrow_week));
+        aftertom_widgetDateAndWeekSelect.setWeek_textView((TextView) findViewById(R.id.id_activity_create_team_date_selectinfo_aftowmor_week));
+        friday_widgetDateAndWeekSelect.setWeek_textView((TextView) findViewById(R.id.id_activity_create_team_date_selectinfo_friday_week));
+        saturday_widgetDateAndWeekSelect.setWeek_textView((TextView) findViewById(R.id.id_activity_create_team_date_selectinfo_saturday_week));
+        sunday_widgetDateAndWeekSelect.setWeek_textView((TextView) findViewById(R.id.id_activity_create_team_date_selectinfo_sunday_week));
 
 //        switch ("周六") {
         switch (CalendarUtil.getWeekOfDate(new Date())) {
             case "周一":
-                today_date_week_select.getDate_textView().setText(CalendarUtil.getCurrentDate());
-                today_date_week_select.getWeek_textView().setText("周一");
-                tomorrow_date_week_select.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 1));
-                tomorrow_date_week_select.getWeek_textView().setText("周二");
-                aftertom_date_week_select.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 2));
-                aftertom_date_week_select.getWeek_textView().setText("周三");
-                friday_date_week_select.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 4));
-                friday_date_week_select.getWeek_textView().setText("周五");
-                saturday_date_week_select.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 5));
-                saturday_date_week_select.getWeek_textView().setText("周六");
-                sunday_date_week_select.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 6));
-                sunday_date_week_select.getWeek_textView().setText("周日");
+                today_widgetDateAndWeekSelect.getDate_textView().setText(CalendarUtil.getCurrentDate());
+                today_widgetDateAndWeekSelect.getWeek_textView().setText("周一");
+                tomorrow_widgetDateAndWeekSelect.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 1));
+                tomorrow_widgetDateAndWeekSelect.getWeek_textView().setText("周二");
+                aftertom_widgetDateAndWeekSelect.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 2));
+                aftertom_widgetDateAndWeekSelect.getWeek_textView().setText("周三");
+                friday_widgetDateAndWeekSelect.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 4));
+                friday_widgetDateAndWeekSelect.getWeek_textView().setText("周五");
+                saturday_widgetDateAndWeekSelect.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 5));
+                saturday_widgetDateAndWeekSelect.getWeek_textView().setText("周六");
+                sunday_widgetDateAndWeekSelect.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 6));
+                sunday_widgetDateAndWeekSelect.getWeek_textView().setText("周日");
                 break;
             case "周二":
-                today_date_week_select.getDate_textView().setText(CalendarUtil.getCurrentDate());
-                today_date_week_select.getWeek_textView().setText("周二");
-                tomorrow_date_week_select.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 1));
-                tomorrow_date_week_select.getWeek_textView().setText("周三");
-                aftertom_date_week_select.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 2));
-                aftertom_date_week_select.getWeek_textView().setText("周四");
-                friday_date_week_select.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 3));
-                friday_date_week_select.getWeek_textView().setText("周五");
-                saturday_date_week_select.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 4));
-                saturday_date_week_select.getWeek_textView().setText("周六");
-                sunday_date_week_select.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 5));
-                sunday_date_week_select.getWeek_textView().setText("周日");
+                today_widgetDateAndWeekSelect.getDate_textView().setText(CalendarUtil.getCurrentDate());
+                today_widgetDateAndWeekSelect.getWeek_textView().setText("周二");
+                tomorrow_widgetDateAndWeekSelect.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 1));
+                tomorrow_widgetDateAndWeekSelect.getWeek_textView().setText("周三");
+                aftertom_widgetDateAndWeekSelect.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 2));
+                aftertom_widgetDateAndWeekSelect.getWeek_textView().setText("周四");
+                friday_widgetDateAndWeekSelect.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 3));
+                friday_widgetDateAndWeekSelect.getWeek_textView().setText("周五");
+                saturday_widgetDateAndWeekSelect.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 4));
+                saturday_widgetDateAndWeekSelect.getWeek_textView().setText("周六");
+                sunday_widgetDateAndWeekSelect.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 5));
+                sunday_widgetDateAndWeekSelect.getWeek_textView().setText("周日");
 
                 break;
             case "周三":
-                today_date_week_select.getDate_textView().setText(CalendarUtil.getCurrentDate());
-                today_date_week_select.getWeek_textView().setText("周三");
-                tomorrow_date_week_select.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 1));
-                tomorrow_date_week_select.getWeek_textView().setText("周四");
-                aftertom_date_week_select.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 2));
-                aftertom_date_week_select.getWeek_textView().setText("周五");
-                friday_date_week_select.getConstraint().setVisibility(View.GONE);
-                saturday_date_week_select.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 3));
-                saturday_date_week_select.getWeek_textView().setText("周六");
-                sunday_date_week_select.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 4));
-                sunday_date_week_select.getWeek_textView().setText("周日");
+                today_widgetDateAndWeekSelect.getDate_textView().setText(CalendarUtil.getCurrentDate());
+                today_widgetDateAndWeekSelect.getWeek_textView().setText("周三");
+                tomorrow_widgetDateAndWeekSelect.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 1));
+                tomorrow_widgetDateAndWeekSelect.getWeek_textView().setText("周四");
+                aftertom_widgetDateAndWeekSelect.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 2));
+                aftertom_widgetDateAndWeekSelect.getWeek_textView().setText("周五");
+                friday_widgetDateAndWeekSelect.getConstraint().setVisibility(View.GONE);
+                saturday_widgetDateAndWeekSelect.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 3));
+                saturday_widgetDateAndWeekSelect.getWeek_textView().setText("周六");
+                sunday_widgetDateAndWeekSelect.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 4));
+                sunday_widgetDateAndWeekSelect.getWeek_textView().setText("周日");
                 break;
             case "周四":
-                today_date_week_select.getDate_textView().setText(CalendarUtil.getCurrentDate());
-                today_date_week_select.getWeek_textView().setText("周四");
-                tomorrow_date_week_select.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 1));
-                tomorrow_date_week_select.getWeek_textView().setText("周五");
-                aftertom_date_week_select.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 2));
-                aftertom_date_week_select.getWeek_textView().setText("周六");
-                friday_date_week_select.getConstraint().setVisibility(View.GONE);
-                saturday_date_week_select.getConstraint().setVisibility(View.GONE);
-                sunday_date_week_select.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 3));
-                sunday_date_week_select.getWeek_textView().setText("周日");
+                today_widgetDateAndWeekSelect.getDate_textView().setText(CalendarUtil.getCurrentDate());
+                today_widgetDateAndWeekSelect.getWeek_textView().setText("周四");
+                tomorrow_widgetDateAndWeekSelect.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 1));
+                tomorrow_widgetDateAndWeekSelect.getWeek_textView().setText("周五");
+                aftertom_widgetDateAndWeekSelect.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 2));
+                aftertom_widgetDateAndWeekSelect.getWeek_textView().setText("周六");
+                friday_widgetDateAndWeekSelect.getConstraint().setVisibility(View.GONE);
+                saturday_widgetDateAndWeekSelect.getConstraint().setVisibility(View.GONE);
+                sunday_widgetDateAndWeekSelect.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 3));
+                sunday_widgetDateAndWeekSelect.getWeek_textView().setText("周日");
                 break;
             case "周五":
-                today_date_week_select.getDate_textView().setText(CalendarUtil.getCurrentDate());
-                today_date_week_select.getWeek_textView().setText("周五");
-                tomorrow_date_week_select.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 1));
-                tomorrow_date_week_select.getWeek_textView().setText("周六");
-                aftertom_date_week_select.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 2));
-                aftertom_date_week_select.getWeek_textView().setText("周日");
-                friday_date_week_select.getConstraint().setVisibility(View.GONE);
-                saturday_date_week_select.getConstraint().setVisibility(View.GONE);
-                sunday_date_week_select.getConstraint().setVisibility(View.GONE);
+                today_widgetDateAndWeekSelect.getDate_textView().setText(CalendarUtil.getCurrentDate());
+                today_widgetDateAndWeekSelect.getWeek_textView().setText("周五");
+                tomorrow_widgetDateAndWeekSelect.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 1));
+                tomorrow_widgetDateAndWeekSelect.getWeek_textView().setText("周六");
+                aftertom_widgetDateAndWeekSelect.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 2));
+                aftertom_widgetDateAndWeekSelect.getWeek_textView().setText("周日");
+                friday_widgetDateAndWeekSelect.getConstraint().setVisibility(View.GONE);
+                saturday_widgetDateAndWeekSelect.getConstraint().setVisibility(View.GONE);
+                sunday_widgetDateAndWeekSelect.getConstraint().setVisibility(View.GONE);
                 break;
             case "周六":
-                today_date_week_select.getDate_textView().setText(CalendarUtil.getCurrentDate());
-                today_date_week_select.getWeek_textView().setText("周六");
-                tomorrow_date_week_select.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 1));
-                tomorrow_date_week_select.getWeek_textView().setText("周日");
-                aftertom_date_week_select.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 2));
-                aftertom_date_week_select.getWeek_textView().setText("周一");
-                friday_date_week_select.getConstraint().setVisibility(View.GONE);
-                saturday_date_week_select.getConstraint().setVisibility(View.GONE);
-                sunday_date_week_select.getConstraint().setVisibility(View.GONE);
+                today_widgetDateAndWeekSelect.getDate_textView().setText(CalendarUtil.getCurrentDate());
+                today_widgetDateAndWeekSelect.getWeek_textView().setText("周六");
+                tomorrow_widgetDateAndWeekSelect.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 1));
+                tomorrow_widgetDateAndWeekSelect.getWeek_textView().setText("周日");
+                aftertom_widgetDateAndWeekSelect.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 2));
+                aftertom_widgetDateAndWeekSelect.getWeek_textView().setText("周一");
+                friday_widgetDateAndWeekSelect.getConstraint().setVisibility(View.GONE);
+                saturday_widgetDateAndWeekSelect.getConstraint().setVisibility(View.GONE);
+                sunday_widgetDateAndWeekSelect.getConstraint().setVisibility(View.GONE);
                 break;
             case "周日":
-                today_date_week_select.getDate_textView().setText(CalendarUtil.getCurrentDate());
-                today_date_week_select.getWeek_textView().setText("周日");
-                tomorrow_date_week_select.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 1));
-                tomorrow_date_week_select.getWeek_textView().setText("周一");
-                aftertom_date_week_select.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 2));
-                aftertom_date_week_select.getWeek_textView().setText("周二");
-                friday_date_week_select.getConstraint().setVisibility(View.GONE);
-                saturday_date_week_select.getConstraint().setVisibility(View.GONE);
-                sunday_date_week_select.getConstraint().setVisibility(View.GONE);
+                today_widgetDateAndWeekSelect.getDate_textView().setText(CalendarUtil.getCurrentDate());
+                today_widgetDateAndWeekSelect.getWeek_textView().setText("周日");
+                tomorrow_widgetDateAndWeekSelect.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 1));
+                tomorrow_widgetDateAndWeekSelect.getWeek_textView().setText("周一");
+                aftertom_widgetDateAndWeekSelect.getDate_textView().setText(CalendarUtil.getStringDateAfter(new Date(), 2));
+                aftertom_widgetDateAndWeekSelect.getWeek_textView().setText("周二");
+                friday_widgetDateAndWeekSelect.getConstraint().setVisibility(View.GONE);
+                saturday_widgetDateAndWeekSelect.getConstraint().setVisibility(View.GONE);
+                sunday_widgetDateAndWeekSelect.getConstraint().setVisibility(View.GONE);
                 break;
         }
     }
 
+    //    初始化时间段
     private void initTime() {
         id_activity_create_team_time_con = findViewById(R.id.id_activity_create_team_time_con);
         id_activity_create_team_time_selectinfo_morning = findViewById(R.id.id_activity_create_team_time_selectinfo_morning);
@@ -278,6 +311,7 @@ public class CreateTeamActivity extends AppCompatActivity {
         id_activity_create_team_time_image_more.setImageResource(R.drawable.more_down);
     }
 
+    //    初始化地点选项
     private void initAddress() {
         create_team_address_constraintlayout = findViewById(R.id.create_team_address_constraintlayout);
         team_create_address_info_layout = findViewById(R.id.team_create_address_info_layout);
@@ -327,18 +361,19 @@ public class CreateTeamActivity extends AppCompatActivity {
         });
     }
 
-    private SharedPreferences pref;
-    private String dataJsonString;
-    private JSONObject jsonObject;
+//    private SharedPreferences pref;
+//    private String dataJsonString;
+//    private JSONObject jsonObject;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case CREATE_TEAM_ADDRESS_STORE:
-                pref = getSharedPreferences("createTeamAddressInfo", MODE_PRIVATE);
-                dataJsonString = pref.getString("responseJsonDataString", null);
-                jsonObject = JSONObject.parseObject(dataJsonString);
+//                pref = getSharedPreferences("createTeamAddressInfo", MODE_PRIVATE);
+//                dataJsonString = pref.getString("responseJsonDataString", null);
+//                jsonObject = JSONObject.parseObject(dataJsonString);
+
 //                隐藏按键选项
                 create_team_address_button_cons1.setVisibility(View.GONE);
                 create_team_address_button_cons2.setVisibility(View.GONE);
@@ -346,14 +381,9 @@ public class CreateTeamActivity extends AppCompatActivity {
                 click_create_team_address_more = true;
 //                获取json内对应的store信息
 
-//                if(data.ge)
                 create_team_address_name.setText(data.getStringExtra("name"));
-
-                AddressInfo addressInfo = new AddressInfo();
-                addressInfo.setStoreInfo(data.getStringExtra("storeInfo"));
-                addressInfo.setAddClass("store");
+                AddressInfo addressInfo = JSONObject.parseObject(data.getStringExtra("address"), AddressInfo.class);
                 teamInfo.setAddressInfo(addressInfo);
-//                teamInfo.setAddressInfo(JSONObject.toJSONString(addressInfo));
 
                 Glide
                         .with(CreateTeamActivity.this)
@@ -369,12 +399,15 @@ public class CreateTeamActivity extends AppCompatActivity {
         }
     }
 
-    private ConstraintLayout create_team_game_lrs, create_team_game_thqby;
-    private TextView create_team_game_number_lrs, create_team_game_number_thqby, create_team_game_title;
-    private AppCompatCheckBox create_team_game_CheckBox_lrs, create_team_game_CheckBox_thqby;
 
-    private Integer gameNumber = 0;
+    private void setToolBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.hide();
+        }
+    }
 
+    //    游戏部分设置
     private void setGame() {
         create_team_game_title = findViewById(R.id.create_team_game_title);
         create_team_game_lrs = findViewById(R.id.create_team_game_lrs);
@@ -407,18 +440,18 @@ public class CreateTeamActivity extends AppCompatActivity {
                 create_team_game_title.setText("已选：" + gameNumber.toString() + "款");
             }
         });
-//        create_team_game_lrs.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//            }
-//        });
-//        create_team_game_thqby.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//            }
-//        });
+        create_team_game_lrs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        create_team_game_thqby.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
 //        create_team_game_class = findViewById(R.id.create_team_game_class);
 //        create_team_game_class.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 //            @Override
@@ -433,12 +466,6 @@ public class CreateTeamActivity extends AppCompatActivity {
 //        });
     }
 
-    private void setToolBar() {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.hide();
-        }
-    }
 
     private void initPeople() {
         ct_people_selectinfo_textview_value_min = findViewById(R.id.ct_people_selectinfo_textview_value_min);
@@ -507,6 +534,7 @@ public class CreateTeamActivity extends AppCompatActivity {
         id_activity_create_team_datetime_con.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //判断是否要折叠选项部分
                 if (click_id_activity_create_team_datetime_image_more) {
                     id_activity_create_team_datetime_image_more.setImageResource(R.drawable.more_up);
                     id_activity_create_team_datetime_selectinfo.setVisibility(View.VISIBLE);
@@ -575,107 +603,74 @@ public class CreateTeamActivity extends AppCompatActivity {
         });
 
 //        date
-        today_date_week_select.getConstraint().setOnClickListener(new View.OnClickListener() {
+        today_widgetDateAndWeekSelect.getConstraint().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                textview_creat_team_date.setText(today_date_week_select.getDate_textView().getText());
+                textview_creat_team_date.setText(today_widgetDateAndWeekSelect.getDate_textView().getText());
                 id_activity_create_team_datetime_image_more.setImageResource(R.drawable.more_down);
                 id_activity_create_team_datetime_selectinfo.setVisibility(View.GONE);
-                create_team_date_title.setText(today_date_week_select.getWeek_textView().getText());
+                create_team_date_title.setText(today_widgetDateAndWeekSelect.getWeek_textView().getText());
                 click_id_activity_create_team_datetime_image_more = true;
-                Toast.makeText(CreateTeamActivity.this, "日期设置成功：" + today_date_week_select.getDate_textView().getText(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(CreateTeamActivity.this, "日期设置成功：" + today_widgetDateAndWeekSelect.getDate_textView().getText(), Toast.LENGTH_SHORT).show();
             }
         });
-        tomorrow_date_week_select.getConstraint().setOnClickListener(new View.OnClickListener() {
+        tomorrow_widgetDateAndWeekSelect.getConstraint().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                textview_creat_team_date.setText(tomorrow_date_week_select.getDate_textView().getText());
+                textview_creat_team_date.setText(tomorrow_widgetDateAndWeekSelect.getDate_textView().getText());
                 id_activity_create_team_datetime_image_more.setImageResource(R.drawable.more_down);
                 id_activity_create_team_datetime_selectinfo.setVisibility(View.GONE);
-                create_team_date_title.setText(tomorrow_date_week_select.getWeek_textView().getText());
+                create_team_date_title.setText(tomorrow_widgetDateAndWeekSelect.getWeek_textView().getText());
                 click_id_activity_create_team_datetime_image_more = true;
-                Toast.makeText(CreateTeamActivity.this, "日期设置成功：" + tomorrow_date_week_select.getDate_textView().getText(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(CreateTeamActivity.this, "日期设置成功：" + tomorrow_widgetDateAndWeekSelect.getDate_textView().getText(), Toast.LENGTH_SHORT).show();
             }
         });
-        aftertom_date_week_select.getConstraint().setOnClickListener(new View.OnClickListener() {
+        aftertom_widgetDateAndWeekSelect.getConstraint().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                textview_creat_team_date.setText(aftertom_date_week_select.getDate_textView().getText());
+                textview_creat_team_date.setText(aftertom_widgetDateAndWeekSelect.getDate_textView().getText());
                 id_activity_create_team_datetime_image_more.setImageResource(R.drawable.more_down);
                 id_activity_create_team_datetime_selectinfo.setVisibility(View.GONE);
-                create_team_date_title.setText(aftertom_date_week_select.getWeek_textView().getText());
+                create_team_date_title.setText(aftertom_widgetDateAndWeekSelect.getWeek_textView().getText());
                 click_id_activity_create_team_datetime_image_more = true;
-                Toast.makeText(CreateTeamActivity.this, "日期设置成功：" + aftertom_date_week_select.getDate_textView().getText(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(CreateTeamActivity.this, "日期设置成功：" + aftertom_widgetDateAndWeekSelect.getDate_textView().getText(), Toast.LENGTH_SHORT).show();
             }
         });
-        friday_date_week_select.getConstraint().setOnClickListener(new View.OnClickListener() {
+        friday_widgetDateAndWeekSelect.getConstraint().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                textview_creat_team_date.setText(friday_date_week_select.getDate_textView().getText());
+                textview_creat_team_date.setText(friday_widgetDateAndWeekSelect.getDate_textView().getText());
                 id_activity_create_team_datetime_image_more.setImageResource(R.drawable.more_down);
                 id_activity_create_team_datetime_selectinfo.setVisibility(View.GONE);
-                create_team_date_title.setText(friday_date_week_select.getWeek_textView().getText());
+                create_team_date_title.setText(friday_widgetDateAndWeekSelect.getWeek_textView().getText());
                 click_id_activity_create_team_datetime_image_more = true;
-                Toast.makeText(CreateTeamActivity.this, "日期设置成功：" + friday_date_week_select.getDate_textView().getText(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(CreateTeamActivity.this, "日期设置成功：" + friday_widgetDateAndWeekSelect.getDate_textView().getText(), Toast.LENGTH_SHORT).show();
             }
         });
-        saturday_date_week_select.getConstraint().setOnClickListener(new View.OnClickListener() {
+        saturday_widgetDateAndWeekSelect.getConstraint().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                textview_creat_team_date.setText(saturday_date_week_select.getDate_textView().getText());
+                textview_creat_team_date.setText(saturday_widgetDateAndWeekSelect.getDate_textView().getText());
                 id_activity_create_team_datetime_image_more.setImageResource(R.drawable.more_down);
                 id_activity_create_team_datetime_selectinfo.setVisibility(View.GONE);
-                create_team_date_title.setText(saturday_date_week_select.getWeek_textView().getText());
+                create_team_date_title.setText(saturday_widgetDateAndWeekSelect.getWeek_textView().getText());
                 click_id_activity_create_team_datetime_image_more = true;
-                Toast.makeText(CreateTeamActivity.this, "日期设置成功：" + saturday_date_week_select.getDate_textView().getText(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(CreateTeamActivity.this, "日期设置成功：" + saturday_widgetDateAndWeekSelect.getDate_textView().getText(), Toast.LENGTH_SHORT).show();
             }
         });
-        sunday_date_week_select.getConstraint().setOnClickListener(new View.OnClickListener() {
+        sunday_widgetDateAndWeekSelect.getConstraint().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                textview_creat_team_date.setText(sunday_date_week_select.getDate_textView().getText());
+                textview_creat_team_date.setText(sunday_widgetDateAndWeekSelect.getDate_textView().getText());
                 id_activity_create_team_datetime_image_more.setImageResource(R.drawable.more_down);
                 id_activity_create_team_datetime_selectinfo.setVisibility(View.GONE);
-                create_team_date_title.setText(sunday_date_week_select.getWeek_textView().getText());
+                create_team_date_title.setText(sunday_widgetDateAndWeekSelect.getWeek_textView().getText());
                 click_id_activity_create_team_datetime_image_more = true;
-                Toast.makeText(CreateTeamActivity.this, "日期设置成功：" + sunday_date_week_select.getDate_textView().getText(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(CreateTeamActivity.this, "日期设置成功：" + sunday_widgetDateAndWeekSelect.getDate_textView().getText(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void initData(){;
-
-        teamInfo = new TeamInfo();
-        filterInfo = new FilterInfo();
-//        date选项部分，点击后是否打开
-        click_id_activity_create_team_datetime_image_more = true;
-//        time选项部分，点击后是否打开
-        click_id_activity_create_team_time_image_more = true;
-
-        nestedScrollView = findViewById(R.id.ct_nestedScrollView);
-
-        pref = getSharedPreferences("userData", MODE_PRIVATE);
-        dataJsonString = pref.getString("responseJsonDataString", null);
-        jsonObject = JSONObject.parseObject(dataJsonString);
-        userId = jsonObject.get("id").toString();
-        teamInfo.setCreaterId(Integer.valueOf(userId));
-    }
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_team);
-        initData();
-        setToolBar();
-        initDate();
-        initTime();
-        initPeople();
-        setAllClickListener();
-        initAddress();
-        setGame();
-        initExtraInfoPart();
-        setButton();
-//        Glide.with(CreateTeamActivity.this).load("http://ww4.sinaimg.cn/large/006uZZy8jw1faic2e7vsaj30ci08cglz.jpg").into(create_team_place_pic1);
-    }
 
     private void initExtraInfoPart() {
         setSecretPart();
@@ -753,7 +748,12 @@ public class CreateTeamActivity extends AppCompatActivity {
     private boolean filterClickFlag;
 
     private void setFilterPart() {
-        filter1=null;filter2=null;filter3=null;filter4=null;filter5=null;filter6=null;
+        filter1 = null;
+        filter2 = null;
+        filter3 = null;
+        filter4 = null;
+        filter5 = null;
+        filter6 = null;
         filterClickFlag = true;
         filter_all_ConstrainLayout = findViewById(R.id.filter_all_ConstrainLayout);
         filter_all_layout = findViewById(R.id.filter_all_layout);
@@ -771,6 +771,7 @@ public class CreateTeamActivity extends AppCompatActivity {
         switch_join_team_spinner_4 = findViewById(R.id.switch_join_team_spinner_4);
         switch_join_team_spinner_5 = findViewById(R.id.switch_join_team_spinner_5);
         switch_join_team_spinner_6 = findViewById(R.id.switch_join_team_spinner_6);
+
         filter_all_ConstrainLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -790,13 +791,12 @@ public class CreateTeamActivity extends AppCompatActivity {
                 if (isChecked) {
                     filterNum++;
                     switch_join_team_spinner_1.setVisibility(View.VISIBLE);
-                    filterInfo.setIntegrityScore(filter1);
+                    teamInfo.getTeamFilterInfo().setIntegrityScore(filter1);
                 } else {
                     filterNum--;
                     switch_join_team_spinner_1.setVisibility(View.GONE);
-                    filterInfo.setIntegrityScore(null);
+                    teamInfo.getTeamFilterInfo().setIntegrityScore(null);
                 }
-                teamInfo.setFilterInfo(filterInfo);
                 ct_filter_title_text.setText("已选" + filterNum.toString() + "项筛选");
             }
         });
@@ -806,13 +806,13 @@ public class CreateTeamActivity extends AppCompatActivity {
                 if (isChecked) {
                     filterNum++;
                     switch_join_team_spinner_2.setVisibility(View.VISIBLE);
-                    filterInfo.setSexRatio(filter2);
+                    teamInfo.getTeamFilterInfo().setSexRatio(filter2);
                 } else {
                     filterNum--;
                     switch_join_team_spinner_2.setVisibility(View.GONE);
-                    filterInfo.setSexRatio(null);
+                    teamInfo.getTeamFilterInfo().setSexRatio(null);
                 }
-                teamInfo.setFilterInfo(filterInfo);
+
                 ct_filter_title_text.setText("已选" + filterNum.toString() + "项筛选");
             }
         });
@@ -822,13 +822,13 @@ public class CreateTeamActivity extends AppCompatActivity {
                 if (isChecked) {
                     filterNum++;
                     switch_join_team_spinner_3.setVisibility(View.VISIBLE);
-                    filterInfo.setSexRatio(filter3);
+                    teamInfo.getTeamFilterInfo().setSexRatio(filter3);
                 } else {
                     filterNum--;
                     switch_join_team_spinner_3.setVisibility(View.GONE);
-                    filterInfo.setSexRatio(null);
+                    teamInfo.getTeamFilterInfo().setSexRatio(null);
                 }
-                teamInfo.setFilterInfo(filterInfo);
+
                 ct_filter_title_text.setText("已选" + filterNum.toString() + "项筛选");
             }
         });
@@ -838,13 +838,13 @@ public class CreateTeamActivity extends AppCompatActivity {
                 if (isChecked) {
                     filterNum++;
                     switch_join_team_spinner_4.setVisibility(View.VISIBLE);
-                    filterInfo.setAgeScreening(filter4);
+                    teamInfo.getTeamFilterInfo().setAgeScreening(filter4);
                 } else {
                     filterNum--;
                     switch_join_team_spinner_4.setVisibility(View.GONE);
-                    filterInfo.setAgeScreening(null);
+                    teamInfo.getTeamFilterInfo().setAgeScreening(null);
                 }
-                teamInfo.setFilterInfo(filterInfo);
+
                 ct_filter_title_text.setText("已选" + filterNum.toString() + "项筛选");
             }
         });
@@ -854,13 +854,13 @@ public class CreateTeamActivity extends AppCompatActivity {
                 if (isChecked) {
                     filterNum++;
                     switch_join_team_spinner_5.setVisibility(View.VISIBLE);
-                    filterInfo.setEvaluationScreening(filter5);
+                    teamInfo.getTeamFilterInfo().setEvaluationScreening(filter5);
                 } else {
                     filterNum--;
                     switch_join_team_spinner_5.setVisibility(View.GONE);
-                    filterInfo.setEvaluationScreening(null);
+                    teamInfo.getTeamFilterInfo().setEvaluationScreening(null);
                 }
-                teamInfo.setFilterInfo(filterInfo);
+
                 ct_filter_title_text.setText("已选" + filterNum.toString() + "项筛选");
             }
         });
@@ -870,13 +870,13 @@ public class CreateTeamActivity extends AppCompatActivity {
                 if (isChecked) {
                     filterNum++;
                     switch_join_team_spinner_6.setVisibility(View.VISIBLE);
-                    filterInfo.setMarriage(filter6);
+                    teamInfo.getTeamFilterInfo().setMarriage(filter6);
                 } else {
                     filterNum--;
                     switch_join_team_spinner_6.setVisibility(View.GONE);
-                    filterInfo.setMarriage(null);
+                    teamInfo.getTeamFilterInfo().setMarriage(null);
                 }
-                teamInfo.setFilterInfo(filterInfo);
+
                 ct_filter_title_text.setText("已选" + filterNum.toString() + "项筛选");
             }
         });
@@ -884,83 +884,84 @@ public class CreateTeamActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 filter1 = getResources().getStringArray(R.array.compare_number_array)[position];
-                filterInfo.setIntegrityScore(filter1);
+                teamInfo.getTeamFilterInfo().setIntegrityScore(filter1);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 filter1 = null;
-                filterInfo.setIntegrityScore(null);
+                teamInfo.getTeamFilterInfo().setIntegrityScore(null);
             }
         });
         switch_join_team_spinner_2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 filter2 = getResources().getStringArray(R.array.filter_gender)[position];
-                filterInfo.setIntegrityScore(filter2);
+                teamInfo.getTeamFilterInfo().setIntegrityScore(filter2);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 filter2 = null;
-                filterInfo.setIntegrityScore(null);
+                teamInfo.getTeamFilterInfo().setIntegrityScore(null);
             }
         });
         switch_join_team_spinner_3.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 filter3 = getResources().getStringArray(R.array.filter_job)[position];
-                filterInfo.setIntegrityScore(filter3);
+                teamInfo.getTeamFilterInfo().setIntegrityScore(filter3);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 filter3 = null;
-                filterInfo.setIntegrityScore(null);
+                teamInfo.getTeamFilterInfo().setIntegrityScore(null);
             }
         });
         switch_join_team_spinner_4.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 filter4 = getResources().getStringArray(R.array.filter_age)[position];
-                filterInfo.setIntegrityScore(filter4);
+                teamInfo.getTeamFilterInfo().setIntegrityScore(filter4);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 filter4 = null;
-                filterInfo.setIntegrityScore(null);
+                teamInfo.getTeamFilterInfo().setIntegrityScore(null);
             }
         });
         switch_join_team_spinner_5.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 filter5 = getResources().getStringArray(R.array.filter_evaluation)[position];
-                filterInfo.setIntegrityScore(filter5);
+                teamInfo.getTeamFilterInfo().setIntegrityScore(filter5);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 filter5 = null;
-                filterInfo.setIntegrityScore(null);
+                teamInfo.getTeamFilterInfo().setIntegrityScore(null);
             }
         });
         switch_join_team_spinner_6.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 filter6 = getResources().getStringArray(R.array.filter_single)[position];
-                filterInfo.setIntegrityScore(filter6);
+                teamInfo.getTeamFilterInfo().setIntegrityScore(filter6);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 filter6 = null;
-                filterInfo.setIntegrityScore(null);
+                teamInfo.getTeamFilterInfo().setIntegrityScore(null);
             }
         });
 
     }
-    private String filter1,filter2,filter3,filter4,filter5,filter6;
+
+    private String filter1, filter2, filter3, filter4, filter5, filter6;
     private Button button_create_team_cancle, button_create_team_next;
     private AlertDialog.Builder builder;
     private ProgressDialog progDialog;
@@ -1018,7 +1019,7 @@ public class CreateTeamActivity extends AppCompatActivity {
                     .show();
             nestedScrollView.scrollTo(1, 1);
             return false;
-        }else {
+        } else {
             teamInfo.setCreateTime(dateUse.getTodayDate());
             teamInfo.setStartDate(textview_creat_team_date.getText().toString());
         }
@@ -1031,16 +1032,16 @@ public class CreateTeamActivity extends AppCompatActivity {
                     .show();
             nestedScrollView.scrollTo(1, 1);
             return false;
-        }else {
+        } else {
             teamInfo.setStartTime(id_activity_create_team_time_value.getText().toString());
         }
 //        3、检查人数；
         if (Integer.valueOf(ct_people_selectinfo_textview_value_min.getText().toString()) > 2) {
-            if(Integer.valueOf(ct_people_selectinfo_textview_value_max.getText().toString())>2){
-                teamInfo.setPlayerMin(ct_people_selectinfo_textview_value_min.getText().toString());
-                teamInfo.setPlayerMax(ct_people_selectinfo_textview_value_max.getText().toString());
-                teamInfo.setPlayerNow("1");
-            }else {
+            if (Integer.valueOf(ct_people_selectinfo_textview_value_max.getText().toString()) > 2) {
+                teamInfo.setPlayerMin(Integer.valueOf(ct_people_selectinfo_textview_value_min.getText().toString()));
+                teamInfo.setPlayerMax(Integer.valueOf(ct_people_selectinfo_textview_value_max.getText().toString()));
+                teamInfo.setPlayerNow(1);
+            } else {
                 new AlertDialog.Builder(this)
                         .setTitle("成员数量设置有误")
                         .setMessage("最大人数应大于2人")
@@ -1068,7 +1069,7 @@ public class CreateTeamActivity extends AppCompatActivity {
                     .show();
             nestedScrollView.scrollTo(1, 1000);
             return false;
-        }else {
+        } else {
         }
 //        5、检查游戏；
         if (create_team_game_title.getText().equals("点击选择")) {
@@ -1079,12 +1080,12 @@ public class CreateTeamActivity extends AppCompatActivity {
                     .show();
             nestedScrollView.scrollTo(1, 1000);
             return false;
-        }else {
+        } else {
 
         }
 //        6、检查加密；
         if (create_team_pwd_switch.getText().equals("是") &&
-                !PatternUtil.strMatcher(ct_pwd_title.getText().toString(),PatternUtil.FUNC_NUMBER_0000_9999)) {
+                !PatternUtil.strMatcher(ct_pwd_title.getText().toString(), PatternUtil.FUNC_NUMBER_0000_9999)) {
             new AlertDialog.Builder(this)
                     .setTitle("密码设置有误")
                     .setMessage("密码设置有误，请重新设置")
@@ -1105,6 +1106,7 @@ public class CreateTeamActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("StaticFieldLeak")
     private void sendCreateInfo() {
         progDialog.show();
         new AsyncTask<Void, Void, Void>() {
@@ -1130,7 +1132,7 @@ public class CreateTeamActivity extends AppCompatActivity {
 
             @Override
             protected Void doInBackground(Void... params) {
-                String path = PropertiesConfig.serverUrl + "team/create";
+                String path = PropertiesConfig.teamServerUrl + "create";
                 OkHttpClient.Builder builder = new OkHttpClient.Builder()
                         .connectTimeout(15, TimeUnit.SECONDS)
                         .readTimeout(15, TimeUnit.SECONDS)
@@ -1193,13 +1195,15 @@ public class CreateTeamActivity extends AppCompatActivity {
     }
 
     private AppCompatSpinner spinner_ct_spend;
-    private void setSpendPart(){
+
+    //
+    private void setSpendPart() {
         spinner_ct_spend = findViewById(R.id.spinner_ct_spend);
         spinner_ct_spend.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 filterInfo.setIntegrityScore(getResources().getStringArray(R.array.compare_number_array)[position]);
-                teamInfo.setFilterInfo(filterInfo);
+//                teamInfo.setFilterInfo(filterInfo);
             }
 
             @Override

@@ -8,6 +8,7 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PersistableBundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -46,18 +47,23 @@ import com.amap.api.services.geocoder.RegeocodeQuery;
 import com.amap.api.services.geocoder.RegeocodeResult;
 import com.amap.api.services.poisearch.PoiResult;
 import com.amap.api.services.poisearch.PoiSearch;
+import com.renchaigao.zujuba.dao.Address;
 
+import java.util.Date;
 import java.util.List;
 
-import renchaigao.com.zujuba.Json.Store;
+import normal.UUIDUtil;
 import renchaigao.com.zujuba.R;
+import renchaigao.com.zujuba.util.DataPart.DataUtil;
+import renchaigao.com.zujuba.util.dateUse;
 
 import static renchaigao.com.zujuba.Activity.CreateStoreActivity.ADD_ADDRESS;
+import static renchaigao.com.zujuba.Activity.MainActivity.MAIN_ADDRESS;
 
-public class MapBusinessActivity extends AppCompatActivity implements LocationSource,
+public class GaoDeMapActivity extends AppCompatActivity implements LocationSource,
         AMapLocationListener, GeocodeSearch.OnGeocodeSearchListener, PoiSearch.OnPoiSearchListener {
     MapView mMapView = null;
-    final private String TAG = "MapBusinessActivity";
+    final private String TAG = "GaoDeMapActivity";
     //声明AMapLocationClient类对象
     public AMapLocationClient mlocationClient = null;
     //声明AMapLocationClientOption对象
@@ -84,7 +90,8 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
     private String addressJsonStr = null;
     private String addressAllJsonStr = null;
     private String addressStoreJsonStr = null;
-    private Store store = new Store();
+    private String whereFlag = null;
+
 
     @Override
     protected void onStart() {
@@ -100,15 +107,33 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWhereCome();
         setContentView(R.layout.activity_map_business);
 
         init(savedInstanceState);
-
         initView();
 
         geoAddress();
         startJumpAnimation();
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+    }
+    private void getWhereCome(){
+        Intent intent = getIntent();
+        String whereComeString = intent.getStringExtra("whereCome");
+        switch (whereComeString) {
+            case "MainActivity"://是创建store的活动调用的；
+                whereFlag = "MAIN_ACT";
+                break;
+            case "CreateStoreActivity"://mainActivity活动调用的；
+                whereFlag = "CREAT_STORE";
+                break;
+        }
+    }
+
 
     private void init(Bundle savedInstanceState) {
         Log.e(TAG, "init");
@@ -195,11 +220,17 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
         }
     }
 
+    public static final int GAODE_MAP = 1103;
     private void initView() {
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.hide();
+        }
         Log.e(TAG, "initView");
         button = findViewById(R.id.map_business_button);
         textView = findViewById(R.id.map_business_text);
-
+//        textView.setBackgroundColor(Color.argb(255, 0, 255, 0));
         geocoderSearch = new GeocodeSearch(this);
         geocoderSearch.setOnGeocodeSearchListener(this);
         progDialog = new ProgressDialog(this);
@@ -212,10 +243,17 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
                     intent.putExtra("addressJsonStr", addressJsonStr);
                     intent.putExtra("addressAllJsonStr", addressAllJsonStr);
                     intent.putExtra("addressStoreJsonStr", addressStoreJsonStr);
-                    setResult(ADD_ADDRESS, intent);
+                    switch (whereFlag){
+                        case "MAIN_ACT":
+                            setResult(MAIN_ADDRESS, intent);
+                            break;
+                        case "CREAT_STORE":
+                            setResult(ADD_ADDRESS, intent);
+                            break;
+                    }
                     finish();
                 } else {
-                    Toast.makeText(MapBusinessActivity.this, "请在地图上选取一个地址", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(GaoDeMapActivity.this, "请在地图上选取一个地址", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -414,34 +452,43 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
         if (rCode == AMapException.CODE_AMAP_SUCCESS) {
             if (result != null && result.getRegeocodeAddress() != null
                     && result.getRegeocodeAddress().getFormatAddress() != null) {
-                String address = result.getRegeocodeAddress().getProvince() + result.getRegeocodeAddress().getCity() +
-                        result.getRegeocodeAddress().getDistrict() + result.getRegeocodeAddress().getTownship();
+//                String address = result.getRegeocodeAddress().getProvince() + result.getRegeocodeAddress().getCity() +
+//                        result.getRegeocodeAddress().getDistrict() + result.getRegeocodeAddress().getTownship();
                 String addressNew = result.getRegeocodeAddress().getFormatAddress();
 //                firstItem = new PoiItem("regeo", searchLatlonPoint, address, address);
-                Toast.makeText(MapBusinessActivity.this, "result" + addressNew, Toast.LENGTH_SHORT).show();
+                Toast.makeText(GaoDeMapActivity.this, "result" + addressNew, Toast.LENGTH_SHORT).show();
                 String strresult = JSONObject.toJSONString(result);
 //                Log.e(TAG,result.getRegeocodeAddress().getCity());
                 textView.setText(addressNew);
                 addressJsonStr = result.getRegeocodeAddress().getFormatAddress();
                 addressAllJsonStr = JSON.toJSONString(result);
-                store.setCity(result.getRegeocodeAddress().getCity());
-                store.setCitycode(result.getRegeocodeAddress().getCityCode());
-                store.setDistrict(result.getRegeocodeAddress().getDistrict());
-                store.setFormataddress(result.getRegeocodeAddress().getFormatAddress());
-                store.setNeighborhood(result.getRegeocodeAddress().getNeighborhood());
-                store.setProvince(result.getRegeocodeAddress().getProvince());
-                store.setTowncode(result.getRegeocodeAddress().getTowncode());
-                store.setTownship(result.getRegeocodeAddress().getTownship());
-                store.setLatitude(result.getRegeocodeQuery().getPoint().getLatitude());
-                store.setLongitude(result.getRegeocodeQuery().getPoint().getLongitude());
-
-                addressStoreJsonStr = JSONObject.toJSONString(store);
-
-                Log.e(TAG, addressJsonStr);
-//                doSearchQuery();//搜索坐标附近的POI
+                Address addressRet = new Address();
+                switch (whereFlag){
+                    case "MAIN_ACT":
+                        addressRet.setId(DataUtil.getUserData(GaoDeMapActivity.this).getMyAddressId());
+                        addressRet.setOwnerId(DataUtil.getUserData(GaoDeMapActivity.this).getId());
+                        addressRet.setAddressClass("user");
+                        break;
+                    case "CREAT_STORE":
+                        addressRet.setId(UUIDUtil.getUUID());
+                        addressRet.setAddressClass("store");
+                        break;
+                }
+                addressRet.setCity(result.getRegeocodeAddress().getCity());
+                addressRet.setCitycode(result.getRegeocodeAddress().getCityCode());
+                addressRet.setDistrict(result.getRegeocodeAddress().getDistrict());
+                addressRet.setFormatAddress(result.getRegeocodeAddress().getFormatAddress());
+                addressRet.setNeighborhood(result.getRegeocodeAddress().getNeighborhood());
+                addressRet.setProvince(result.getRegeocodeAddress().getProvince());
+                addressRet.setTowncode(result.getRegeocodeAddress().getTowncode());
+                addressRet.setTownship(result.getRegeocodeAddress().getTownship());
+                addressRet.setLatitude(result.getRegeocodeQuery().getPoint().getLatitude());
+                addressRet.setLongitude(result.getRegeocodeQuery().getPoint().getLongitude());
+                addressRet.setUpTime(dateUse.DateToString(new Date()));
+                addressStoreJsonStr = JSONObject.toJSONString(addressRet);
             }
         } else {
-            Toast.makeText(MapBusinessActivity.this, "error code is " + rCode, Toast.LENGTH_SHORT).show();
+            Toast.makeText(GaoDeMapActivity.this, "error code is " + rCode, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -475,11 +522,11 @@ public class MapBusinessActivity extends AppCompatActivity implements LocationSo
                             Log.e("poiItems", poiItems.get(j).getAdName());
                         }
                     } else {
-                        Toast.makeText(MapBusinessActivity.this, "无搜索结果", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(GaoDeMapActivity.this, "无搜索结果", Toast.LENGTH_SHORT).show();
                     }
                 }
             } else {
-                Toast.makeText(MapBusinessActivity.this, "无搜索结果", Toast.LENGTH_SHORT).show();
+                Toast.makeText(GaoDeMapActivity.this, "无搜索结果", Toast.LENGTH_SHORT).show();
             }
         }
     }

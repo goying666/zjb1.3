@@ -1,5 +1,6 @@
 package renchaigao.com.zujuba.Activity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -16,6 +17,8 @@ import android.widget.TextView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.renchaigao.zujuba.mongoDB.info.store.StoreInfo;
+import com.renchaigao.zujuba.mongoDB.info.user.UserInfo;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,8 +33,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import renchaigao.com.zujuba.Adapter.HallFragmentAdapter;
-import renchaigao.com.zujuba.Json.StoreInfo;
 import renchaigao.com.zujuba.R;
+import renchaigao.com.zujuba.util.DataPart.DataUtil;
 import renchaigao.com.zujuba.util.OkhttpFunc;
 import renchaigao.com.zujuba.util.PropertiesConfig;
 import renchaigao.com.zujuba.widgets.DividerItemDecoration;
@@ -87,6 +90,7 @@ public class PlaceListActivity extends AppCompatActivity {
             @Override
             public void onItemClick(View view, int position) {
                 final Intent intent = new Intent(PlaceListActivity.this, CreateTeamActivity.class);
+                intent.putExtra("address",JSONObject.toJSONString(mStoreInfo.get(position).getAddressInfo()));
                 intent.putExtra("storeInfo",JSONObject.toJSONString(mStoreInfo.get(position)));
                 intent.putExtra("name", mStoreInfo.get(position).getName());
                 setResult(CREATE_TEAM_ADDRESS_STORE, intent);
@@ -102,22 +106,20 @@ public class PlaceListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mStoreInfo = new ArrayList();
-        getUserData();
+        initeData();
         setContentView(R.layout.activity_place_list);
         setToolBar();
         setRecyclerView();
 
         setSwipeRefresh();
     }
-    private void getUserData(){
-         SharedPreferences pref;
-         String dataJsonString;
-         JSONObject jsonObject;
-        pref = getSharedPreferences("userData", MODE_PRIVATE);
-        dataJsonString = pref.getString("responseJsonDataString", null);
-        jsonObject = JSONObject.parseObject(dataJsonString);
-        userId = jsonObject.get("id").toString();
+    private UserInfo userInfo;
+    private void initeData(){
+        userInfo = DataUtil.getUserInfoData(this);
+        userId = userInfo.getId();
     }
+
+    @SuppressLint("StaticFieldLeak")
     public void reloadAdapter() {
         new AsyncTask<Void, Void, Void>() {
             @Override
@@ -162,7 +164,7 @@ public class PlaceListActivity extends AppCompatActivity {
         }.execute();
     }
     private void okhttp(){
-        String path = PropertiesConfig.serverUrl + "store/get/storeinfo/" + userId;
+        String path = PropertiesConfig.storeServerUrl + "get/storeinfo/" + userId;
 //                String path = PropertiesConfig.serverUrl + "store/get/storeinfo/" + JSONObject.parseObject(getActivity().getSharedPreferences("userData",getActivity().MODE_PRIVATE).getString("responseJsonDataString",null)).get("id").toString();
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .connectTimeout(15, TimeUnit.SECONDS)

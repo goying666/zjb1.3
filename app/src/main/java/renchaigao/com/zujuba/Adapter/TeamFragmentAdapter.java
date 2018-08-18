@@ -1,7 +1,6 @@
 package renchaigao.com.zujuba.Adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,15 +10,11 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
-import com.alibaba.fastjson.JSONObject;
+import com.renchaigao.zujuba.mongoDB.info.team.TeamInfo;
 
 import java.util.ArrayList;
 
-import renchaigao.com.zujuba.Activity.PlaceListActivity;
-import renchaigao.com.zujuba.Activity.TeamActivity;
 import renchaigao.com.zujuba.R;
-import renchaigao.com.zujuba.Json.Team;
-import renchaigao.com.zujuba.info.TeamInfo;
 
 /**
  * Created by Administrator on 2018/8/1/001.
@@ -48,18 +43,18 @@ public class TeamFragmentAdapter extends RecyclerView.Adapter<TeamFragmentAdapte
     @Override
     public void onBindViewHolder(TeamFragmentAdapter.ItemHolder holder, final int position) {
         TeamInfo teamInfo = mTeamList.get(position);
-        holder.team_cardview_style.setText(teamInfo.getTeamstate());
-        holder.team_cardview_place.setText(teamInfo.getAddressInfo().getStoreInfo());
-        holder.cardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TeamInfo teamInfo1 = mTeamList.get(position);
-                Intent intent = new Intent(mContext, TeamActivity.class);
-//                intent.putExtra("distance",storeInfo.getDistance());
-//                intent.putExtra("json", JSONObject.toJSONString(storeInfo));
-                mContext.startActivity(intent);
-            }
-        });
+//        holder.team_cardview_style.setText(teamInfo.getTeamstate());
+//        holder.team_cardview_place.setText(teamInfo.getAddressInfo().getStoreInfo());
+//        holder.cardView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                TeamInfo teamInfo1 = mTeamList.get(position);
+//                Intent intent = new Intent(mContext, TeamActivity.class);
+////                intent.putExtra("distance",storeInfo.getDistance());
+////                intent.putExtra("json", JSONObject.toJSONString(storeInfo));
+//                mContext.startActivity(intent);
+//            }
+//        });
 
     }
 

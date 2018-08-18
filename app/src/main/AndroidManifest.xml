@@ -75,7 +75,7 @@
 
         <service android:name="com.amap.api.location.APSService" />
 
-        <activity android:name=".Activity.MapBusinessActivity" />
+        <activity android:name=".Activity.GaoDeMapActivity" />
         <activity
             android:name=".Activity.LoginActivity"
             android:label="@string/app_name" />

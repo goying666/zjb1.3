@@ -7,6 +7,8 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.ActionBar;
@@ -35,7 +37,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import renchaigao.com.zujuba.Data.dao.User;
+import com.renchaigao.zujuba.dao.User;
 import renchaigao.com.zujuba.R;
 import renchaigao.com.zujuba.util.FinalDefine;
 import renchaigao.com.zujuba.util.OkhttpFunc;
@@ -60,6 +62,18 @@ public class LoginActivity extends AppCompatActivity {
     private TimeCount time;
     private String reCode;//验证码；
     private String pageClass;
+
+    // Handler内部类，它的引用在子线程中被使用，发送mesage，被handlerMesage方法接收
+    @SuppressLint("HandlerLeak")
+    private Handler handler = new Handler() {
+
+        public void handleMessage(Message msg) {
+            String str = (String) msg.obj;
+            Toast.makeText(LoginActivity.this, str, Toast.LENGTH_SHORT).show();
+        }
+
+        ;
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -151,6 +165,7 @@ public class LoginActivity extends AppCompatActivity {
                     case "Z"://注册场景
                         if (sendCode == 0) {
                             //发送过验证码，改写各种状态，等待接收
+                            addUser(userApp, "Z");
                             time.start();
                             sendCode++;
                         }
@@ -338,7 +353,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             protected Void doInBackground(Void... params) {
-                String path = PropertiesConfig.testServerUrl + "user/login/";
+                String path = PropertiesConfig.userServerUrl + "login/";
                 switch (mode){
                     case "S":
                         path += "secret/0";
@@ -382,6 +397,7 @@ public class LoginActivity extends AppCompatActivity {
                             String token;
                             SharedPreferences.Editor editor;
                             Intent intent;
+                            Message msg = new Message();
                             switch (code) {
                                 //                                    用户首次登陆系统进行创建账号，
                                 case 500:
@@ -402,9 +418,16 @@ public class LoginActivity extends AppCompatActivity {
                                     intent.putExtra("user", responseJsonData.toJSONString());
                                     startActivity(intent);
                                     finish();
+                                    msg.obj = "登录成功0";
+                                    // 把消息发送到主线程，在主线程里现实Toast
+                                    handler.sendMessage(msg);
+                                    finish();
                                     break;
                                 case 1: //在数据库中更新用户数据出错；
                                     Toast.makeText(LoginActivity.this, "在数据库中更新用户数据出错", Toast.LENGTH_LONG).show();
+                                    msg.obj = "更新数据失败";
+                                    // 把消息发送到主线程，在主线程里现实Toast
+                                    handler.sendMessage(msg);
                                     break;
                                 case 1001: //用户是存在的，更新数据成功；
                                     //将token信息保存至本地
@@ -420,21 +443,38 @@ public class LoginActivity extends AppCompatActivity {
                                     intent.putExtra("userId", responseJsonData.get("id").toString());
                                     intent.putExtra("user", responseJsonData.toJSONString());
                                     startActivity(intent);
+                                    msg.obj = "登录成功1001";
+                                    // 把消息发送到主线程，在主线程里现实Toast
+                                    handler.sendMessage(msg);
                                     finish();
                                     break;
                                 case -1001://用户登录，密码错误；
-                                    Toast.makeText(LoginActivity.this, "用户登录，密码错误", Toast.LENGTH_LONG).show();
+                                    msg.obj = "密码错误";
+                                    // 把消息发送到主线程，在主线程里现实Toast
+                                    handler.sendMessage(msg);
                                     break;
                                 case -1002: //创建新用户，电话号码错误
-                                    Toast.makeText(LoginActivity.this, "创建新用户，电话号码错误", Toast.LENGTH_LONG).show();
+                                    msg.obj = "创建新用户，号码错误";
+                                    // 把消息发送到主线程，在主线程里现实Toast
+                                    handler.sendMessage(msg);
+//                                    Toast.makeText(LoginActivity.this, "创建新用户，电话号码错误", Toast.LENGTH_LONG).show();
                                     break;
                                 case -1003: //用户是存在的，本地的TOKEN超时，需要重新登录；
+                                    msg.obj = "Token超时，需重新登录";
+                                    // 把消息发送到主线程，在主线程里现实Toast
+                                    handler.sendMessage(msg);
                                     Toast.makeText(LoginActivity.this, "本地的TOKEN超时，需要重新登录", Toast.LENGTH_LONG).show();
                                     break;
                                 case -1004: //用户是存在的，本地的TOKEN错误；
+                                    msg.obj = "Token错误，需重新登录";
+                                    // 把消息发送到主线程，在主线程里现实Toast
+                                    handler.sendMessage(msg);
                                     Toast.makeText(LoginActivity.this, "本地的TOKEN错误", Toast.LENGTH_LONG).show();
                                     break;
                                 case -1009: //用户是存在的，本地的TOKEN错误；
+                                    msg.obj = "未注册用户（手机号）";
+                                    // 把消息发送到主线程，在主线程里现实Toast
+                                    handler.sendMessage(msg);
                                     Toast.makeText(LoginActivity.this, "该手机号还未注册", Toast.LENGTH_LONG).show();
                                     break;
                             }

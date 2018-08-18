@@ -49,6 +49,7 @@ dependencies {
     compile 'com.android.support:gridlayout-v7:22.+'
 
     dependencies { compile files('F:\\00project\\zjb\\code\\server\\data2.0\\data20\\target\\data2.0-1.0-SNAPSHOT.jar')}
+    dependencies { compile files('F:\\00project\\zjb\\code\\server\\data2.0\\merge\\target\\merge-1.0-SNAPSHOT.jar')}
 
 //    implementation files('libs/Amap_2DMap_V5.2.0_20170627.jar')
 //    implementation files('libs/AMap_Search_V6.1.0_20180330.jar')

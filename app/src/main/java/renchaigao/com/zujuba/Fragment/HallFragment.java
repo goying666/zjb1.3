@@ -1,5 +1,6 @@
 package renchaigao.com.zujuba.Fragment;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -25,6 +26,8 @@ import android.widget.ImageView;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.bumptech.glide.Glide;
+import com.renchaigao.zujuba.mongoDB.info.store.StoreInfo;
+import com.renchaigao.zujuba.mongoDB.info.user.UserInfo;
 import com.youth.banner.Banner;
 import com.youth.banner.BannerConfig;
 import com.youth.banner.Transformer;
@@ -46,8 +49,8 @@ import okhttp3.Response;
 import renchaigao.com.zujuba.Activity.CreateStoreActivity;
 import renchaigao.com.zujuba.Activity.JoinUsActivity;
 import renchaigao.com.zujuba.Adapter.HallFragmentAdapter;
-import renchaigao.com.zujuba.Json.StoreInfo;
 import renchaigao.com.zujuba.R;
+import renchaigao.com.zujuba.util.DataPart.DataUtil;
 import renchaigao.com.zujuba.util.OkhttpFunc;
 import renchaigao.com.zujuba.util.PropertiesConfig;
 import renchaigao.com.zujuba.widgets.DividerItemDecoration;
@@ -110,12 +113,17 @@ public class HallFragment extends Fragment implements OnBannerListener {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
-        pref = getActivity().getSharedPreferences("userData", getActivity().MODE_PRIVATE);
-        dataJsonString = pref.getString("responseJsonDataString", null);
-        jsonObject = JSONObject.parseObject(dataJsonString);
-        userId = jsonObject.get("id").toString();
+        initData();
+//        pref = getActivity().getSharedPreferences("userData", getActivity().MODE_PRIVATE);
+//        dataJsonString = pref.getString("responseJsonDataString", null);
+//        jsonObject = JSONObject.parseObject(dataJsonString);
+//        userId = jsonObject.get("id").toString();
 //        userId = JSONObject.parseObject(getActivity().getSharedPreferences("userData",getActivity().MODE_PRIVATE).getString("responseJsonDataString",null)).get("id").toString();
+    }
+    private UserInfo userInfo;
+    private void initData(){
+        userInfo = DataUtil.getUserInfoData(mContext);
+
     }
 
     private SharedPreferences pref;
@@ -134,7 +142,6 @@ public class HallFragment extends Fragment implements OnBannerListener {
     private HallFragmentAdapter hallFragmentAdapter;
     private RecyclerView recyclerView;
     private LinearLayoutManager layoutManager;
-
 
     private String reloadFlag;
 
@@ -213,6 +220,7 @@ public class HallFragment extends Fragment implements OnBannerListener {
 //        reloadAdapter();
     }
 
+    @SuppressLint("StaticFieldLeak")
     public void reloadAdapter() {
         new AsyncTask<Void, Void, Void>() {
             @Override
@@ -240,7 +248,7 @@ public class HallFragment extends Fragment implements OnBannerListener {
             protected Void doInBackground(Void... params) {
                 Log.e(TAG,"doInBackground");
 
-                String path = PropertiesConfig.serverUrl + "store/get/storeinfo/" + userId;
+                String path = PropertiesConfig.storeServerUrl + "get/storeinfo/" + userInfo.getId();
 //                String path = PropertiesConfig.serverUrl + "store/get/storeinfo/" + JSONObject.parseObject(getActivity().getSharedPreferences("userData",getActivity().MODE_PRIVATE).getString("responseJsonDataString",null)).get("id").toString();
                 OkHttpClient.Builder builder = new OkHttpClient.Builder()
                         .connectTimeout(15, TimeUnit.SECONDS)

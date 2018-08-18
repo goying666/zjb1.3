@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="renchaigao.com.zujuba.Activity.MapBusinessActivity">
+    tools:context="renchaigao.com.zujuba.Activity.GaoDeMapActivity">
 
     <TextView
         android:id="@+id/map_business_text"
@@ -13,44 +13,11 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:background="#99ffffff"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-    <!--<AutoCompleteTextView-->
-        <!--android:id="@+id/map_keyWord"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="36dp"-->
-        <!--android:layout_marginEnd="0dp"-->
-        <!--android:layout_marginStart="0dp"-->
-        <!--android:layout_marginTop="0dp"-->
-        <!--android:layout_weight="1"-->
-        <!--android:background="@drawable/text_search"-->
-        <!--android:completionThreshold="1"-->
-        <!--android:dropDownVerticalOffset="1.0dip"-->
-        <!--android:focusable="true"-->
-        <!--android:hint="请输入关键字"-->
-        <!--android:imeOptions="actionDone"-->
-        <!--android:inputType="text|textAutoComplete"-->
-        <!--android:maxLength="20"-->
-        <!--android:paddingLeft="20.0dip"-->
-        <!--android:paddingRight="37.0dip"-->
-        <!--android:singleLine="true"-->
-        <!--android:textColor="#000000"-->
-        <!--android:textColorHint="#C0C0C0"-->
-        <!--android:textSize="16.0sp"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toTopOf="parent" />-->
 
-    <com.amap.api.maps.MapView
-        android:id="@+id/map_business"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/map_business_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/map_business_text" />
 
     <Button
         android:id="@+id/map_business_button"
@@ -63,5 +30,16 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <com.amap.api.maps.MapView
+        android:id="@+id/map_business"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/map_business_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 
 </android.support.constraint.ConstraintLayout>

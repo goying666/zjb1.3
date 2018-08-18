@@ -12,12 +12,12 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSONObject;
+import com.renchaigao.zujuba.mongoDB.info.store.StoreInfo;
 
 import java.util.ArrayList;
 
 import renchaigao.com.zujuba.Activity.PlaceListActivity;
 import renchaigao.com.zujuba.Activity.StoreActivity;
-import renchaigao.com.zujuba.Json.StoreInfo;
 import renchaigao.com.zujuba.R;
 
 /**
@@ -47,31 +47,32 @@ public class HallFragmentAdapter extends RecyclerView.Adapter<HallFragmentAdapte
     @Override
     public void onBindViewHolder(final ItemHolder holder, final int position) {
         StoreInfo store = mStore.get(position);
-        holder.place_star_num.setNumStars(store.getStarnum());
+        String str = JSONObject.toJSONString(store);
+        holder.place_star_num.setNumStars(store.getStoreIntegrationInfo().getStartNum());
         holder.store_cardview_name.setText(store.getName());
-        holder.store_cardview_place.setText(store.getAddress());
+        holder.store_cardview_place.setText(store.getAddressInfo().getFormatAddress());
 
 //        holder.store_image.setImageResource(R.drawable.boy);
 
-        holder.store_desk_info.setText(store.getDeskinfo());
-        holder.store_people_info.setText(store.getPeopleinfo());
+        holder.store_desk_info.setText(store.getStoreTeamInfo().getTodayDesk()+"/"+store.getMaxDeskSum());
+        holder.store_people_info.setText(store.getStoreTeamInfo().getTodayPeople()+"/"+store.getMaxPeopleSum());
 //        holder.store_team_info.setText(store.get);
-        holder.store_user_evaluate_1.setText(store.getEvaluates());
+//        holder.store_user_evaluate_1.setText(store.getStoreEvaluationInfo().getStoreScore());
 //        holder.store_user_evaluate_2.setText();
 //        holder.store_user_evaluate_3.setText();
-        holder.store_cardview_style.setText(store.getStatus());
-        holder.store_place_howlong.setText(store.getDistance().toString());
-        holder.store_start_time.setText(store.getWorkingtimeid().toString());
-        holder.store_store_rank.setText(store.getRank());
+        holder.store_cardview_style.setText(store.getState());
+        holder.store_place_howlong.setText(store.getAddressInfo().getDistance().toString()+"米");
+//        holder.store_start_time.setText(store.getWorkingtimeid().toString());
+        holder.store_store_rank.setText(store.getStoreRankInfo().getCityIntegralRank().toString());
         holder.store_tips.setText(store.getTipsinfo());
-        holder.store_score.setText(store.getScore().toString());
-        holder.store_spend.setText(store.getSpend().toString());
+        holder.store_score.setText(store.getStoreEvaluationInfo().getStoreScore().toString());
+        holder.store_spend.setText(store.getStoreShoppingInfo().getAverageSpend().toString());
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 StoreInfo storeInfo = mStore.get(position);
                 Intent intent = new Intent(mContext, StoreActivity.class);
-                intent.putExtra("distance",storeInfo.getDistance());
+//                intent.putExtra("distance",storeInfo.getDistance());
                 intent.putExtra("json", JSONObject.toJSONString(storeInfo));
                 mContext.startActivity(intent);
             }

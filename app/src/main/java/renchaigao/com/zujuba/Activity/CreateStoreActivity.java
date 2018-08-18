@@ -9,6 +9,8 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
@@ -34,20 +36,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
+import com.renchaigao.zujuba.dao.Address;
 import com.renchaigao.zujuba.dao.User;
+import com.renchaigao.zujuba.mongoDB.info.store.BusinessPart.BusinessTimeInfo;
+import com.renchaigao.zujuba.mongoDB.info.store.BusinessPart.StoreBusinessInfo;
+import com.renchaigao.zujuba.mongoDB.info.store.StoreInfo;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.SecureRandom;
-import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Date;
 
 import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
+import normal.UUIDUtil;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MultipartBody;
@@ -55,16 +58,20 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import renchaigao.com.zujuba.Json.Store;
 import renchaigao.com.zujuba.R;
-import renchaigao.com.zujuba.util.DataUtil;
+import renchaigao.com.zujuba.util.DataPart.DataUtil;
 import renchaigao.com.zujuba.util.FinalDefine;
 import renchaigao.com.zujuba.util.ImgUtil;
+import renchaigao.com.zujuba.util.OkhttpFunc;
 import renchaigao.com.zujuba.util.PatternUtil;
 import renchaigao.com.zujuba.util.PictureRAR;
 import renchaigao.com.zujuba.util.PropertiesConfig;
+import renchaigao.com.zujuba.util.dateUse;
+
+import static renchaigao.com.zujuba.Activity.GaoDeMapActivity.GAODE_MAP;
 
 public class CreateStoreActivity extends AppCompatActivity {
+
     private String TAG = "This is CreateStoreActivity ";
     private TextView business_join_introduce_addres_name, business_join_introduce_time_textView_number, business_join_introduce_time_textView_title_note;
     private LinearLayout linearLayout_part1, linearLayout_part2, linearLayout_part3, linearLayout_part4, business_join_introduce_part5;
@@ -115,15 +122,37 @@ public class CreateStoreActivity extends AppCompatActivity {
 
     private Uri imageUri;
 
-    private Store store = new Store();
-    
+    private StoreInfo storeInfo = new StoreInfo();
+    private User saveUser;
 
+    private BusinessTimeInfo
+            businessTimeInfo_1 = new BusinessTimeInfo(),
+            businessTimeInfo_2 = new BusinessTimeInfo(),
+            businessTimeInfo_3 = new BusinessTimeInfo(),
+            businessTimeInfo_4 = new BusinessTimeInfo();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_business);
+        setToolBar();
+        initView();
+        initBasicPart();
+        initExtraPart();
+        initPhotoPart();
+        initFinishPart();
+        setLinearLayoutVisibile(1);
+    }
+
+    private void setToolBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.hide();
+        }
+    }
 
     private void initView() {
-
-        store = new Store();
-        store.setWorkingtimeid(0x0);
-        store.setHardware(0x0);
+        saveUser = DataUtil.getUserData(CreateStoreActivity.this);
         builder = new AlertDialog.Builder(this);
         business_join_introduce_button_next = findViewById(R.id.business_join_introduce_button_next);
         business_join_NestedScrollView = findViewById(R.id.business_join_NestedScrollView);
@@ -164,7 +193,7 @@ public class CreateStoreActivity extends AppCompatActivity {
         business_join_class.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                store.setStoreclass(getResources().getStringArray(R.array.business_class_array)[position]);
+                storeInfo.setStoreclass(String.valueOf(position));//getResources().getStringArray(R.array.business_class_array)[position]
             }
 
             @Override
@@ -182,14 +211,14 @@ public class CreateStoreActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-                    business_join_name_layout.setError("请输入店铺的真实名字");
+                business_join_name_layout.setError("请输入店铺的真实名字");
 
             }
 
             @Override
             public void afterTextChanged(Editable s) {
                 if (s.length() > 0) {
-                    store.setName(s.toString());
+                    storeInfo.setName(s.toString());
                     business_join_name.setError(null);
                     business_join_name_layout.setError(null);
                 } else {
@@ -200,14 +229,16 @@ public class CreateStoreActivity extends AppCompatActivity {
         business_join_introduce_addres_name.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(CreateStoreActivity.this, MapBusinessActivity.class);
+                Intent intent = new Intent(CreateStoreActivity.this, GaoDeMapActivity.class);
+                intent.putExtra("whereCome", "CreateStoreActivity");
                 startActivityForResult(intent, ADD_ADDRESS);
             }
         });
         business_join_introduce_addres_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(CreateStoreActivity.this, MapBusinessActivity.class);
+                Intent intent = new Intent(CreateStoreActivity.this, GaoDeMapActivity.class);
+                intent.putExtra("whereCome", "CreateStoreActivity");
                 startActivityForResult(intent, ADD_ADDRESS);
             }
         });
@@ -224,7 +255,7 @@ public class CreateStoreActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                store.setPlaceinfo(s.toString());
+                storeInfo.setPlaceinfo(s.toString());
             }
         });
         business_telephone_name.addTextChangedListener(new TextWatcher() {
@@ -241,8 +272,8 @@ public class CreateStoreActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 if (null != s.toString()) {
-                    if(s.toString().length()<10)
-                        store.setContact(s.toString());
+                    if (s.toString().length() < 10)
+                        storeInfo.setContact(s.toString());
                     else
                         business_join_introduce_content_TextInputLayout_name.setError("联系人需要小于10个字");
                 } else
@@ -263,8 +294,8 @@ public class CreateStoreActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (null != s.toString() && PatternUtil.strMatcher(s.toString(),PatternUtil.FUNC_TELEPHONE_NUMBER)) {
-                    store.setTelephonenum(s.toString());
+                if (null != s.toString() && PatternUtil.strMatcher(s.toString(), PatternUtil.FUNC_TELEPHONE_NUMBER)) {
+                    storeInfo.setTelephonenum(s.toString());
                 } else
                     business_join_introduce_content_TextInputLayout_person.setError("请输入正确的11位手机号码");
             }
@@ -283,7 +314,7 @@ public class CreateStoreActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 if (null != s.toString()) {
-                    store.setPhonenum(s.toString());
+                    storeInfo.setPhonenum(s.toString());
                 }
             }
         });
@@ -293,13 +324,16 @@ public class CreateStoreActivity extends AppCompatActivity {
                                          boolean isChecked) {
                 if (isChecked) {
                     checkBoxNum++;
-                    store.setWorkingtimeid(store.getWorkingtimeid() | 0x1);
+                    businessTimeInfo_1 = new BusinessTimeInfo();
+                    businessTimeInfo_1.setTimeFrame("MOR");
+                    businessTimeInfo_1.setStartTime("9:00");
+                    businessTimeInfo_1.setEndTime("12:00");
+
                 } else {
-                    store.setWorkingtimeid(store.getWorkingtimeid() & 0x1110);
+                    businessTimeInfo_1 = null;
                     checkBoxNum--;
                 }
                 timeNoteCheckView();
-                Log.e(TAG, JSONObject.toJSONString(store));
                 business_join_introduce_time_textView_number.setText(checkBoxNum.toString());
             }
         });
@@ -309,13 +343,16 @@ public class CreateStoreActivity extends AppCompatActivity {
                                          boolean isChecked) {
                 if (isChecked) {
                     checkBoxNum++;
-                    store.setWorkingtimeid(store.getWorkingtimeid() | 0x10);
+                    businessTimeInfo_2 = new BusinessTimeInfo();
+                    businessTimeInfo_2.setTimeFrame("AFT");
+                    businessTimeInfo_2.setStartTime("13:00");
+                    businessTimeInfo_2.setEndTime("17:00");
+
                 } else {
-                    store.setWorkingtimeid(store.getWorkingtimeid() & 0x1101);
+                    businessTimeInfo_2 = null;
                     checkBoxNum--;
                 }
                 timeNoteCheckView();
-                Log.e(TAG, JSONObject.toJSONString(store));
                 business_join_introduce_time_textView_number.setText(checkBoxNum.toString());
             }
         });
@@ -325,13 +362,16 @@ public class CreateStoreActivity extends AppCompatActivity {
                                          boolean isChecked) {
                 if (isChecked) {
                     checkBoxNum++;
-                    store.setWorkingtimeid(store.getWorkingtimeid() | 0x100);
+                    businessTimeInfo_3 = new BusinessTimeInfo();
+                    businessTimeInfo_3.setTimeFrame("NON");
+                    businessTimeInfo_3.setStartTime("18:00");
+                    businessTimeInfo_3.setEndTime("21:00");
+
                 } else {
-                    store.setWorkingtimeid(store.getWorkingtimeid() & 0x1011);
+                    businessTimeInfo_3 = null;
                     checkBoxNum--;
                 }
                 timeNoteCheckView();
-                Log.e(TAG, JSONObject.toJSONString(store));
                 business_join_introduce_time_textView_number.setText(checkBoxNum.toString());
             }
         });
@@ -341,13 +381,16 @@ public class CreateStoreActivity extends AppCompatActivity {
                                          boolean isChecked) {
                 if (isChecked) {
                     checkBoxNum++;
-                    store.setWorkingtimeid(store.getWorkingtimeid() | 0x1000);
+                    businessTimeInfo_4 = new BusinessTimeInfo();
+                    businessTimeInfo_4.setTimeFrame("NIG");
+                    businessTimeInfo_4.setStartTime("21:00");
+                    businessTimeInfo_4.setEndTime("23:00");
+
                 } else {
-                    store.setWorkingtimeid(store.getWorkingtimeid() & 0x111);
+                    businessTimeInfo_4 = null;
                     checkBoxNum--;
                 }
                 timeNoteCheckView();
-                Log.e(TAG, JSONObject.toJSONString(store));
                 business_join_introduce_time_textView_number.setText(checkBoxNum.toString());
             }
         });
@@ -393,7 +436,7 @@ public class CreateStoreActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 if (PatternUtil.strMatcher(s.toString(), PatternUtil.FUNC_NUMBER_1_99)) {
-                    store.setMaxdesknum(Integer.valueOf(s.toString()));
+                    storeInfo.setMaxDeskSum(Integer.valueOf(s.toString()));
                     business_join_desk_layout.setError("");
                 } else business_join_desk_layout.setError("请输入1到99的数字");
             }
@@ -414,7 +457,7 @@ public class CreateStoreActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 if (PatternUtil.strMatcher(s.toString(), PatternUtil.FUNC_NUMBER_1_99)) {
-                    store.setMaxpeoplenum(Integer.valueOf(s.toString()));
+                    storeInfo.setMaxPeopleSum(Integer.valueOf(s.toString()));
                     business_join_maxpeople_layout.setError("");
                 } else business_join_maxpeople_layout.setError("请输入1到99的数字");
             }
@@ -433,7 +476,7 @@ public class CreateStoreActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 if (s.toString() != null)
-                    store.setStoreinfo(s.toString());
+                    storeInfo.setPlaceinfo(s.toString());
                 else {
                 }
             }
@@ -442,9 +485,9 @@ public class CreateStoreActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    store.setHardware(store.getHardware() | 0x1);
+                    storeInfo.getStoreHardwareInfo().setExistAir(true);
                 } else {
-                    store.setHardware(store.getHardware() & 0x1110);
+                    storeInfo.getStoreHardwareInfo().setExistAir(false);
                 }
             }
         });
@@ -452,9 +495,9 @@ public class CreateStoreActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    store.setHardware(store.getHardware() | 0x10);
+                    storeInfo.getStoreHardwareInfo().setExistWifi(true);
                 } else {
-                    store.setHardware(store.getHardware() & 0x1101);
+                    storeInfo.getStoreHardwareInfo().setExistWifi(false);
                 }
             }
         });
@@ -462,9 +505,9 @@ public class CreateStoreActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    store.setHardware(store.getHardware() | 0x100);
+                    storeInfo.getStoreHardwareInfo().setExistHeat(true);
                 } else {
-                    store.setHardware(store.getHardware() & 0x1011);
+                    storeInfo.getStoreHardwareInfo().setExistHeat(false);
                 }
             }
         });
@@ -472,9 +515,9 @@ public class CreateStoreActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    store.setHardware(store.getHardware() | 0x1000);
+                    storeInfo.getStoreHardwareInfo().setExistToilet(true);
                 } else {
-                    store.setHardware(store.getHardware() & 0x111);
+                    storeInfo.getStoreHardwareInfo().setExistToilet(false);
                 }
             }
         });
@@ -626,51 +669,67 @@ public class CreateStoreActivity extends AppCompatActivity {
         business_join_map_end_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                StoreBusinessInfo storeBusinessInfo = new StoreBusinessInfo();
+                ArrayList<BusinessTimeInfo> businessTimeInfos = new ArrayList<>();
+                if (businessTimeInfo_1 != null)
+                    businessTimeInfos.add(businessTimeInfo_1);
+                if (businessTimeInfo_2 != null)
+                    businessTimeInfos.add(businessTimeInfo_2);
+                if (businessTimeInfo_3 != null)
+                    businessTimeInfos.add(businessTimeInfo_3);
+                if (businessTimeInfo_4 != null)
+                    businessTimeInfos.add(businessTimeInfo_4);
+                storeBusinessInfo.setBusinessTimeInfos(businessTimeInfos);
+                storeBusinessInfo.setAllFrameSum(checkBoxNum);
+                storeBusinessInfo.setUpTime(dateUse.DateToString(new Date()));
+                storeInfo.setStoreBusinessInfo(storeBusinessInfo);
                 builder.show();
             }
         });
     }
 
-    private void timeNoteCheckView(){
-        if (store.getWorkingtimeid() > 0)
+    private void timeNoteCheckView() {
+        if (checkBoxNum > 0)
             business_join_introduce_time_textView_title_note.setVisibility(View.GONE);
-         else
+        else
             business_join_introduce_time_textView_title_note.setVisibility(View.VISIBLE);
     }
+
     private boolean checkBasicPart() {
-        if (store.getName() != null) {
-            if (store.getFormataddress() != null) {
-                if (store.getContact() != null) {
-                    if (store.getTelephonenum() != null) {
-                        if (store.getWorkingtimeid() > 0) {
-                            business_join_introduce_time_textView_title_note.setVisibility(View.GONE);
-                            return true;
-                        } else {
-                            business_join_introduce_time_textView_title_note.setVisibility(View.VISIBLE);
-                            business_join_introduce_time_textView_title_note.setError("请至少选择一个营业时间段");
-                            Toast.makeText(this, "请至少选择一个营业时间段", Toast.LENGTH_LONG).show();
-                            return false;
-                        }
-                    } else {
-                        business_join_introduce_content_TextInputLayout_person.setError("请完善店铺联系人电话信息");
-                        Toast.makeText(this, "请完善店铺联系人电话信息", Toast.LENGTH_LONG).show();
-                        return false;
-                    }
-                } else {
-                    business_telephone_name.setError("请完善店铺联系人信息");
-                    Toast.makeText(this, "请完善店铺联系人信息", Toast.LENGTH_LONG).show();
-                    return false;
-                }
-            } else {
-                business_join_name_layout.setError("请完善店铺地址信息");
-                Toast.makeText(this, "请完善店铺地址信息", Toast.LENGTH_LONG).show();
-                return false;
-            }
-        } else {
-            business_join_name_layout.setError("请完善店铺名称");
-            Toast.makeText(this, "请完善店铺名称", Toast.LENGTH_LONG).show();
-            return false;
-        }
+        return true;
+//        if (store.getName() != null) {
+//            if (store.getFormataddress() != null) {
+//                if (store.getContact() != null) {
+//                    if (store.getTelephonenum() != null) {
+//                        if (store.getWorkingtimeid() > 0) {
+//                            business_join_introduce_time_textView_title_note.setVisibility(View.GONE);
+//                            return true;
+//                        } else {
+//                            business_join_introduce_time_textView_title_note.setVisibility(View.VISIBLE);
+//                            business_join_introduce_time_textView_title_note.setError("请至少选择一个营业时间段");
+//                            Toast.makeText(this, "请至少选择一个营业时间段", Toast.LENGTH_LONG).show();
+//                            return false;
+//                        }
+//                    } else {
+//                        business_join_introduce_content_TextInputLayout_person.setError("请完善店铺联系人电话信息");
+//                        Toast.makeText(this, "请完善店铺联系人电话信息", Toast.LENGTH_LONG).show();
+//                        return false;
+//                    }
+//                } else {
+//                    business_telephone_name.setError("请完善店铺联系人信息");
+//                    Toast.makeText(this, "请完善店铺联系人信息", Toast.LENGTH_LONG).show();
+//                    return false;
+//                }
+//            } else {
+//                business_join_name_layout.setError("请完善店铺地址信息");
+//                Toast.makeText(this, "请完善店铺地址信息", Toast.LENGTH_LONG).show();
+//                return false;
+//            }
+//        } else {
+//            business_join_name_layout.setError("请完善店铺名称");
+//            Toast.makeText(this, "请完善店铺名称", Toast.LENGTH_LONG).show();
+//            return false;
+//        }
     }
 
     private boolean checkExtraPart() {
@@ -683,6 +742,15 @@ public class CreateStoreActivity extends AppCompatActivity {
         else return false;
     }
 
+
+    // Handler内部类，它的引用在子线程中被使用，发送mesage，被handlerMesage方法接收
+    private Handler handler = new Handler() {
+
+        public void handleMessage(Message msg) {
+            String str = (String) msg.obj;
+            Toast.makeText(CreateStoreActivity.this, str, Toast.LENGTH_SHORT).show();
+        };
+    };
     private void sendStoresAddInfo() {
         /*进度条后续优化*/
         progDialog.show();
@@ -691,11 +759,11 @@ public class CreateStoreActivity extends AppCompatActivity {
             @Override
             public void run() {
 //                String path = "https://47.106.149.105/zujuba/join/addstores";
-
-                String path = PropertiesConfig.serverUrl + "store/join";
-                OkHttpClient client = new OkHttpClient();
+                String path = PropertiesConfig.storeServerUrl + "join";
+//                OkHttpClient client = new OkHttpClient();
                 OkHttpClient.Builder builder = new OkHttpClient.Builder();
-                builder.sslSocketFactory(createSSLSocketFactory());
+                builder.sslSocketFactory(OkhttpFunc.createSSLSocketFactory());
+//                builder.sslSocketFactory(createSSLSocketFactory());
                 builder.hostnameVerifier(new HostnameVerifier() {
                     @Override
                     public boolean verify(String hostname, SSLSession session) {
@@ -725,13 +793,15 @@ public class CreateStoreActivity extends AppCompatActivity {
                 RequestBody fileBodyPhoto6 = RequestBody.create(FinalDefine.MEDIA_TYPE_JPG, photo6);
                 RequestBody fileBodyPhoto7 = RequestBody.create(FinalDefine.MEDIA_TYPE_JPG, photo7);
 
-                store.setOwnerid(DataUtil.getUserData(CreateStoreActivity.this).getId());
-                String storeString = JSONObject.toJSONString(store);
-                RequestBody jsonBody = RequestBody.create(FinalDefine.MEDIA_TYPE_JSON, storeString);
+                storeInfo.setOwnerId(saveUser.getId());
+                storeInfo.setId(UUIDUtil.getUUID());
+                storeInfo.getStoreRankInfo().setId(UUIDUtil.getUUID());
+                String storeInfoString = JSONObject.toJSONString(storeInfo);
+                RequestBody jsonBody = RequestBody.create(FinalDefine.MEDIA_TYPE_JSON, storeInfoString);
 
                 RequestBody multiBody = new MultipartBody.Builder()
                         .setType(MultipartBody.FORM)
-                        .addFormDataPart("json", storeString)
+                        .addFormDataPart("json", storeInfoString)
                         .addFormDataPart("photo", photo1.getName(), fileBodyPhoto1)
                         .addFormDataPart("photo", photo2.getName(), fileBodyPhoto2)
                         .addFormDataPart("photo", photo3.getName(), fileBodyPhoto3)
@@ -740,46 +810,6 @@ public class CreateStoreActivity extends AppCompatActivity {
                         .addFormDataPart("photo", photo6.getName(), fileBodyPhoto6)
                         .addFormDataPart("photo", photo7.getName(), fileBodyPhoto7)
                         .build();
-//                File rarphoto1 = new File(getExternalCacheDir() + "/rarphoto1,jpg");
-//                File rarphoto2 = new File(getExternalCacheDir() + "/rarphoto2,jpg");
-//                File rarphoto3 = new File(getExternalCacheDir() + "/rarphoto3,jpg");
-//                File rarphoto4 = new File(getExternalCacheDir() + "/rarphoto4,jpg");
-//                File rarphoto5 = new File(getExternalCacheDir() + "/rarphoto5,jpg");
-//                File rarphoto6 = new File(getExternalCacheDir() + "/rarphoto6,jpg");
-//                File rarphoto7 = new File(getExternalCacheDir() + "/rarphoto7,jpg");
-
-
-//                PictureRAR.qualityCompress(getExternalCacheDir() + "/photo1.jpg", rarphoto1);
-//                PictureRAR.qualityCompress(getExternalCacheDir() + "/photo2.jpg", rarphoto2);
-//                PictureRAR.qualityCompress(getExternalCacheDir() + "/photo3.jpg", rarphoto3);
-//                PictureRAR.qualityCompress(getExternalCacheDir() + "/photo4.jpg", rarphoto4);
-//                PictureRAR.qualityCompress(getExternalCacheDir() + "/photo5.jpg", rarphoto5);
-//                PictureRAR.qualityCompress(getExternalCacheDir() + "/photo6.jpg", rarphoto6);
-//                PictureRAR.qualityCompress(getExternalCacheDir() + "/photo7.jpg", rarphoto7);
-
-//                File file = new File(Environment.getExternalStorageDirectory()+"/photo1.jpg");
-
-//                String jsonStr = "{\"name\":\"haha11\"}";//json数据.
-//
-//                RequestBody body = RequestBody.create(FinalDefine.MEDIA_TYPE_JSON, jsonStr);
-//                RequestBody jsonBody = RequestBody.create(FinalDefine.MEDIA_TYPE_JPG, file);
-//                RequestBody jsonBody2 = RequestBody.create(FinalDefine.MEDIA_TYPE_JPG, file3);
-////                RequestBody fileBody =;
-//                RequestBody multiBody = new MultipartBody.Builder()
-//                        .setType(MultipartBody.FORM)
-//                        .addFormDataPart("file", file.getName(), jsonBody)
-//                        .addFormDataPart("photo2", file3.getName(), jsonBody2)
-//                        .addFormDataPart("json", jsonStr)
-//                        .addPart(body)
-////                        .addPart(jsonBody)
-////                        .addPart(body)
-//                        .build();
-
-//                Request request = new Request.Builder()
-//                        .url(PropertiesConfig.serverUrl + path)
-//                        .header("Content-Type", "application/json")
-//                        .post(body)
-//                        .build();
                 Request mulRrequest = new Request.Builder()
                         .url(path)
                         .header("Content-Type", "multipart/form-data")
@@ -791,6 +821,10 @@ public class CreateStoreActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(Call call, IOException e) {
                         dismissDialog();
+                        Message msg = new Message();
+                        msg.obj = "发送失败，e";
+                        // 把消息发送到主线程，在主线程里现实Toast
+                        handler.sendMessage(msg);
                         Log.e(TAG, call.request().body().toString());
                     }
 
@@ -800,42 +834,24 @@ public class CreateStoreActivity extends AppCompatActivity {
                         JSONObject responseJson = JSONObject.parseObject(response.body().string());
                         int code = Integer.valueOf(responseJson.get("code").toString());
                         JSONObject responseJsonData = (JSONObject) responseJson.getJSONObject("data");
+                        Message msg = new Message();
                         switch (code) {
                             case 0:
                                 dismissDialog();
+                                msg.obj = "成功发送";
+                                // 把消息发送到主线程，在主线程里现实Toast
+                                handler.sendMessage(msg);
                                 finish();
                                 break;
                             case 1:
-                                Toast.makeText(CreateStoreActivity.this, "Throw an exception", Toast.LENGTH_LONG).show();
+                                msg.obj = "Throw an exception";
+                                // 把消息发送到主线程，在主线程里现实Toast
+                                handler.sendMessage(msg);
                                 dismissDialog();
                                 break;
                         }
                     }
                 });
-//                    Response response = client.newCall(request).execute();
-//                    Log.e(TAG, response.body().string());
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//                try {
-//                client.newCall(request).enqueue(new Callback() {
-//                    @Override
-//                    public void onFailure(Call call, IOException e) {
-//
-//                        Log.e(TAG, call.request().body().toString());
-//                    }
-//
-//                    @Override
-//                    public void onResponse(Call call, Response response) throws IOException {
-//
-//                        Log.e(TAG, response.body().string());
-//                    }
-//                });
-////                    Response response = client.newCall(request).execute();
-////                    Log.e(TAG, response.body().string());
-////                } catch (IOException e) {
-////                    e.printStackTrace();
-////                }
             }
         }).start();
     }
@@ -871,6 +887,21 @@ public class CreateStoreActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
+            case ADD_ADDRESS:
+                Address addressUse = JSONObject.parseObject(data.getStringExtra("addressStoreJsonStr").toString(), Address.class);
+                storeInfo.getAddressInfo().setId(addressUse.getId());
+                storeInfo.getAddressInfo().setCity(addressUse.getCity());
+                storeInfo.getAddressInfo().setCitycode(addressUse.getCitycode());
+                storeInfo.getAddressInfo().setDistrict(addressUse.getDistrict());
+                storeInfo.getAddressInfo().setFormatAddress(addressUse.getFormatAddress());
+                storeInfo.getAddressInfo().setNeighborhood(addressUse.getNeighborhood());
+                storeInfo.getAddressInfo().setProvince(addressUse.getProvince());
+                storeInfo.getAddressInfo().setTowncode(addressUse.getTowncode());
+                storeInfo.getAddressInfo().setTownship(addressUse.getTownship());
+                storeInfo.getAddressInfo().setLatitude(addressUse.getLatitude());
+                storeInfo.getAddressInfo().setLongitude(addressUse.getLongitude());
+                business_join_introduce_addres_name.setText(storeInfo.getAddressInfo().getFormatAddress());
+                break;
             case PHOTO_1:
                 if (resultCode == RESULT_OK) {
                     try {
@@ -957,20 +988,6 @@ public class CreateStoreActivity extends AppCompatActivity {
                 }
                 break;
 
-            case ADD_ADDRESS:
-                Store storeUse = JSONObject.parseObject(data.getStringExtra("addressStoreJsonStr").toString(), Store.class);
-                store.setCity(storeUse.getCity());
-                store.setCitycode(storeUse.getCitycode());
-                store.setDistrict(storeUse.getDistrict());
-                store.setFormataddress(storeUse.getFormataddress());
-                store.setNeighborhood(storeUse.getNeighborhood());
-                store.setProvince(storeUse.getProvince());
-                store.setTowncode(storeUse.getTowncode());
-                store.setTownship(storeUse.getTownship());
-                store.setLatitude(storeUse.getLatitude());
-                store.setLongitude(storeUse.getLongitude());
-                business_join_introduce_addres_name.setText(data.getStringExtra("addressJsonStr"));
-                break;
 //                通过相册选择的图片和对应的显示设置；
             case CHOOSE_PHOTO:
                 if (resultCode == RESULT_OK) {
@@ -986,7 +1003,7 @@ public class CreateStoreActivity extends AppCompatActivity {
                     switch (imageFlag) {
                         case PICK_PHOTO_1:
                             imageFinish1 = true;
-                            String test = getExternalCacheDir() + "/photo1.jpg";
+//                            String test = getExternalCacheDir() + "/photo1.jpg";
                             ImgUtil.bitmapToFile(bitmapPhoto, getExternalCacheDir() + "/photo1.jpg");
                             business_join_map_image_store_1.setImageBitmap(bitmapPhoto);
                             break;
@@ -1078,35 +1095,15 @@ public class CreateStoreActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_business);
-        setToolBar();
-        initView();
-        initBasicPart();
-        initExtraPart();
-        initPhotoPart();
-        initFinishPart();
-        setLinearLayoutVisibile(3);
-    }
 
     @Override
     protected void onStart() {
         super.onStart();
     }
-
-    private void setToolBar() {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.hide();
-        }
-    }
-
-    private long time = 0;
-
+    long time = 0;
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if ((System.currentTimeMillis() - time > 1000)) {
                 Toast.makeText(this, "再按一次取消入驻", Toast.LENGTH_SHORT).show();
@@ -1119,34 +1116,5 @@ public class CreateStoreActivity extends AppCompatActivity {
             return super.onKeyDown(keyCode, event);
         }
 
-    }
-
-    public static class TrustAllCerts implements X509TrustManager {
-        @Override
-        public void checkClientTrusted(X509Certificate[] chain, String authType) {
-        }
-
-        @Override
-        public void checkServerTrusted(X509Certificate[] chain, String authType) {
-        }
-
-        @Override
-        public X509Certificate[] getAcceptedIssuers() {
-            return new X509Certificate[0];
-        }
-    }
-
-    private static SSLSocketFactory createSSLSocketFactory() {
-        SSLSocketFactory ssfFactory = null;
-
-        try {
-            SSLContext sc = SSLContext.getInstance("TLS");
-            sc.init(null, new TrustManager[]{new TrustAllCerts()}, new SecureRandom());
-
-            ssfFactory = sc.getSocketFactory();
-        } catch (Exception e) {
-        }
-
-        return ssfFactory;
     }
 }

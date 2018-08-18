@@ -8,13 +8,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.renchaigao.zujuba.mongoDB.info.team.TeamInfo;
+
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import renchaigao.com.zujuba.Json.StoreInfo;
 import renchaigao.com.zujuba.R;
-import renchaigao.com.zujuba.info.PlayerInfo;
-import renchaigao.com.zujuba.info.TeamInfo;
 
 /**
  * Created by Administrator on 2018/8/7/007.
@@ -40,7 +39,7 @@ public class TeamActivityAdapter extends RecyclerView.Adapter<TeamActivityAdapte
     public void onBindViewHolder(TeamActivityAdapter.ViewHolder holder, int position) {
         TeamInfo teamInfo ;
         teamInfo = new TeamInfo();
-        holder.card_player_name.setText(teamInfo.getAddressInfo().getStoreInfo());
+//        holder.card_player_name.setText(teamInfo.getAddressInfo().getStoreInfo());
 //        holder.card_player_zu_number.setText(teamInfo.getName());
 //        holder.card_player_you_number.setText(teamInfo.getName());
 //        holder.card_player_state.setText(teamInfo.getName());

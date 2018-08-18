@@ -21,6 +21,7 @@ import android.widget.Button;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.renchaigao.zujuba.mongoDB.info.team.TeamInfo;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,8 +40,6 @@ import renchaigao.com.zujuba.Activity.CreateTeamActivity;
 import renchaigao.com.zujuba.Activity.MyTeamActivity;
 import renchaigao.com.zujuba.Adapter.TeamFragmentAdapter;
 import renchaigao.com.zujuba.R;
-import renchaigao.com.zujuba.Json.Team;
-import renchaigao.com.zujuba.info.TeamInfo;
 import renchaigao.com.zujuba.util.OkhttpFunc;
 import renchaigao.com.zujuba.util.PropertiesConfig;
 import renchaigao.com.zujuba.widgets.DividerItemDecoration;
@@ -247,7 +246,7 @@ public class TeamFragment extends Fragment {
             protected Void doInBackground(Void... params) {
                 Log.e(TAG, "doInBackground");
 
-                String path = PropertiesConfig.serverUrl + "team/get/" + userId;
+                String path = PropertiesConfig.teamServerUrl + "get/" + userId;
 //                String path = PropertiesConfig.serverUrl + "store/get/storeinfo/" + JSONObject.parseObject(getActivity().getSharedPreferences("userData",getActivity().MODE_PRIVATE).getString("responseJsonDataString",null)).get("id").toString();
                 OkHttpClient.Builder builder = new OkHttpClient.Builder()
                         .connectTimeout(15, TimeUnit.SECONDS)

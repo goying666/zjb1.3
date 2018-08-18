@@ -4,11 +4,10 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
+
+import com.renchaigao.zujuba.mongoDB.info.store.StoreInfo;
 
 import java.util.ArrayList;
-
-import renchaigao.com.zujuba.Json.StoreInfo;
 
 /**
  * Created by Administrator on 2018/8/2/002.
