@@ -145,6 +145,51 @@ public class CreateTeamActivity extends AppCompatActivity {
         setButton();
 //        Glide.with(CreateTeamActivity.this).load("http://ww4.sinaimg.cn/large/006uZZy8jw1faic2e7vsaj30ci08cglz.jpg").into(create_team_place_pic1);
     }
+//    private SharedPreferences pref;
+//    private String dataJsonString;
+//    private JSONObject jsonObject;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case CREATE_TEAM_ADDRESS_STORE:
+//                pref = getSharedPreferences("createTeamAddressInfo", MODE_PRIVATE);
+//                dataJsonString = pref.getString("responseJsonDataString", null);
+//                jsonObject = JSONObject.parseObject(dataJsonString);
+
+//                隐藏按键选项
+                create_team_address_button_cons1.setVisibility(View.GONE);
+                create_team_address_button_cons2.setVisibility(View.GONE);
+                create_team_address_more_image.setImageResource(R.drawable.more_down);
+                click_create_team_address_more = true;
+//                获取json内对应的store信息
+
+                create_team_address_name.setText(data.getStringExtra("name"));
+                AddressInfo addressInfo = JSONObject.parseObject(data.getStringExtra("address"), AddressInfo.class);
+                teamInfo.setAddressInfo(addressInfo);
+
+                Glide
+                        .with(CreateTeamActivity.this)
+                        .load("http://ww4.sinaimg.cn/large/006uZZy8jw1faic2e7vsaj30ci08cglz.jpg")
+                        .placeholder(R.drawable.image_loading)
+                        .error(R.drawable.image_load_fail)
+                        .into(create_team_place_pic1);
+//                更新图片信息
+
+                break;
+            case CREATE_TEAM_ADDRESS_OPEN_PLACE:
+                break;
+        }
+    }
+
+
+    private void setToolBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.hide();
+        }
+    }
 
     //    初始化一些准备数据；
     private void initData() {
@@ -309,6 +354,54 @@ public class CreateTeamActivity extends AppCompatActivity {
         id_activity_create_team_time_selectinfo.setVisibility(View.GONE);
         id_activity_create_team_time_value.setText("点击选择");
         id_activity_create_team_time_image_more.setImageResource(R.drawable.more_down);
+        id_activity_create_team_time_selectinfo_morning.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                id_activity_create_team_time_value.setText(R.string.create_team_time_morning);
+                id_activity_create_team_time_image_more.setImageResource(R.drawable.more_down);
+                id_activity_create_team_time_selectinfo.setVisibility(View.GONE);
+                click_id_activity_create_team_time_image_more = true;
+                teamInfo.getTeamGameInfo().setStartTime("9:00");
+                teamInfo.getTeamGameInfo().setEndTime("12:00");
+                Toast.makeText(CreateTeamActivity.this, "时间设置成功：" + R.string.create_team_time_morning, Toast.LENGTH_SHORT).show();
+            }
+        });
+        id_activity_create_team_time_selectinfo_afternoon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                id_activity_create_team_time_value.setText(R.string.create_team_time_afternoon);
+                id_activity_create_team_time_image_more.setImageResource(R.drawable.more_down);
+                id_activity_create_team_time_selectinfo.setVisibility(View.GONE);
+                click_id_activity_create_team_time_image_more = true;
+                teamInfo.getTeamGameInfo().setStartTime("13:00");
+                teamInfo.getTeamGameInfo().setEndTime("17:00");
+                Toast.makeText(CreateTeamActivity.this, "时间设置成功：" + R.string.create_team_time_afternoon, Toast.LENGTH_SHORT).show();
+            }
+        });
+        id_activity_create_team_time_selectinfo_evening.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                id_activity_create_team_time_value.setText(R.string.create_team_time_evening);
+                id_activity_create_team_time_image_more.setImageResource(R.drawable.more_down);
+                id_activity_create_team_time_selectinfo.setVisibility(View.GONE);
+                click_id_activity_create_team_time_image_more = true;
+                teamInfo.getTeamGameInfo().setStartTime("18:00");
+                teamInfo.getTeamGameInfo().setEndTime("21:00");
+                Toast.makeText(CreateTeamActivity.this, "时间设置成功：" + R.string.create_team_time_evening, Toast.LENGTH_SHORT).show();
+            }
+        });
+        id_activity_create_team_time_selectinfo_night.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                id_activity_create_team_time_value.setText(R.string.create_team_time_night);
+                id_activity_create_team_time_image_more.setImageResource(R.drawable.more_down);
+                id_activity_create_team_time_selectinfo.setVisibility(View.GONE);
+                click_id_activity_create_team_time_image_more = true;
+                teamInfo.getTeamGameInfo().setStartTime("21:00");
+                teamInfo.getTeamGameInfo().setEndTime("23:00");
+                Toast.makeText(CreateTeamActivity.this, "时间设置成功：" + R.string.create_team_time_night, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     //    初始化地点选项
@@ -361,52 +454,6 @@ public class CreateTeamActivity extends AppCompatActivity {
         });
     }
 
-//    private SharedPreferences pref;
-//    private String dataJsonString;
-//    private JSONObject jsonObject;
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case CREATE_TEAM_ADDRESS_STORE:
-//                pref = getSharedPreferences("createTeamAddressInfo", MODE_PRIVATE);
-//                dataJsonString = pref.getString("responseJsonDataString", null);
-//                jsonObject = JSONObject.parseObject(dataJsonString);
-
-//                隐藏按键选项
-                create_team_address_button_cons1.setVisibility(View.GONE);
-                create_team_address_button_cons2.setVisibility(View.GONE);
-                create_team_address_more_image.setImageResource(R.drawable.more_down);
-                click_create_team_address_more = true;
-//                获取json内对应的store信息
-
-                create_team_address_name.setText(data.getStringExtra("name"));
-                AddressInfo addressInfo = JSONObject.parseObject(data.getStringExtra("address"), AddressInfo.class);
-                teamInfo.setAddressInfo(addressInfo);
-
-                Glide
-                        .with(CreateTeamActivity.this)
-                        .load("http://ww4.sinaimg.cn/large/006uZZy8jw1faic2e7vsaj30ci08cglz.jpg")
-                        .placeholder(R.drawable.image_loading)
-                        .error(R.drawable.image_load_fail)
-                        .into(create_team_place_pic1);
-//                更新图片信息
-
-                break;
-            case CREATE_TEAM_ADDRESS_OPEN_PLACE:
-                break;
-        }
-    }
-
-
-    private void setToolBar() {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.hide();
-        }
-    }
-
     //    游戏部分设置
     private void setGame() {
         create_team_game_title = findViewById(R.id.create_team_game_title);
@@ -422,8 +469,10 @@ public class CreateTeamActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
+                    teamInfo.getTeamGameInfo().setSelect_LRS(true);
                     gameNumber++;
                 } else {
+                    teamInfo.getTeamGameInfo().setSelect_LRS(false);
                     gameNumber--;
                 }
                 create_team_game_title.setText("已选：" + gameNumber.toString() + "款");
@@ -433,8 +482,10 @@ public class CreateTeamActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
+                    teamInfo.getTeamGameInfo().setSelect_THQBY(true);
                     gameNumber++;
                 } else {
+                    teamInfo.getTeamGameInfo().setSelect_THQBY(false);
                     gameNumber--;
                 }
                 create_team_game_title.setText("已选：" + gameNumber.toString() + "款");
@@ -466,7 +517,7 @@ public class CreateTeamActivity extends AppCompatActivity {
 //        });
     }
 
-
+    //    初始化人数
     private void initPeople() {
         ct_people_selectinfo_textview_value_min = findViewById(R.id.ct_people_selectinfo_textview_value_min);
         ct_people_selectinfo_textview_value_max = findViewById(R.id.ct_people_selectinfo_textview_value_max);
@@ -561,46 +612,7 @@ public class CreateTeamActivity extends AppCompatActivity {
                 click_id_activity_create_team_time_image_more = !click_id_activity_create_team_time_image_more;
             }
         });
-        id_activity_create_team_time_selectinfo_morning.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                id_activity_create_team_time_value.setText(R.string.create_team_time_morning);
-                id_activity_create_team_time_image_more.setImageResource(R.drawable.more_down);
-                id_activity_create_team_time_selectinfo.setVisibility(View.GONE);
-                click_id_activity_create_team_time_image_more = true;
-                Toast.makeText(CreateTeamActivity.this, "时间设置成功：" + R.string.create_team_time_morning, Toast.LENGTH_SHORT).show();
-            }
-        });
-        id_activity_create_team_time_selectinfo_afternoon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                id_activity_create_team_time_value.setText(R.string.create_team_time_afternoon);
-                id_activity_create_team_time_image_more.setImageResource(R.drawable.more_down);
-                id_activity_create_team_time_selectinfo.setVisibility(View.GONE);
-                click_id_activity_create_team_time_image_more = true;
-                Toast.makeText(CreateTeamActivity.this, "时间设置成功：" + R.string.create_team_time_afternoon, Toast.LENGTH_SHORT).show();
-            }
-        });
-        id_activity_create_team_time_selectinfo_evening.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                id_activity_create_team_time_value.setText(R.string.create_team_time_evening);
-                id_activity_create_team_time_image_more.setImageResource(R.drawable.more_down);
-                id_activity_create_team_time_selectinfo.setVisibility(View.GONE);
-                click_id_activity_create_team_time_image_more = true;
-                Toast.makeText(CreateTeamActivity.this, "时间设置成功：" + R.string.create_team_time_evening, Toast.LENGTH_SHORT).show();
-            }
-        });
-        id_activity_create_team_time_selectinfo_night.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                id_activity_create_team_time_value.setText(R.string.create_team_time_night);
-                id_activity_create_team_time_image_more.setImageResource(R.drawable.more_down);
-                id_activity_create_team_time_selectinfo.setVisibility(View.GONE);
-                click_id_activity_create_team_time_image_more = true;
-                Toast.makeText(CreateTeamActivity.this, "时间设置成功：" + R.string.create_team_time_night, Toast.LENGTH_SHORT).show();
-            }
-        });
+
 
 //        date
         today_widgetDateAndWeekSelect.getConstraint().setOnClickListener(new View.OnClickListener() {
@@ -1145,6 +1157,7 @@ public class CreateTeamActivity extends AppCompatActivity {
                         return true;
                     }
                 });
+                teamInfo.getTeamGameInfo().setGameNum(gameNumber);
                 String stringBody = JSONObject.toJSONString(teamInfo);
                 RequestBody jsonBody = RequestBody.create(FinalDefine.MEDIA_TYPE_JSON, stringBody);
                 final Request request = new Request.Builder()

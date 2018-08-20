@@ -17,12 +17,16 @@ public class PropertiesConfig {
 //    public final static String storeServerUrl = serverUrl+ "store/" ;
 //    public final static String playerServerUrl = serverUrl+ "player/" ;
 
+//    private final static String windowsIp = "http://192.168.199.155";
+    private final static String macIp = "http://192.168.1.190";
+
     public final static String serverUrlAL = "https://www.zujuba.com/";
-    public final static String serverUrlBD = "http://192.168.199.155";
+    public final static String serverUrlBD = macIp;
+//    public final static String serverUrlBD = "http://192.168.199.155";
 
-    public final static String userServerUrl = serverUrlAL + "user/";
+//    public final static String userServerUrl = serverUrlAL + "user/";
 
-//    public final static String userServerUrl = serverUrlBD + ":7801/";
+    public final static String userServerUrl = serverUrlBD + ":7801/";
 
 //    public final static String teamServerUrl = serverUrlAL + "team/";
 

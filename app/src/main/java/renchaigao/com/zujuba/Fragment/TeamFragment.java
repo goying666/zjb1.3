@@ -13,6 +13,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ import android.widget.Button;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.renchaigao.zujuba.mongoDB.info.team.TeamInfo;
+import com.renchaigao.zujuba.mongoDB.info.user.UserInfo;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,6 +42,7 @@ import renchaigao.com.zujuba.Activity.CreateTeamActivity;
 import renchaigao.com.zujuba.Activity.MyTeamActivity;
 import renchaigao.com.zujuba.Adapter.TeamFragmentAdapter;
 import renchaigao.com.zujuba.R;
+import renchaigao.com.zujuba.util.DataPart.DataUtil;
 import renchaigao.com.zujuba.util.OkhttpFunc;
 import renchaigao.com.zujuba.util.PropertiesConfig;
 import renchaigao.com.zujuba.widgets.DividerItemDecoration;
@@ -75,10 +78,8 @@ public class TeamFragment extends Fragment {
     private Button button_creatTeam, button_myTeam, button_joinTeam;
 
     final private String TAG = "TeamFragment";
-    private SharedPreferences pref;
-    private String dataJsonString;
-    private JSONObject jsonObject;
     private String userId;
+    private UserInfo userInfo;
 
     @Override
     public void onAttach(Activity activity) {
@@ -195,18 +196,16 @@ public class TeamFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        userInfo = DataUtil.getUserInfoData(mContext);
 
-        pref = getActivity().getSharedPreferences("userData", getActivity().MODE_PRIVATE);
-        dataJsonString = pref.getString("responseJsonDataString", null);
-        jsonObject = JSONObject.parseObject(dataJsonString);
-        userId = jsonObject.get("id").toString();
+        userId = userInfo.getId();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(
+            View rootView = inflater.inflate(
                 R.layout.fragment_team, container, false);
         setSwipeRefresh(rootView);
         setRecyclerView(rootView);

@@ -163,12 +163,11 @@ public class LoginActivity extends AppCompatActivity {
 
                         break;
                     case "Z"://注册场景
-                        if (sendCode == 0) {
                             //发送过验证码，改写各种状态，等待接收
                             addUser(userApp, "Z");
                             time.start();
                             sendCode++;
-                        }
+
                         break;
                 }
             }
