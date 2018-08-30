@@ -125,6 +125,11 @@
 
     <string name="ct_end_note">一次组局，一些人，一段回忆。</string>
     <string name="ct_end_note_author">——Goying</string>
+    <string name="title_activity_game_info">GameInfoActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="title_activity_game_world">GameWorldActivity</string>
 
 
 </resources>

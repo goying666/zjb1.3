@@ -22,6 +22,7 @@ import android.widget.Button;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.renchaigao.zujuba.mongoDB.info.team.TeamInfo;
+import com.renchaigao.zujuba.mongoDB.info.user.UserInfo;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,6 +41,7 @@ import renchaigao.com.zujuba.Activity.CreateTeamActivity;
 import renchaigao.com.zujuba.Activity.MyTeamActivity;
 import renchaigao.com.zujuba.Adapter.TeamFragmentAdapter;
 import renchaigao.com.zujuba.R;
+import renchaigao.com.zujuba.util.DataPart.DataUtil;
 import renchaigao.com.zujuba.util.OkhttpFunc;
 import renchaigao.com.zujuba.util.PropertiesConfig;
 import renchaigao.com.zujuba.widgets.DividerItemDecoration;
@@ -79,6 +81,7 @@ public class TeamFragment extends Fragment {
     private String dataJsonString;
     private JSONObject jsonObject;
     private String userId;
+    private UserInfo userInfo;
 
     @Override
     public void onAttach(Activity activity) {
@@ -195,11 +198,8 @@ public class TeamFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
-        pref = getActivity().getSharedPreferences("userData", getActivity().MODE_PRIVATE);
-        dataJsonString = pref.getString("responseJsonDataString", null);
-        jsonObject = JSONObject.parseObject(dataJsonString);
-        userId = jsonObject.get("id").toString();
+        userInfo = DataUtil.getUserInfoData(mContext);
+       userId= userInfo.getId();
     }
 
     @Override
@@ -288,10 +288,6 @@ public class TeamFragment extends Fragment {
                                 case 0: //在数据库中更新用户数据出错；
                                     ArrayList<TeamInfo> mTeam = new ArrayList();
                                     for (Object m : responseJsonData) {
-                                        String testStr = JSONObject.toJSONString(m);
-                                        JSONObject json = JSONObject.parseObject(testStr);
-                                        Date dateTest = json.getDate("createTime");
-                                        TeamInfo testTeamInfo = JSONObject.parseObject(testStr, TeamInfo.class);
                                         mTeam.add(JSONObject.parseObject(JSONObject.toJSONString(m), TeamInfo.class));
                                     }
 //                                    Log.e("responseJsonData",responseJsonData.toJSONString());

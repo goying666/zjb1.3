@@ -80,11 +80,13 @@
             android:name=".Activity.LoginActivity"
             android:label="@string/app_name" />
         <activity android:name=".Activity.StartActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
         </activity>
         <activity
             android:name=".Activity.StoreActivity"
@@ -102,7 +104,23 @@
         <activity android:name=".Activity.MyTeamActivity" />
         <activity android:name=".Activity.PlaceListActivity" />
         <activity android:name=".Activity.TeamActivity" />
-        <activity android:name=".Activity.AdvertisingActivity"></activity>
+        <activity android:name=".Activity.AdvertisingActivity" />
+        <activity
+            android:name=".Activity.GameInfoActivity"
+            android:label="@string/title_activity_game_info"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".Activity.GameWorldActivity"
+            android:label="@string/title_activity_game_world"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:launchMode="singleTask"></activity>
     </application>
 
 </manifest>

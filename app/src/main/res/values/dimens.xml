@@ -84,5 +84,13 @@ http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
     <dimen name="image_user_size_m">25dp</dimen>
 
     <dimen name="user_image_size">58dp</dimen>
+    <dimen name="nav_header_vertical_spacing">8dp</dimen>
+    <dimen name="nav_header_height">176dp</dimen>
+
+
+    <!--game part-->
+    <dimen name="game_info_wanjia_width">72dp</dimen>
+    <dimen name="game_info_wanjia_height">102dp</dimen>
+    <dimen name="game_info_equip_image_size">56dp</dimen>
 
 </resources>
