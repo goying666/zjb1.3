@@ -39,20 +39,21 @@ public class GameInfoActivity extends AppCompatActivity {
         });
     }
 
+    private TeamFragmentAdapter teamFragmentAdapter;
     private RecyclerView recyclerView;
     private LinearLayoutManager layoutManager;
 
-    private void setRecyclerView() {
-        recyclerView = findViewById(R.id.team_page_recycler_view);
-        layoutManager = new LinearLayoutManager(GameInfoActivity.this);
-        recyclerView.setLayoutManager(layoutManager);
-        teamFragmentAdapter = new TeamFragmentAdapter(mContext);
-        recyclerView.setAdapter(teamFragmentAdapter);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL_LIST));
-        ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
-
-    }
+//    private void setRecyclerView() {
+//        recyclerView = findViewById(R.id.team_page_recycler_view);
+//        layoutManager = new LinearLayoutManager(GameInfoActivity.this);
+//        recyclerView.setLayoutManager(layoutManager);
+//        teamFragmentAdapter = new TeamFragmentAdapter(mContext);
+//        recyclerView.setAdapter(teamFragmentAdapter);
+//        recyclerView.setHasFixedSize(true);
+//        recyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL_LIST));
+//        ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
+//
+//    }
 
 
 }
