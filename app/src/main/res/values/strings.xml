@@ -125,6 +125,36 @@
 
     <string name="ct_end_note">一次组局，一些人，一段回忆。</string>
     <string name="ct_end_note_author">——Goying</string>
+    <string name="title_activity_game_info">GameInfoActivity</string>
 
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="title_activity_game_world">GameWorldActivity</string>
+    <string name="title_activity_deep_forest_game_main">DeepForestGameMainActivity</string>
+    <string name="title_activity_deep_forest_game_tactics">DeepForestGameTacticsActivity</string>
+    <string name="title_activity_deep_forest_game_tactics_attact">
+        DeepForestGameTacticsAttactActivity
+    </string>
+    <string name="title_activity_deep_forest_game_tactics_defence">
+        DeepForestGameTacticsDefenceActivity
+    </string>
+    <string name="title_activity_deep_forest_game_tactics_move">DeepForestGameTacticsMoveActivity
+    </string>
+    <string name="title_activity_deep_forest_game_tactics_explore">
+        DeepForestGameTacticsExploreActivity
+    </string>
+    <string name="title_activity_deep_forest_game_tactics_settle">
+        DeepForestGameTacticsSettleActivity
+    </string>
+    <string name="title_activity_deep_forest_game_message_info">DeepForestGameMessageInfoActivity
+    </string>
+    <string name="title_activity_deep_forest_game_message_info_carmera">
+        DeepForestGameMessageInfoCarmeraActivity
+    </string>
+    <string name="title_activity_deep_forest_game_business">DeepForestGameBusinessActivity</string>
+
+
+    <!--Deep Forest Game Use Part-->
+    <!--<string name=""-->
 
 </resources>

@@ -1152,10 +1152,12 @@ public class CreateTeamActivity extends AppCompatActivity {
                         .header("Content-Type", "application/json")
                         .post(jsonBody)
                         .build();
+                final Long startTimeMil = System.currentTimeMillis();
                 builder.build().newCall(request).enqueue(new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
                         Log.e("onFailure", e.toString());
+                        Log.i(TAG + " callBack spend time : ", String.valueOf(System.currentTimeMillis() - startTimeMil));
                     }
 
                     @Override
@@ -1171,6 +1173,7 @@ public class CreateTeamActivity extends AppCompatActivity {
                             Log.e(TAG, "onResponse CODE is" + code);
 
 //                            ArrayList<StoreInfo> mStores = new ArrayList<>();
+                            Log.i(TAG + " callBack spend time : ", String.valueOf(System.currentTimeMillis() - startTimeMil));
                             switch (code) {
                                 case 0: //在数据库中更新用户数据出错；
                                     Log.e(TAG, "onResponse");

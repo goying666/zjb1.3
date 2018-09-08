@@ -153,22 +153,22 @@ public class LoginActivity extends AppCompatActivity {
                         break;
                     case "Y"://验证码登录
 //                        判断是否发送过
-                        if (sendCode == 0) {
+//                        if (sendCode == 0) {
                             //发送过验证码，改写各种状态，等待接收
                             sendCode++;
-                        }
+//                        }
 //                        判断是否在等待时间内
 
 //                        判断是否超过数值
 
                         break;
                     case "Z"://注册场景
-                        if (sendCode == 0) {
+//                        if (sendCode == 0) {
                             //发送过验证码，改写各种状态，等待接收
                             addUser(userApp, "Z");
                             time.start();
                             sendCode++;
-                        }
+//                        }
                         break;
                 }
             }
