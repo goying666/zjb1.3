@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.renchaigao.zujuba.mongoDB.info.game.DeepForest.CivilizationInfo;
 import com.renchaigao.zujuba.mongoDB.info.game.DeepForest.StarInfo;
 
 import java.util.ArrayList;
@@ -23,13 +24,15 @@ public class DFGStarCardAdapter extends RecyclerView.Adapter<DFGStarCardAdapter.
 
     private Context mContext;
     private ArrayList<StarInfo> starInfoArrayList;
+    private CivilizationInfo civilizationInfo;
 
     public DFGStarCardAdapter(Context context) {
         this.mContext = context;
     }
 
-    public void updateResults(ArrayList<StarInfo> starInfoArrayList) {
+    public void updateResults(ArrayList<StarInfo> starInfoArrayList,CivilizationInfo civilizationInfo) {
         this.starInfoArrayList = starInfoArrayList;
+        this.civilizationInfo = civilizationInfo;
     }
 
     @Override
@@ -42,7 +45,7 @@ public class DFGStarCardAdapter extends RecyclerView.Adapter<DFGStarCardAdapter.
         StarInfo starInfo = starInfoArrayList.get(position);
 //        holder.card_game_deep_forest_star_image.setImageResource(starInfo.get);
 //        holder.card_game_deep_forest_star_select_Image.setText(starInfo.get);
-        holder.card_game_deep_forest_star_message.setText(starInfo.get);
+        holder.card_game_deep_forest_star_message.setText(starInfo.);
         holder.card_game_deep_forest_star_name.setText(starInfo.get);
         holder.card_game_deep_forest_star_timeValue.setText(starInfo.get);
         holder.card_game_deep_forest_star_technologyValue.setText(starInfo.get);
