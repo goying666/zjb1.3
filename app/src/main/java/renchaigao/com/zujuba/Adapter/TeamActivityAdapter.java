@@ -31,6 +31,7 @@ public class TeamActivityAdapter extends RecyclerView.Adapter<TeamActivityAdapte
     public TeamActivityAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return null;
     }
+
     public void updateResults(ArrayList<TeamInfo> teamInfos) {
         this.teamInfoArrayList = teamInfos;
     }
