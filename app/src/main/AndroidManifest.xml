@@ -52,7 +52,9 @@
         android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:name="org.litepal.LitePalApplication"
+        >
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.example.cameraalbumtest.fileprovider"
@@ -80,13 +82,11 @@
             android:name=".Activity.LoginActivity"
             android:label="@string/app_name" />
         <activity android:name=".Activity.StartActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-
-
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".Activity.StoreActivity"
@@ -119,11 +119,13 @@
             android:name=".GamePart.DeepForest.DeepForestGameMainActivity"
             android:label="@string/title_activity_deep_forest_game_main"
             android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
         </activity>
         <activity
             android:name=".GamePart.DeepForest.DeepForestGameTacticsActivity"
@@ -160,7 +162,23 @@
         <activity
             android:name=".GamePart.DeepForest.DeepForestGameBusinessActivity"
             android:label="@string/title_activity_deep_forest_game_business"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <service
+            android:name=".GamePart.DeepForest.DFGService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <activity
+            android:name=".Activity.MessageInfoActivity"
+            android:label="@string/title_activity_message_info"
+            android:theme="@style/AppTheme.NoActionBar">
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
+        </activity>
     </application>
 
 </manifest>

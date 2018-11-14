@@ -93,4 +93,7 @@ http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
     <dimen name="game_info_wanjia_height">102dp</dimen>
     <dimen name="game_info_equip_image_size">56dp</dimen>
 
+    <!--Message Size-->
+    <dimen name="message_image_width">36dp</dimen>
+    <dimen name="message_image_height">36dp</dimen>
 </resources>

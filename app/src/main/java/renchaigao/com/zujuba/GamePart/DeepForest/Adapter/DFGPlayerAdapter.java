@@ -40,9 +40,9 @@ public class DFGPlayerAdapter extends RecyclerView.Adapter<DFGPlayerAdapter.View
     public void onBindViewHolder(DFGPlayerAdapter.ViewHolder holder, int position) {
         CivilizationInfo civilizationInfo = civilizationInfos.get(position);
         holder.dfg_card_main_player_active.setText(civilizationInfo.getActive());
-        holder.dfg_card_main_player_name.setText(civilizationInfo.getUserName());
+//        holder.dfg_card_main_player_name.setText(civilizationInfo.getUserName());
         holder.dfg_card_main_player_number.setText(civilizationInfo.getNumber());
-        holder.dfg_card_main_player_signature.setText(civilizationInfo.getSignature());
+//        holder.dfg_card_main_player_signature.setText(civilizationInfo.getSignature());
 //        holder.dfg_card_main_player_image.setImageResource(civilizationInfo.getUserImage());
 
     }

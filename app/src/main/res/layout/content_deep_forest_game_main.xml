@@ -302,23 +302,22 @@
                     android:id="@+id/dfg_main_mine_playerNum"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
                     android:layout_marginEnd="32dp"
-                    android:layout_marginTop="8dp"
                     android:text="1号玩家"
                     android:textStyle="bold"
-                    app:layout_constraintEnd_toStartOf="@+id/dfg_main_mine_active"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintBottom_toBottomOf="@+id/dfg_main_mine_text1"
+                    app:layout_constraintEnd_toStartOf="@+id/dfg_main_mine_active" />
 
                 <TextView
                     android:id="@+id/dfg_main_mine_active"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
-                    android:layout_marginTop="8dp"
                     android:text="生存"
                     android:textStyle="bold"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintBottom_toBottomOf="@+id/dfg_main_mine_playerNum"
+                    app:layout_constraintEnd_toEndOf="parent" />
 
                 <TextView
                     android:id="@+id/dfg_main_mine_text90"
@@ -592,7 +591,7 @@
 
     <Button
         android:id="@+id/dfg_main_button"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"

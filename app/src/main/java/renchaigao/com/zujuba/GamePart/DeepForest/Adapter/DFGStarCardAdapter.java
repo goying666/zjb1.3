@@ -45,17 +45,17 @@ public class DFGStarCardAdapter extends RecyclerView.Adapter<DFGStarCardAdapter.
         StarInfo starInfo = starInfoArrayList.get(position);
 //        holder.card_game_deep_forest_star_image.setImageResource(starInfo.get);
 //        holder.card_game_deep_forest_star_select_Image.setText(starInfo.get);
-        holder.card_game_deep_forest_star_message.setText(starInfo.);
-        holder.card_game_deep_forest_star_name.setText(starInfo.get);
-        holder.card_game_deep_forest_star_timeValue.setText(starInfo.get);
-        holder.card_game_deep_forest_star_technologyValue.setText(starInfo.get);
-        holder.card_game_deep_forest_star_defenceValue.setText(starInfo.get);
-        holder.card_game_deep_forest_star_number.setText(starInfo.get);
-        holder.card_game_deep_forest_star_levelValue.setText(starInfo.get);
-        holder.card_game_deep_forest_star_ownerName.setText(starInfo.get);
-
-        holder.card_game_deep_forest_star_message_infoPart.setText(starInfo.get);
-        holder.card_game_deep_forest_star_messagePart.setText(starInfo.get);
+//        holder.card_game_deep_forest_star_message.setText(starInfo.);
+//        holder.card_game_deep_forest_star_name.setText(starInfo.get);
+//        holder.card_game_deep_forest_star_timeValue.setText(starInfo.get);
+//        holder.card_game_deep_forest_star_technologyValue.setText(starInfo.get);
+//        holder.card_game_deep_forest_star_defenceValue.setText(starInfo.get);
+//        holder.card_game_deep_forest_star_number.setText(starInfo.get);
+//        holder.card_game_deep_forest_star_levelValue.setText(starInfo.get);
+//        holder.card_game_deep_forest_star_ownerName.setText(starInfo.get);
+//
+//        holder.card_game_deep_forest_star_message_infoPart.setText(starInfo.get);
+//        holder.card_game_deep_forest_star_messagePart.setText(starInfo.get);
 
     }
 

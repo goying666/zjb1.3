@@ -152,6 +152,7 @@
         DeepForestGameMessageInfoCarmeraActivity
     </string>
     <string name="title_activity_deep_forest_game_business">DeepForestGameBusinessActivity</string>
+    <string name="title_activity_message_info">MessageInfoActivity</string>
 
 
     <!--Deep Forest Game Use Part-->

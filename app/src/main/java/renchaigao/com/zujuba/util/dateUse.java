@@ -1,5 +1,7 @@
 package renchaigao.com.zujuba.util;
 
+import android.content.Intent;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -7,6 +9,29 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class dateUse {
+
+    public static String GameBeginCountDown(String dateString){
+        //日期 + 时间 ，返回 天数、小时数、分钟数、秒数四部分中的两部分，以左边为准。
+//        String retDay,retHour,retMin,retSecond;
+        Date beginGameDate = StringToDate(dateString);
+//        Date beginGameDate = StringToDate("2018-09-15 16:37:52");
+        Calendar calBeginGame = Calendar.getInstance();
+        Calendar calNow = Calendar.getInstance();
+        calBeginGame.setTime(beginGameDate);
+        calNow.setTime(new Date());
+        Long retHour,retMin,retSecond;
+        retHour = (calBeginGame.getTimeInMillis() - calNow.getTimeInMillis())/(1000*60*60);
+        retMin = (calBeginGame.getTimeInMillis() - calNow.getTimeInMillis())%(1000*60*60)/(1000*60);
+        retSecond = (calBeginGame.getTimeInMillis() - calNow.getTimeInMillis())%(1000*60)/1000;
+        if (retHour > 0){
+            return retHour.toString()+"时"+retMin.toString()+"分";
+        }else {
+            if (retMin>0){
+                return retMin.toString()+"分"+retSecond.toString()+"秒";
+            }else
+                return  retSecond.toString()+"秒";
+        }
+    }
 
     public static String getTodayDate() {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");

@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 
 import com.alibaba.fastjson.JSONObject;
 import com.renchaigao.zujuba.dao.User;
+import com.renchaigao.zujuba.mongoDB.info.team.TeamInfo;
 import com.renchaigao.zujuba.mongoDB.info.user.UserInfo;
 
 
@@ -63,6 +64,7 @@ public class DataUtil {
             return false;
         }
     }
+
     public static Boolean saveUserInfoData(Activity activity, UserInfo userInfoData) {
         userInfoData.setUpTime(dateUse.DateToString(new Date()));
         return saveUserData(activity, JSONObject.toJSONString(userInfoData));
@@ -72,6 +74,31 @@ public class DataUtil {
         try {
             SharedPreferences.Editor editor = activity.getSharedPreferences("userData", MODE_PRIVATE).edit();
             editor.putString("userInfo", userInfoData);
+            editor.apply();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static TeamInfo getTeamInfo(Context context){
+        try {
+            SharedPreferences pref = context.getSharedPreferences("teamData", MODE_PRIVATE);
+            String dataJsonString = pref.getString("teaminfo", null);
+            JSONObject jsonObject = JSONObject.parseObject(dataJsonString);
+            if (null != jsonObject)
+                return JSONObject.parseObject(dataJsonString, TeamInfo.class);
+            else return null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static Boolean saveTeamInfo(Activity activity,TeamInfo teamInfo){
+        teamInfo.setUpTime(dateUse.DateToString(new Date()));
+        try {
+            SharedPreferences.Editor editor = activity.getSharedPreferences("teamData", MODE_PRIVATE).edit();
+            editor.putString("teaminfo", JSONObject.toJSONString(teamInfo));
             editor.apply();
             return true;
         } catch (Exception e) {

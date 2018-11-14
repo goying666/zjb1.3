@@ -75,14 +75,16 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
-            android:text="6月29日生日派对聚会"
+            android:maxWidth="160dp"
+            android:maxLines="2"
+            android:text="6月29日生日派对聚会6月29日生日派对聚会6月29日生日派对聚会"
             android:textColor="#222222"
             android:textSize="@dimen/md_text_size_body"
             app:layout_constraintStart_toEndOf="@+id/team_image"
             app:layout_constraintTop_toTopOf="@+id/team_image" />
 
         <TextView
-            android:id="@+id/team_cardview_style"
+            android:id="@+id/team_cardview_state"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
