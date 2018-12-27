@@ -35,10 +35,9 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import renchaigao.com.zujuba.Activity.CreateTeamActivity;
+import renchaigao.com.zujuba.Activity.TeamPart.TeamCreateActivity;
 import renchaigao.com.zujuba.Activity.MyTeamActivity;
-import renchaigao.com.zujuba.Activity.PlaceListActivity;
-import renchaigao.com.zujuba.Adapter.TeamFragmentAdapter;
+import renchaigao.com.zujuba.Fragment.Adapter.TeamFragmentAdapter;
 import renchaigao.com.zujuba.R;
 import renchaigao.com.zujuba.util.DataPart.DataUtil;
 import renchaigao.com.zujuba.util.OkhttpFunc;
@@ -92,7 +91,7 @@ public class TeamFragment extends Fragment {
 //        teamFragmentAdapter.setOnItemClickListener(new PlaceListActivity.OnItemClickListener() {
 //            @Override
 //            public void onItemClick(View view, int position) {
-//                final Intent intent = new Intent(getActivity(), CreateTeamActivity.class);
+//                final Intent intent = new Intent(getActivity(), TeamCreateActivity.class);
 //                intent.putExtra("address",JSONObject.toJSONString(mStoreInfo.get(position).getAddressInfo()));
 //                intent.putExtra("storeInfo",JSONObject.toJSONString(mStoreInfo.get(position)));
 //                intent.putExtra("name", mStoreInfo.get(position).getName());
@@ -128,7 +127,7 @@ public class TeamFragment extends Fragment {
         button_creatTeam.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Intent intent = new Intent(getActivity(), CreateTeamActivity.class);
+                final Intent intent = new Intent(getActivity(), TeamCreateActivity.class);
                 getActivity().startActivityForResult(intent, MAIN_TEAM_CREAT_TEAM);
             }
         });
@@ -142,7 +141,7 @@ public class TeamFragment extends Fragment {
         button_joinTeam.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                final Intent intent = new Intent(getActivity(), CreateTeamActivity.class);
+//                final Intent intent = new Intent(getActivity(), TeamCreateActivity.class);
 //                getActivity().startActivityForResult(intent,MAIN_TEAM_CREAT_TEAM);
             }
         });
@@ -163,8 +162,6 @@ public class TeamFragment extends Fragment {
 
         }
     }
-
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

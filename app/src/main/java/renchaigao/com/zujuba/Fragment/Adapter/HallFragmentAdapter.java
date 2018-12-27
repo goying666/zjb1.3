@@ -1,4 +1,4 @@
-package renchaigao.com.zujuba.Adapter;
+package renchaigao.com.zujuba.Fragment.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,7 +17,7 @@ import com.renchaigao.zujuba.mongoDB.info.store.StoreInfo;
 import java.util.ArrayList;
 
 import renchaigao.com.zujuba.Activity.PlaceListActivity;
-import renchaigao.com.zujuba.Activity.StoreActivity;
+import renchaigao.com.zujuba.Activity.Center.StoreActivity;
 import renchaigao.com.zujuba.R;
 
 /**

@@ -1,4 +1,4 @@
-package renchaigao.com.zujuba.info;
+package renchaigao.com.zujuba.Bean;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -21,4 +21,8 @@ public class FilterInfo {
     private String evaluationScreening;
 
     private String marriage;
+
+    public void setIntegrityScore(String integrityScore) {
+        this.integrityScore = integrityScore;
+    }
 }

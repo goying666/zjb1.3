@@ -1,6 +1,5 @@
-package renchaigao.com.zujuba.Adapter;
+package renchaigao.com.zujuba.Fragment.Adapter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.CardView;
@@ -15,11 +14,9 @@ import android.widget.TextView;
 import com.alibaba.fastjson.JSONObject;
 import com.renchaigao.zujuba.mongoDB.info.team.TeamInfo;
 
-
 import java.util.ArrayList;
 
-import renchaigao.com.zujuba.Activity.PlaceListActivity;
-import renchaigao.com.zujuba.Activity.TeamActivity;
+import renchaigao.com.zujuba.Activity.TeamPart.TeamActivity;
 import renchaigao.com.zujuba.R;
 import renchaigao.com.zujuba.util.dateUse;
 
@@ -52,7 +49,7 @@ public class TeamFragmentAdapter extends RecyclerView.Adapter<TeamFragmentAdapte
     public void onBindViewHolder(TeamFragmentAdapter.ItemHolder holder, final int position) {
         TeamInfo teamInfo = mTeamList.get(position);
         String teamJson = JSONObject.toJSONString(teamInfo);
-        holder.place_star_num.setNumStars(teamInfo.getAddressInfo().getStarValue());
+//        holder.place_star_num.setNumStars(teamInfo.getAddressInfo().getStarValue());
         holder.team_image.setImageResource(R.drawable.lrs_image);
         holder.team_boy_number.setText(teamInfo.getTeamPlayerInfo().getBoySum().toString() + "人");
         holder.team_girl_number.setText(teamInfo.getTeamPlayerInfo().getGirlSum().toString() + "人");
@@ -73,7 +70,8 @@ public class TeamFragmentAdapter extends RecyclerView.Adapter<TeamFragmentAdapte
             public void onClick(View v) {
                 TeamInfo teamInfo1 = mTeamList.get(position);
                 Intent intent = new Intent(mContext, TeamActivity.class);
-                intent.putExtra("team", JSONObject.toJSONString(teamInfo1));
+                intent.putExtra("teamInfo", JSONObject.toJSONString(teamInfo1));
+                intent.putExtra("COME_FROM", "FRAGMENT_TEAM");
                 mContext.startActivity(intent);
             }
         });

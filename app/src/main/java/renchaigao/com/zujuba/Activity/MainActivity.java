@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case MAIN_ADDRESS://是地图api返回的；
-                AddressInfo addressUse = JSONObject.parseObject(data.getStringExtra("addressStoreJsonStr").toString(), AddressInfo.class);
+                AddressInfo addressUse = JSONObject.parseObject(data.getStringExtra("addressStoreJsonStr"), AddressInfo.class);
                 userInfo.setMyAddressInfo(addressUse);
                 user = userInfo;
                 DataUtil.saveUserInfoData(MainActivity.this, userInfo);
@@ -153,12 +153,12 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, MAIN_ADDRESS);
             }
         });
-        if(userInfo!=null ){
-            if (userInfo.getMyAddressInfo() ==null){
+        if (userInfo != null) {
+            if (userInfo.getMyAddressInfo() == null) {
 
                 builder.show();
-            }else {
-                if(userInfo.getMyAddressInfo().getLatitude() == null || userInfo.getMyAddressInfo().getLongitude() == null) {
+            } else {
+                if (userInfo.getMyAddressInfo().getLatitude() == null || userInfo.getMyAddressInfo().getLongitude() == null) {
                     builder.show();
                 }
             }
@@ -421,8 +421,8 @@ public class MainActivity extends AppCompatActivity {
                             JSONObject responseJsonData = (JSONObject) responseJson.getJSONObject("data");
                             switch (code) {
                                 case 0:
-                                    DataUtil.saveUserInfoData(MainActivity.this,JSONObject.toJSONString(responseJsonData));
-    UserInfo userTestINFO = DataUtil.getUserInfoData(MainActivity.this);
+                                    DataUtil.saveUserInfoData(MainActivity.this, JSONObject.toJSONString(responseJsonData));
+                                    UserInfo userTestINFO = DataUtil.getUserInfoData(MainActivity.this);
                                     Message msg = new Message();
                                     msg.obj = "地址更新成功";
                                     // 把消息发送到主线程，在主线程里现实Toast

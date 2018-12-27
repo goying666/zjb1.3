@@ -1,4 +1,4 @@
-package renchaigao.com.zujuba.Activity;
+package renchaigao.com.zujuba.Activity.GamePart;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,13 +6,11 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SimpleItemAnimator;
 import android.view.View;
 import android.widget.Button;
 
-import renchaigao.com.zujuba.Adapter.TeamFragmentAdapter;
+import renchaigao.com.zujuba.Fragment.Adapter.TeamFragmentAdapter;
 import renchaigao.com.zujuba.R;
-import renchaigao.com.zujuba.widgets.DividerItemDecoration;
 
 public class GameInfoActivity extends AppCompatActivity {
 

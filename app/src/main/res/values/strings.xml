@@ -155,6 +155,18 @@
     <string name="title_activity_message_info">MessageInfoActivity</string>
 
 
+    <!--界面部分-->
+    <!--Game Begin Part-->
+    <string name="game_begin_button1">组局后开始游戏</string>
+    <string name="game_begin_button1_introduce_text">适合预约组局进行游戏场景</string>
+    <string name="game_begin_button2">直接开始游戏</string>
+    <string name="game_begin_button2_introduce_text">适合面对面组局进行游戏场景</string>
+
+    <!--start Activity-->
+    <string name="activity_start_text_zujuba">组局吧</string>
+    <string name="activity_start_text_info">组局玩桌游的APP</string>
+
+
     <!--Deep Forest Game Use Part-->
     <!--<string name=""-->
 

@@ -57,7 +57,7 @@ import renchaigao.com.zujuba.R;
 import renchaigao.com.zujuba.util.DataPart.DataUtil;
 import renchaigao.com.zujuba.util.dateUse;
 
-import static renchaigao.com.zujuba.Activity.CreateStoreActivity.ADD_ADDRESS;
+import static renchaigao.com.zujuba.Activity.Center.CreateStoreActivity.ADD_ADDRESS;
 import static renchaigao.com.zujuba.Activity.MainActivity.MAIN_ADDRESS;
 
 public class GaoDeMapActivity extends AppCompatActivity implements LocationSource,

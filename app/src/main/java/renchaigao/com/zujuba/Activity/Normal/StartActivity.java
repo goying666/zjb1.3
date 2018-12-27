@@ -1,4 +1,4 @@
-package renchaigao.com.zujuba.Activity;
+package renchaigao.com.zujuba.Activity.Normal;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -13,7 +13,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
-import com.renchaigao.zujuba.domain.response.RespCode;
+
+import org.litepal.LitePal;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -27,6 +28,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import renchaigao.com.zujuba.Activity.AdvertisingActivity;
 import renchaigao.com.zujuba.R;
 import renchaigao.com.zujuba.util.FinalDefine;
 import renchaigao.com.zujuba.util.OkhttpFunc;
@@ -57,6 +59,7 @@ public class StartActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
+        LitePal.initialize(this);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.hide();

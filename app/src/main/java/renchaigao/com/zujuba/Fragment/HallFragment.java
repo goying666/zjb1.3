@@ -46,9 +46,9 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import renchaigao.com.zujuba.Activity.CreateStoreActivity;
-import renchaigao.com.zujuba.Activity.JoinUsActivity;
-import renchaigao.com.zujuba.Adapter.HallFragmentAdapter;
+import renchaigao.com.zujuba.Activity.Center.CreateStoreActivity;
+import renchaigao.com.zujuba.Activity.Center.JoinUsActivity;
+import renchaigao.com.zujuba.Fragment.Adapter.HallFragmentAdapter;
 import renchaigao.com.zujuba.R;
 import renchaigao.com.zujuba.util.DataPart.DataUtil;
 import renchaigao.com.zujuba.util.OkhttpFunc;
@@ -138,7 +138,6 @@ public class HallFragment extends Fragment implements OnBannerListener {
     private SwipeRefreshLayout swipeRefreshLayout;
     private Toolbar toolbar;
     private FloatingActionButton floatingActionButton;
-
     private HallFragmentAdapter hallFragmentAdapter;
     private RecyclerView recyclerView;
     private LinearLayoutManager layoutManager;
@@ -272,7 +271,7 @@ public class HallFragment extends Fragment implements OnBannerListener {
                     @Override
                     public void onFailure(Call call, IOException e) {
                         Log.e("onFailure", e.toString());
-                        Log.i(TAG + " callBack spend time : ", String.valueOf(System.currentTimeMillis() - startTimeMil));
+                        Log.i(TAG , String.valueOf(System.currentTimeMillis() - startTimeMil));
 
                         reloadFlag = "doInBackground";
                     }
@@ -289,7 +288,7 @@ public class HallFragment extends Fragment implements OnBannerListener {
                             Log.e(TAG,"onResponse CODE is" + code);
 
 //                            ArrayList<StoreInfo> mStores = new ArrayList<>();
-                            Log.i(TAG + " callBack spend time : ", String.valueOf(System.currentTimeMillis() - startTimeMil));
+                            Log.i(TAG, String.valueOf(System.currentTimeMillis() - startTimeMil));
                             switch (code) {
                                 case 0: //在数据库中更新用户数据出错；
                                     ArrayList<StoreInfo> mStores = new ArrayList();
@@ -325,7 +324,6 @@ public class HallFragment extends Fragment implements OnBannerListener {
             }
         }.execute();
     }
-
 
     private void setButton(View view) {
         button_joinUs = view.findViewById(R.id.hall_button_joinUs);

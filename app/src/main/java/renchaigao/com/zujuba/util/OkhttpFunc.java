@@ -8,8 +8,6 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import renchaigao.com.zujuba.Activity.CreateStoreActivity;
-
 /**
  * Created by Administrator on 2018/7/27/027.
  */

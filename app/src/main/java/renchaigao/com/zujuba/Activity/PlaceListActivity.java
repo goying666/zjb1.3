@@ -2,7 +2,6 @@ package renchaigao.com.zujuba.Activity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -32,14 +31,15 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import renchaigao.com.zujuba.Adapter.HallFragmentAdapter;
+import renchaigao.com.zujuba.Activity.TeamPart.TeamCreateActivity;
+import renchaigao.com.zujuba.Fragment.Adapter.HallFragmentAdapter;
 import renchaigao.com.zujuba.R;
 import renchaigao.com.zujuba.util.DataPart.DataUtil;
 import renchaigao.com.zujuba.util.OkhttpFunc;
 import renchaigao.com.zujuba.util.PropertiesConfig;
 import renchaigao.com.zujuba.widgets.DividerItemDecoration;
 
-import static renchaigao.com.zujuba.Activity.CreateTeamActivity.CREATE_TEAM_ADDRESS_STORE;
+import static renchaigao.com.zujuba.Activity.TeamPart.TeamCreateActivity.CREATE_TEAM_ADDRESS_STORE;
 
 /******     该活动用于创建Team时选择地点，展示地点list使用。    ******/
 public class PlaceListActivity extends AppCompatActivity {
@@ -89,7 +89,7 @@ public class PlaceListActivity extends AppCompatActivity {
         hallFragmentAdapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                final Intent intent = new Intent(PlaceListActivity.this, CreateTeamActivity.class);
+                final Intent intent = new Intent(PlaceListActivity.this, TeamCreateActivity.class);
                 intent.putExtra("address",JSONObject.toJSONString(mStoreInfo.get(position).getAddressInfo()));
                 intent.putExtra("storeInfo",JSONObject.toJSONString(mStoreInfo.get(position)));
                 intent.putExtra("name", mStoreInfo.get(position).getName());

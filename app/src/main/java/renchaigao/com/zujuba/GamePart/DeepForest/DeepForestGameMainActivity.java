@@ -2,12 +2,9 @@ package renchaigao.com.zujuba.GamePart.DeepForest;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabItem;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.ActionBar;
@@ -15,41 +12,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
-import android.support.v7.widget.Toolbar;
-import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.renchaigao.zujuba.mongoDB.info.game.DeepForest.CivilizationInfo;
 import com.renchaigao.zujuba.mongoDB.info.game.DeepForest.DeepForestGameInfo;
 import com.renchaigao.zujuba.mongoDB.info.game.DeepForest.StarInfo;
 import com.renchaigao.zujuba.mongoDB.info.team.TeamInfo;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLSession;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import renchaigao.com.zujuba.Adapter.TeamFragmentAdapter;
 import renchaigao.com.zujuba.GamePart.DeepForest.Adapter.DFGNoteAdapter;
 import renchaigao.com.zujuba.GamePart.DeepForest.Adapter.DFGPlayerAdapter;
 import renchaigao.com.zujuba.R;
 import renchaigao.com.zujuba.util.DataPart.DataUtil;
-import renchaigao.com.zujuba.util.OkhttpFunc;
-import renchaigao.com.zujuba.util.PropertiesConfig;
 import renchaigao.com.zujuba.widgets.DividerItemDecoration;
 
 public class DeepForestGameMainActivity extends AppCompatActivity {

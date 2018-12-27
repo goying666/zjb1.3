@@ -1,10 +1,9 @@
-package renchaigao.com.zujuba.Activity;
+package renchaigao.com.zujuba.Activity.TeamPart;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -33,7 +32,6 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
 import com.bumptech.glide.Glide;
-import com.renchaigao.zujuba.dao.Address;
 import com.renchaigao.zujuba.mongoDB.info.AddressInfo;
 import com.renchaigao.zujuba.mongoDB.info.team.TeamInfo;
 import com.renchaigao.zujuba.mongoDB.info.user.UserInfo;
@@ -51,19 +49,21 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import renchaigao.com.zujuba.info.FilterInfo;
-import renchaigao.com.zujuba.util.DataPart.DataUtil;
-import renchaigao.com.zujuba.widgets.WidgetDateAndWeekSelect;
+import renchaigao.com.zujuba.Activity.MessageInfoActivity;
+import renchaigao.com.zujuba.Activity.PlaceListActivity;
+import renchaigao.com.zujuba.Bean.FilterInfo;
 import renchaigao.com.zujuba.R;
 import renchaigao.com.zujuba.util.CalendarUtil;
+import renchaigao.com.zujuba.util.DataPart.DataUtil;
 import renchaigao.com.zujuba.util.FinalDefine;
 import renchaigao.com.zujuba.util.OkhttpFunc;
 import renchaigao.com.zujuba.util.PatternUtil;
 import renchaigao.com.zujuba.util.PropertiesConfig;
 import renchaigao.com.zujuba.util.dateUse;
+import renchaigao.com.zujuba.widgets.WidgetDateAndWeekSelect;
 
 
-public class CreateTeamActivity extends AppCompatActivity {
+public class TeamCreateActivity extends AppCompatActivity {
     private NestedScrollView nestedScrollView;
     private Integer pageNum;
     private boolean click_id_activity_create_team_datetime_image_more,
@@ -90,7 +90,12 @@ public class CreateTeamActivity extends AppCompatActivity {
             id_activity_create_team_place,
             team_create_address_info_layout,
             ct_addres_info_layout;
-    private Button create_team_cancle, create_team_next, create_team_open_place_button, create_team_store_button;
+    private Button create_team_cancle,
+            create_team_next,
+            create_team_open_place_button,
+            create_team_store_button,
+            button_create_team_cancle,
+            button_create_team_next;
     private ConstraintLayout
             id_activity_create_team_game,
             id_activity_create_team_basic_information,
@@ -143,7 +148,7 @@ public class CreateTeamActivity extends AppCompatActivity {
         setGame();
         initExtraInfoPart();
         setButton();
-//        Glide.with(CreateTeamActivity.this).load("http://ww4.sinaimg.cn/large/006uZZy8jw1faic2e7vsaj30ci08cglz.jpg").into(create_team_place_pic1);
+//        Glide.with(TeamCreateActivity.this).load("http://ww4.sinaimg.cn/large/006uZZy8jw1faic2e7vsaj30ci08cglz.jpg").into(create_team_place_pic1);
     }
 
     //    初始化一些准备数据；
@@ -348,14 +353,14 @@ public class CreateTeamActivity extends AppCompatActivity {
         create_team_open_place_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Intent intent = new Intent(CreateTeamActivity.this, PlaceListActivity.class);
+                final Intent intent = new Intent(TeamCreateActivity.this, PlaceListActivity.class);
                 startActivityForResult(intent, CREATE_TEAM_ADDRESS_OPEN_PLACE);
             }
         });
         create_team_store_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Intent intent = new Intent(CreateTeamActivity.this, PlaceListActivity.class);
+                final Intent intent = new Intent(TeamCreateActivity.this, PlaceListActivity.class);
                 startActivityForResult(intent, CREATE_TEAM_ADDRESS_STORE);
             }
         });
@@ -386,7 +391,7 @@ public class CreateTeamActivity extends AppCompatActivity {
                 teamInfo.setAddressInfo(addressInfo);
 
                 Glide
-                        .with(CreateTeamActivity.this)
+                        .with(TeamCreateActivity.this)
                         .load("http://ww4.sinaimg.cn/large/006uZZy8jw1faic2e7vsaj30ci08cglz.jpg")
                         .placeholder(R.drawable.image_loading)
                         .error(R.drawable.image_load_fail)
@@ -568,7 +573,7 @@ public class CreateTeamActivity extends AppCompatActivity {
                 id_activity_create_team_time_image_more.setImageResource(R.drawable.more_down);
                 id_activity_create_team_time_selectinfo.setVisibility(View.GONE);
                 click_id_activity_create_team_time_image_more = true;
-                Toast.makeText(CreateTeamActivity.this, "时间设置成功：" + R.string.create_team_time_morning, Toast.LENGTH_SHORT).show();
+                Toast.makeText(TeamCreateActivity.this, "时间设置成功：" + R.string.create_team_time_morning, Toast.LENGTH_SHORT).show();
             }
         });
         id_activity_create_team_time_selectinfo_afternoon.setOnClickListener(new View.OnClickListener() {
@@ -578,7 +583,7 @@ public class CreateTeamActivity extends AppCompatActivity {
                 id_activity_create_team_time_image_more.setImageResource(R.drawable.more_down);
                 id_activity_create_team_time_selectinfo.setVisibility(View.GONE);
                 click_id_activity_create_team_time_image_more = true;
-                Toast.makeText(CreateTeamActivity.this, "时间设置成功：" + R.string.create_team_time_afternoon, Toast.LENGTH_SHORT).show();
+                Toast.makeText(TeamCreateActivity.this, "时间设置成功：" + R.string.create_team_time_afternoon, Toast.LENGTH_SHORT).show();
             }
         });
         id_activity_create_team_time_selectinfo_evening.setOnClickListener(new View.OnClickListener() {
@@ -588,7 +593,7 @@ public class CreateTeamActivity extends AppCompatActivity {
                 id_activity_create_team_time_image_more.setImageResource(R.drawable.more_down);
                 id_activity_create_team_time_selectinfo.setVisibility(View.GONE);
                 click_id_activity_create_team_time_image_more = true;
-                Toast.makeText(CreateTeamActivity.this, "时间设置成功：" + R.string.create_team_time_evening, Toast.LENGTH_SHORT).show();
+                Toast.makeText(TeamCreateActivity.this, "时间设置成功：" + R.string.create_team_time_evening, Toast.LENGTH_SHORT).show();
             }
         });
         id_activity_create_team_time_selectinfo_night.setOnClickListener(new View.OnClickListener() {
@@ -598,7 +603,7 @@ public class CreateTeamActivity extends AppCompatActivity {
                 id_activity_create_team_time_image_more.setImageResource(R.drawable.more_down);
                 id_activity_create_team_time_selectinfo.setVisibility(View.GONE);
                 click_id_activity_create_team_time_image_more = true;
-                Toast.makeText(CreateTeamActivity.this, "时间设置成功：" + R.string.create_team_time_night, Toast.LENGTH_SHORT).show();
+                Toast.makeText(TeamCreateActivity.this, "时间设置成功：" + R.string.create_team_time_night, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -611,7 +616,7 @@ public class CreateTeamActivity extends AppCompatActivity {
                 id_activity_create_team_datetime_selectinfo.setVisibility(View.GONE);
                 create_team_date_title.setText(today_widgetDateAndWeekSelect.getWeek_textView().getText());
                 click_id_activity_create_team_datetime_image_more = true;
-                Toast.makeText(CreateTeamActivity.this, "日期设置成功：" + today_widgetDateAndWeekSelect.getDate_textView().getText(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(TeamCreateActivity.this, "日期设置成功：" + today_widgetDateAndWeekSelect.getDate_textView().getText(), Toast.LENGTH_SHORT).show();
             }
         });
         tomorrow_widgetDateAndWeekSelect.getConstraint().setOnClickListener(new View.OnClickListener() {
@@ -622,7 +627,7 @@ public class CreateTeamActivity extends AppCompatActivity {
                 id_activity_create_team_datetime_selectinfo.setVisibility(View.GONE);
                 create_team_date_title.setText(tomorrow_widgetDateAndWeekSelect.getWeek_textView().getText());
                 click_id_activity_create_team_datetime_image_more = true;
-                Toast.makeText(CreateTeamActivity.this, "日期设置成功：" + tomorrow_widgetDateAndWeekSelect.getDate_textView().getText(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(TeamCreateActivity.this, "日期设置成功：" + tomorrow_widgetDateAndWeekSelect.getDate_textView().getText(), Toast.LENGTH_SHORT).show();
             }
         });
         aftertom_widgetDateAndWeekSelect.getConstraint().setOnClickListener(new View.OnClickListener() {
@@ -633,7 +638,7 @@ public class CreateTeamActivity extends AppCompatActivity {
                 id_activity_create_team_datetime_selectinfo.setVisibility(View.GONE);
                 create_team_date_title.setText(aftertom_widgetDateAndWeekSelect.getWeek_textView().getText());
                 click_id_activity_create_team_datetime_image_more = true;
-                Toast.makeText(CreateTeamActivity.this, "日期设置成功：" + aftertom_widgetDateAndWeekSelect.getDate_textView().getText(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(TeamCreateActivity.this, "日期设置成功：" + aftertom_widgetDateAndWeekSelect.getDate_textView().getText(), Toast.LENGTH_SHORT).show();
             }
         });
         friday_widgetDateAndWeekSelect.getConstraint().setOnClickListener(new View.OnClickListener() {
@@ -644,7 +649,7 @@ public class CreateTeamActivity extends AppCompatActivity {
                 id_activity_create_team_datetime_selectinfo.setVisibility(View.GONE);
                 create_team_date_title.setText(friday_widgetDateAndWeekSelect.getWeek_textView().getText());
                 click_id_activity_create_team_datetime_image_more = true;
-                Toast.makeText(CreateTeamActivity.this, "日期设置成功：" + friday_widgetDateAndWeekSelect.getDate_textView().getText(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(TeamCreateActivity.this, "日期设置成功：" + friday_widgetDateAndWeekSelect.getDate_textView().getText(), Toast.LENGTH_SHORT).show();
             }
         });
         saturday_widgetDateAndWeekSelect.getConstraint().setOnClickListener(new View.OnClickListener() {
@@ -655,7 +660,7 @@ public class CreateTeamActivity extends AppCompatActivity {
                 id_activity_create_team_datetime_selectinfo.setVisibility(View.GONE);
                 create_team_date_title.setText(saturday_widgetDateAndWeekSelect.getWeek_textView().getText());
                 click_id_activity_create_team_datetime_image_more = true;
-                Toast.makeText(CreateTeamActivity.this, "日期设置成功：" + saturday_widgetDateAndWeekSelect.getDate_textView().getText(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(TeamCreateActivity.this, "日期设置成功：" + saturday_widgetDateAndWeekSelect.getDate_textView().getText(), Toast.LENGTH_SHORT).show();
             }
         });
         sunday_widgetDateAndWeekSelect.getConstraint().setOnClickListener(new View.OnClickListener() {
@@ -666,7 +671,7 @@ public class CreateTeamActivity extends AppCompatActivity {
                 id_activity_create_team_datetime_selectinfo.setVisibility(View.GONE);
                 create_team_date_title.setText(sunday_widgetDateAndWeekSelect.getWeek_textView().getText());
                 click_id_activity_create_team_datetime_image_more = true;
-                Toast.makeText(CreateTeamActivity.this, "日期设置成功：" + sunday_widgetDateAndWeekSelect.getDate_textView().getText(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(TeamCreateActivity.this, "日期设置成功：" + sunday_widgetDateAndWeekSelect.getDate_textView().getText(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -962,13 +967,12 @@ public class CreateTeamActivity extends AppCompatActivity {
     }
 
     private String filter1, filter2, filter3, filter4, filter5, filter6;
-    private Button button_create_team_cancle, button_create_team_next;
     private AlertDialog.Builder builder;
     private ProgressDialog progDialog;
 
     private void setButton() {
-        builder = new AlertDialog.Builder(CreateTeamActivity.this);
-        progDialog = new ProgressDialog(CreateTeamActivity.this);
+        builder = new AlertDialog.Builder(TeamCreateActivity.this);
+        progDialog = new ProgressDialog(TeamCreateActivity.this);
         button_create_team_cancle = findViewById(R.id.button_create_team_cancle);
         button_create_team_next = findViewById(R.id.button_create_team_next);
         button_create_team_cancle.setOnClickListener(new View.OnClickListener() {
@@ -1164,19 +1168,20 @@ public class CreateTeamActivity extends AppCompatActivity {
                     public void onResponse(Call call, Response response) throws IOException {
                         try {
                             JSONObject responseJson = JSONObject.parseObject(response.body().string());
-                            String responseJsoStr = responseJson.toJSONString();
+//                            String responseJsoStr = responseJson.toJSONString();
                             int code = Integer.valueOf(responseJson.get("code").toString());
                             JSONObject responseJsonData = responseJson.getJSONObject("data");
 //                            JSONArray responseJsonData = responseJson.getJSONArray("data");
-
-                            Log.e(TAG, "onResponse CODE OUT");
-                            Log.e(TAG, "onResponse CODE is" + code);
-
-//                            ArrayList<StoreInfo> mStores = new ArrayList<>();
-                            Log.i(TAG + " callBack spend time : ", String.valueOf(System.currentTimeMillis() - startTimeMil));
+//                            Log.e(TAG, "onResponse CODE OUT");
+//                            Log.e(TAG, "onResponse CODE is" + code);//
+////                            ArrayList<StoreInfo> mStores = new ArrayList<>();
+//                            Log.i(TAG + " callBack spend time : ", String.valueOf(System.currentTimeMillis() - startTimeMil));
                             switch (code) {
                                 case 0: //在数据库中更新用户数据出错；
                                     Log.e(TAG, "onResponse");
+                                    Intent intent = new Intent(TeamCreateActivity.this, MessageInfoActivity.class);
+                                    intent.putExtra("teamInfo",JSONObject.toJSONString(responseJsonData));
+                                    startActivity(intent);
                                     finish();
                                     break;
                             }

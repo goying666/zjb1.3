@@ -1,4 +1,4 @@
-package renchaigao.com.zujuba.Activity;
+package renchaigao.com.zujuba.Activity.Center;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;

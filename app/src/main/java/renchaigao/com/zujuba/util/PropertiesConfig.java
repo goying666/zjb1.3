@@ -31,8 +31,8 @@ public class PropertiesConfig {
 //    public final static String teamServerUrl = serverUrlAL + "team/";
     public final static String teamServerUrl = serverUrlBD + ":7802/";
 
-//    public final static String storeServerUrl = serverUrlAL + "store/";//
-    public final static String storeServerUrl = serverUrlBD + ":7803/";
+    public final static String storeServerUrl = serverUrlAL + "store/";//
+//    public final static String storeServerUrl = serverUrlBD + ":7803/";
 //
 //    public final static String playerServerUrl = serverUrlAL + "player/";
 //
@@ -43,6 +43,20 @@ public class PropertiesConfig {
     public final static String mxtWorldGameServerUrl = serverUrlBD + ":7805/";
 
     public final static String deepForestGameUrl = serverUrlBD + ":7806/";
+
+    //    public final static String messageUrl = serverUrlAL + "message/";//
+    public final static String messageUrl = serverUrlBD + ":7807/";
+
+
+    public final static int ACTIVITY_MESSAGE = 1;
+    public final static int ACTIVITY_TEAM = 2;
+    public final static int ACTIVITY_TEAM_CREATE = 3;
+    public final static int FRAGMENT_MESSAGE = 4;
+    public final static int FRAGMENT_TEAM = 5;
+
+//    public final static String ;
+
+
 
 
 }

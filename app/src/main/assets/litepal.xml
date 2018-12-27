@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <litepal>
-    <dbname value="MessageDB"></dbname>
-    <version value="1"></version>
+    <dbname value="MessageDB" />
+    <version value="2" />
 
     <list>
-        <mapping class="renchaigao.com.zujuba.info.MessageNoteInfo"></mapping>
+        <mapping class="renchaigao.com.zujuba.Bean.MessageNoteInfo" />
+        <mapping class="renchaigao.com.zujuba.Bean.MessageContentInfo" />
     </list>
 </litepal>

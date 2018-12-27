@@ -1,4 +1,4 @@
-package renchaigao.com.zujuba.Activity;
+package renchaigao.com.zujuba.Activity.Center;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -58,6 +58,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import renchaigao.com.zujuba.Activity.GaoDeMapActivity;
 import renchaigao.com.zujuba.R;
 import renchaigao.com.zujuba.util.DataPart.DataUtil;
 import renchaigao.com.zujuba.util.FinalDefine;
@@ -67,8 +68,6 @@ import renchaigao.com.zujuba.util.PatternUtil;
 import renchaigao.com.zujuba.util.PictureRAR;
 import renchaigao.com.zujuba.util.PropertiesConfig;
 import renchaigao.com.zujuba.util.dateUse;
-
-import static renchaigao.com.zujuba.Activity.GaoDeMapActivity.GAODE_MAP;
 
 public class CreateStoreActivity extends AppCompatActivity {
 

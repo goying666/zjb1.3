@@ -1,4 +1,4 @@
-package renchaigao.com.zujuba.Adapter;
+package renchaigao.com.zujuba.Activity.Adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

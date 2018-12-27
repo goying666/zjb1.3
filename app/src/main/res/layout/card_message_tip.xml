@@ -34,7 +34,7 @@
             tools:ignore="MissingConstraints" />
 
         <TextView
-            android:id="@+id/card_message_zu_number"
+            android:id="@+id/card_message_current_content"
             android:layout_width="wrap_content"
             android:layout_height="19dp"
             android:layout_marginBottom="8dp"

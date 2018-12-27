@@ -45,6 +45,7 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
+        android:name="org.litepal.LitePalApplication"
         android:allowBackup="true"
         android:hardwareAccelerated="false"
         android:icon="@mipmap/ic_launcher"
@@ -52,9 +53,7 @@
         android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:name="org.litepal.LitePalApplication"
-        >
+        android:theme="@style/AppTheme">
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.example.cameraalbumtest.fileprovider"
@@ -68,8 +67,8 @@
         <activity
             android:name=".Activity.MainActivity"
             android:label="@string/app_name" />
-        <activity android:name=".Activity.JoinUsActivity" />
-        <activity android:name=".Activity.CreateStoreActivity" />
+        <activity android:name=".Activity.Center.JoinUsActivity" />
+        <activity android:name=".Activity.Center.CreateStoreActivity" />
 
         <meta-data
             android:name="com.amap.api.v2.apikey"
@@ -79,9 +78,9 @@
 
         <activity android:name=".Activity.GaoDeMapActivity" />
         <activity
-            android:name=".Activity.LoginActivity"
+            android:name=".Activity.Normal.LoginActivity"
             android:label="@string/app_name" />
-        <activity android:name=".Activity.StartActivity">
+        <activity android:name=".Activity.Normal.StartActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -89,44 +88,30 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Activity.StoreActivity"
+            android:name=".Activity.Center.StoreActivity"
             android:label="@string/title_activity_store"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".Activity.CreateTeamActivity">
-
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-
-
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
-        </activity>
+        <activity android:name=".Activity.TeamPart.TeamCreateActivity" />
         <activity android:name=".Activity.MyTeamActivity" />
         <activity android:name=".Activity.PlaceListActivity" />
-        <activity android:name=".Activity.TeamActivity" />
+        <activity
+            android:name=".Activity.TeamPart.TeamActivity"
+            android:launchMode="singleTask" />
         <activity android:name=".Activity.AdvertisingActivity" />
         <activity
-            android:name=".Activity.GameInfoActivity"
+            android:name=".Activity.GamePart.GameInfoActivity"
             android:label="@string/title_activity_game_info"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".Activity.GameWorldActivity"
+            android:name=".Activity.GamePart.GameWorldActivity"
             android:label="@string/title_activity_game_world"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".GamePart.DeepForest.DeepForestGameMainActivity"
             android:label="@string/title_activity_deep_forest_game_main"
-            android:theme="@style/AppTheme.NoActionBar">
-
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-
-
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".GamePart.DeepForest.DeepForestGameTacticsActivity"
             android:label="@string/title_activity_deep_forest_game_tactics"
@@ -172,13 +157,11 @@
         <activity
             android:name=".Activity.MessageInfoActivity"
             android:label="@string/title_activity_message_info"
-            android:theme="@style/AppTheme.NoActionBar">
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
-
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
-        </activity>
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".GamePart.DeepForest.DeepForestGmaeSetUpActivity" />
+        <activity android:name=".Activity.GamePart.GameBeginActivity" />
+        <activity android:name=".Activity.GamePart.GameReadyActivity"></activity>
     </application>
 
 </manifest>
